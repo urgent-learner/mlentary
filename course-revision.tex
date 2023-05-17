@@ -1,0 +1,703 @@
+\documentclass[12pt]{article}
+
+\include{sam.sty}
+
+\usepackage{amssymb}
+\usepackage{wrapfig}
+
+\begin{document}
+
+\begin{center}
+  \huge
+    686 course revision, 2023
+\end{center}
+
+\newcommand{\defined}[1]{\textbf{#1}}
+
+\part{Motivation}
+  \section*{\sc Learner Concerns}
+
+
+  \section*{\sc Cohesion and Completeness}
+    \subsection*{}
+    \subsection*{}
+    \subsection*{}
+    \subsection*{}
+    \subsection*{Pointing Students to External Resources.  Clarifying What They Learn on Own Neede}
+
+  \section*{\sc Modern Emphasis}
+    \subsection*{Topics to Introduce and/or Emphasize}
+      Besides Attention Layers and Variational Autoencoders, the topics to
+      introduce and/or emphasize are more in the way of LIGAMENTS to reveal the
+      unity of course content and to help learners distilll their
+      understanding.  What I want to avoid is a feeling that Units 4
+      and 5 are just a grab bag of not-very-related topics.  Helping cohesion
+      is a more unified view or emphasis, e.g.\ keeping in mind everything
+      as approximate probability maximization etc.
+
+      Overfitting, Regularization, and Priors.
+      Role of Featurization
+      Probabilistic Models.
+      Conditional Bandits (one-state) for comparison to supervised learning.
+
+    \subsection*{Topics to De-emphasize}
+      Perceptrons, RNNs (including LSTMS), Kernel trick (especially motivation
+      from speed), analytic solution to least squares, K-means and K-medioids,
+      Low-rank approximation, collaborative filtering.
+
+      How to De-emphasize?
+        E.g. move from lectures to homeworks, mention but don't belabor
+
+    \subsection*{}
+    \subsection*{}
+    \subsection*{}
+
+  \section*{\sc Non-Busy Work}  %Clear Goals and Clear Point.  No busywork}
+    \subsection*{}
+    \subsection*{Forum is Hard to Search}
+    \subsection*{Revised Projects}
+    \subsection*{Less Calculation Homeworks.  Replace Toy Examples by Insightful Toy Examples}
+    \subsection*{Projects, Slowness, "Vectorize"}
+
+
+  \section*{\sc Forum Dynamics}
+    \subsection*{}
+    \subsection*{}
+    \subsection*{}
+
+
+    \newpage
+
+\part{Course Mechanics}
+  \section*{\sc Overview}
+
+    \subsection*{Components}
+      The class consists of lectures, plus forum participation, homeworks,
+      projects, and a final exam.  We have a \defined{Coding Lecture} in each
+      Unit, filling an needed hole.
+
+    \subsection*{Story Arc}
+
+    \subsection*{Learning Objectives}
+
+    \subsection*{Time Commitment}
+      This seems about right to me:
+      \begin{align*}
+           25 \times \text{1 hr } -& \text{watch each of 25 lectures}
+        \\ 25 \times \text{2 hrs} -& \text{study each of 25 lectures and summarize and do forum Q/A}
+        \\  5 \times \text{8 hrs} -& \text{complete each of 5 homeworks}
+        \\  5 \times \text{8 hrs} -& \text{complete each of 5 projects}
+        \\  1 \times \text{6 hrs} -& \text{study for the final}
+        \\  1 \times \text{2 hrs} -& \text{complete the final}
+        \\  1 \times \text{5 hrs} -& \text{overhead (review prereqs, install packages, etc)}
+      \end{align*}
+      ... so 168 hours total (about 14 hrs per week over 12 weeks).
+      %
+      But learners with different levels of preparation and with different
+      learning styles might need much less or much more time.
+
+    \subsection*{Grading}
+      What's graded is forum participation, homeworks, projects, and a final
+      exam.
+
+      \subsubsection*{Homeworks vs Projects}
+        FILLIN
+
+        The point of projects is to get learners some hands-on experience (a)
+        seeing ``the whole car'' built from all its little pieces exposed and
+        viewable in context and (b) learning to improve and drive
+        the car.  Ways to test a project are:
+        (a) asking for program output,
+        (b) auto-grader unit tests,
+        (c) prediction challenge,
+        (d) honor system self-assessment or peer assessment.
+        %
+        These differ in reliability, the flexibility and creativity they
+        permit, how heavy-weight our automated grading infrastructure has to
+        be, and how frustrating it can be for the students to fight with the
+        grader.
+
+        The real value of the projects is hard to grade.  I mean that I'm
+        having a hard time thinking of a scalable grading scheme (besides maybe
+        getting student pairs to peer review each other) whose numeric grades
+        relate causally with the kind of project-engagement that students
+        actually learn from.
+
+        Each Unit will have two homeworks and two projects.
+
+        I want to shift weight (slightly and not completely) away from
+        the auto-grader.
+
+        ProjectA (``car build from parts'') involves adding a bit of code to
+        pre-existing code.  The main way we test is by asking learners for
+        program output (e.g., numbers, rankings, including from helper
+        functions) and by auto-grading.
+
+        ProjectB (``improving and driving the car'') involves using and
+        fiddling with already-functioning code.  The main way we test is by a
+        prediction challenge.
+
+      \subsubsection*{Forum Participation through Lecture Summaries}
+        Forum participation centers on an unusual idea called
+        \defined{lecture summaries}: after each of the $\sim 20$ lectures, a
+        learner must summarize the lecture in their own words (roughly two
+        paragraphs, three hundred words), including their confusions.
+        This is an excellent way to get learners to really ponder and internalize
+        lecture material; it also can spark forum discussion and help us diagnose
+        and address any widespread confusions before project time.
+
+        A lecture summary is adequate if upon brief inspection it plausibly
+        evidences that the learner worked hard to digest the lecture and to
+        clearly record their impression of and confusions from that lecture.
+        Provided among the materials at the start of the class will be examples
+        of adequate lecture summaries.  During finals week, a TA will randomly
+        select one lecture; then, for each learner, the TA will check whether
+        that learner's lecture summary for that selected lecture is adequate.
+        For 1000 learners and 10 seconds per summary, this is a 3 hour job.
+        This process should be helped by a scraper and grader script so that
+        the TA can just press Q for inadequate and P for adequate and
+        immediately (without waiting for edx loading) move to the next learner.
+        So each learner gets either full or zero points for this grade
+        component.
+
+        This is a random procedure; a learner's expected forum grade increases
+        linearly with the number of lecture summaries they complete.  But it
+        ain't a capricious procedure: the variance of a learner's forum grade
+        goes to zero the limit of adequate completion of all lecture summaries.
+
+        We also encourage learners to ask and answer thoughtfully and
+        frequently on the forum, but this is not graded.
+
+      \subsubsection*{Final Exam}
+        There is only one exam: a final exam.  It consists of $\sim 12$
+        multiple choice questions, each with about $\sim 5$ choices exactly one
+        of which is correct.  A learner gets 1 point for each correct answer
+        and 0 points for each incorrect or blank answer.  Very simple.
+
+        This Final Exam is an opportunity to test \defined{integrated
+        knowledge} and conceptual (hence transferable) understanding.  So many
+        of the questions will involve concepts from multiple units, and, better
+        yet, will test the Grand Themes that thread through the whole course.
+
+        Why Multiple Choice?  MC is easier to auto-grade, fits better to the
+        conceptual understanding I want to test, and causes less resentment,
+        than other exam question formats.  Other formats can cause resentment
+        by being confusing as to the exact space of answers to choose from
+        (e.g.\ $\texttt{pi}$ vs \texttt{numpy.pi} vs $3.141$ vs $180^\circ$ vs
+        $1/2 \text{~turns}$) OR by forcing the learner to cater to unknown
+        precision thresholds (significant figures, etc).  The menu of candidate
+        answers in an MC problem serves to clarify the question itself.
+
+      \subsubsection*{Formula for Normalized Grades}
+        We \defined{normalize} each of $10$ grade components by the average
+        score in that component among the top $100$ scores (for a class of
+        $1000$ learners, this is the top $10\%$) for that component.  The point
+        is to enjoy most of the benefits of curving while avoiding most of the
+        downsides.
+
+        Indeed, under this system, a learner at any point in the term has a
+        nontrivial lower bound on the grade contribution from the components
+        they have completed so far, by ignoring the normalization.  I mean that
+        it is reasonable for a learner to pretend there is no normalization at
+        all, and that with respect to this the normalization will only help
+        them.  Yet, if a component (especially project or exam) is harder than
+        we thought, the normalization will save the class's grade.
+
+        I also believe the normalization will not cause perverse competition
+        incentives between learners: the way to change the normalization is to
+        confuse or to avoid collaborating with top learners, but my model of
+        such top learners is that by their nature this injury isn't plausibly
+        achievable by others.  This system maintains a strong cooperation
+        incentive for the non-top learners: if they can help each other get
+        numerically (rather than rank-wise) closer to the top learners, then
+        they will improve their grades without harming anyone else's grade.
+
+        In an ideal situation, every learner maintains a not-too-bad baseline
+        understanding, so there will be strong clustering (so heavy upward tail
+        but those who do less well are very bounded in how badly they do), in
+        which case everybody gets an A.
+        %
+        So instead of the ``evil'' act of forcing there to be at least
+        such-and-such many bad grades, this system makes it possible for the
+        entire class to earn an A.
+
+        We normalize component-by-component rather than at a coarser level
+        in order to maintain proportions between parts.  Otherwise, variance
+        in exam grades could dominate everything else etc.
+
+        \begin{align*}
+          \text{Grade} =
+               ~&10 \cdot {\gre \min(1,~} ( \text{forum score}     ) {\gre / ( \text{average of top $100$ scores for forum}       ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{homework1 score} ) {\gre / ( \text{average of top $100$ scores for homework1}   ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{homework2 score} ) {\gre / ( \text{average of top $100$ scores for homework2}   ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{homework3 score} ) {\gre / ( \text{average of top $100$ scores for homework3}   ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{homework4 score} ) {\gre / ( \text{average of top $100$ scores for homework4}   ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{homework5 score} ) {\gre / ( \text{average of top $100$ scores for homework5}   ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{project1 score}  ) {\gre / ( \text{average of top $100$ scores for project1}    ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{project2 score}  ) {\gre / ( \text{average of top $100$ scores for project2}    ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{project3 score}  ) {\gre / ( \text{average of top $100$ scores for project3}    ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{project4 score}  ) {\gre / ( \text{average of top $100$ scores for project4}    ))}
+            \\+~& 8 \cdot {\gre \min(1,~} ( \text{project5 score}  ) {\gre / ( \text{average of top $100$ scores for project5}    ))}
+            \\+~&10 \cdot {\gre \min(1,~} ( \text{final score}     ) {\gre / ( \text{average of top $100$ scores for final}       ))}
+        \end{align*}
+        The maximal Grade is $100$.
+        Letter grades are
+        \begin{align*}
+          A+ & \text{~when Grade is $\geq 95$ else:}\\
+          A  & \text{~when Grade is $\geq 80$ else:}\\
+          B  & \text{~when Grade is $\geq 65$ else:}\\
+          C  & \text{~when Grade is $\geq 50$ else:}\\
+          D  & \text{~}
+        \end{align*}
+
+    \newpage
+
+\part{Course Content}
+  \section*{\sc Unit 0: Prerequisites}
+    \subsection*{Coding Lecture 0: Python, Numpy, Pytorch}
+      \subsubsection*{Multi-axis arrays.  Speedups.  Index kung-fu.}
+        \paragraph{\sf} --- notion of nparray and shape.  to/from list, types
+        \paragraph{\sf} --- making arrays: zeros, ones, arange, linspace, eye, diag
+        \paragraph{\sf} --- access, slices, setting (mutates cuz is object!)
+        \paragraph{\sf} --- shapes to shapes.  flatten, newaxis, transpose
+        \paragraph{\sf} --- example: pooling (channel widen) speedup example
+
+      \subsubsection*{Common numpy maps and zips, filters, reduces, and contractions}
+        \paragraph{\sf} --- elementwise log, exp; plus, times.  broadcasting (scalar vs vector)
+        \paragraph{\sf} --- (in)equality testing (filter), index composition
+        \paragraph{\sf} --- mean, variance, stddev, max.  examples along different axes
+        \paragraph{\sf} --- dots, matmul, general contraction
+        \paragraph{\sf} --- example: one-hot and logistic softmax speedup example (use lambda)
+
+      \subsubsection*{Example: large-numbers dice statistics, plotting}
+        \paragraph{\sf} --- generator (randomness and seed!)
+        \paragraph{\sf} --- streaming statistics: avg, highwatermark outliers
+        \paragraph{\sf} --- plotting
+        \paragraph{\sf} --- normalizing (iterated log)
+        \paragraph{\sf} --- plotting bells and whistles, saving
+
+      \subsubsection*{Example: (batched) image filter made by hand}
+        \paragraph{\sf} --- loading data
+        \paragraph{\sf} --- images represented as arrays
+        \paragraph{\sf} --- blur filter: average with neighbor; mention boundary choices
+        \paragraph{\sf} --- sharpen filter: reverse of blur!
+        \paragraph{\sf} --- making everything batchwise
+
+      \subsubsection*{Intro to Pytorch}
+        \paragraph{\sf} --- notion of computation graphs
+        \paragraph{\sf} --- pytorch tensor vs (and to/from) numpy array)
+        \paragraph{\sf} --- exponential decay GD by hand (exercise: do in numpy)
+        \paragraph{\sf} --- autodiff
+        \paragraph{\sf} --- exponential decay GD by autodiff
+
+    \newpage
+
+    \subsection*{Homework 0a: Math}
+      \subsubsection*{Types, Functions and Dependencies, Notation}
+      \subsubsection*{Linear Algebra: High Dimensions, Hyperplanes, Linear Maps, Trace and Det; Quadratic Forms, Dot Products, SVD}
+      \subsubsection*{Probability: Expectations, Independence, Bayes, Concentration; Coinflips, Gaussians}
+      \subsubsection*{Optimization: Visualizing Derivative Rules, Sums of Terms (Constraints); Vectors vs Covectors, Overshooting, Convexity}
+      \subsubsection*{Examples: Least Squares; Gaussian Fitting M-Step}
+    \newpage
+
+    \subsection*{Homework 0b: Programming}
+      \subsubsection*{Matrix Multiply Speed Test}
+      \subsubsection*{Numpy Safari / Treasurehunt}
+      \subsubsection*{Softmax Speed Test}
+      \subsubsection*{Debugging Randomized Code}
+      \subsubsection*{Debugging Many-File Codebase}
+    \newpage
+
+    %\subsection*{Project 0a: }
+    %\subsection*{Project 0b: }
+
+    \newpage
+
+  \section*{\sc Unit 1: Learning from Examples}
+    \subsection*{Lecture 1a: What is Machine Learning?}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Lecture 1b: A Simple Image Classifier}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Lecture 1c: Accelerate Learning using Gradient Descent}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Lecture 1d: Training vs Testing Error} % Generalization, Optimization, Approximation
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+
+    \subsection*{Coding Lecture 1: Coding the image classifier from lectures, from scratch.  Examining behavior on a concrete image.}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Homework 1a: Hyperplanes and Dataclouds}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Homework 1b: Learning.  Weights-vs-Correlations}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Project 1a: Text Classification} % not 3-Way.  Just 2-way.
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+    \subsection*{Project 1b: Measuring Overfitting; Hyperparameter Search}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+  \section*{\sc Unit 2: Engineering Features (and Friends) by Hand}
+    \subsection*{Lecture 2a: Feature Engineering}
+      \subsubsection*{Bias Trick}
+      \subsubsection*{Black Holes}
+      \subsubsection*{Specialty Features, e.g.\ Trig or Threshold}
+      \subsubsection*{Interpreting Weights (vs Correlations)}
+      \subsubsection*{Feature Selection and Generalization}
+    \newpage
+
+    \subsection*{Lecture 2b: Loss Functions, Regularization, Margins} % Logistic, Hinge, Perceptron, Square; acc bound; L-inf, L2, L1; prob interp
+      \subsubsection*{Humble Models, Acc Bound}
+      \subsubsection*{Regularization: Why and How}
+      \subsubsection*{Probabilistic Interpretation, Likelihood, Gradient Descent}
+      \subsubsection*{Margin Maximization and Supports}
+      \subsubsection*{Feature Selection and Optimization (Convexity)}
+    \newpage
+
+    \subsection*{Lecture 2c: Data-based Featurization} % Kernels, PCA, Quantiles & Trees
+      \subsubsection*{Quantiles (Binning), Stumps, Trees}
+      \subsubsection*{Linear Dimension Reduction: PCA}
+      \subsubsection*{Matrix Factorization Perspective, ICA}
+      \subsubsection*{Nonlinear Dimension Reduction: Similarity-to-Landmark Embeddings.  Kernels}
+      \subsubsection*{Designing Similarity Functions.  Consideration for Text, Images.}
+    \newpage
+
+    \subsection*{Lecture 2d: Reducing to Linear Learning} % Softmax, Regression, Sequences, etc
+      \subsubsection*{Specialized Readouts}
+      \subsubsection*{Soft Classes, Multiple Classes}
+      \subsubsection*{Regression}
+      \subsubsection*{Factoring Big Problems.  E.g.\ Sequences}
+      \subsubsection*{Shared Features for Multiple Outputs.  Examples of Overall Architectures}
+    \newpage
+
+    \subsection*{Coding Lecture 2: SVM with RBF Features from Scratch, for Image Classification}
+      \subsubsection*{Plan, Pictures, Meeting Data}
+      \subsubsection*{Forward Model}
+      \subsubsection*{Gradient Step}
+      \subsubsection*{Training and Model Selection}
+      \subsubsection*{Testing, Interpreting Weights}
+    \newpage
+
+    \subsection*{Homework 2a: Feature Geometry, Geometry of Margins and Regression}
+      \subsubsection*{Matching Features (and Losses/Architectures) and Domain Knowledge, Practice}
+      \subsubsection*{Recognizing Decision Boundaries}
+      \subsubsection*{Probabilistic Interpretation of Losses, Regularizers}
+      \subsubsection*{Support Vector Bound.  Perceptron Update.  Perceptron worse generalization.}
+      \subsubsection*{Implicit Regularization in Least Squares Regression by Gradient Descent}
+    \newpage
+
+    \subsection*{Homework 2b: Kernel Trick}
+      \subsubsection*{Data-Dependent Features.  Similarity, Inner Products, Generalization.}
+      \subsubsection*{Why We Want Positive Definite Kernel}
+      \subsubsection*{Kernelized Update}
+      \subsubsection*{Recognizing Decision Boundaries} % ??
+      \subsubsection*{Wide Random Features Kernel}
+    \newpage
+
+    \subsection*{Project 2a: Overfitting to Features on Kaggle-Style Challenge} % Selection/Hyperparam/Unsupervised Featurization
+      \subsubsection*{Adapt the SVM to Kaggle Task; Weights and Overfitting}
+      \subsubsection*{Success Measures.  Accuracy vs Loss.  ROC Curve, Ranking.  Class-imbalance.}
+      \subsubsection*{Feature Selection and Overfitting}
+      \subsubsection*{Quantilization and Overfitting}
+      \subsubsection*{DataSnooping and Overfitting} % difficult but important lesson to design!
+    \newpage
+
+    \subsection*{Project 2b: 10-Way Image Softmax Classification.  Calibration Prediction Challenge}
+      \subsubsection*{Softmax, Prob Calibration}
+      \subsubsection*{Basic Features.  Add your twist!}
+      \subsubsection*{Badly Set Hyperparams.  Add your insight!}
+      \subsubsection*{Assessing Confidence: Generalization Bounds, Margin-Based Cross-Validation}
+      \subsubsection*{Prediction Challenge}
+    \newpage
+
+  \section*{\sc Unit 3: Learning Features from Data}
+    \subsection*{Lecture 3a: Shallow Learning} % Optimization tricks
+      \subsubsection*{Architecture, Intuiting Decision Boundaries (Universality)}
+      \subsubsection*{Gradient Descent (Backprop)}
+      \subsubsection*{An Example Learning Trajectory: Vertical vs Horizontal Learning}
+      \subsubsection*{MLP as Butter: add to everything.  Regularization.  Examples.}
+      \subsubsection*{BIC, Johann-Lindenstrauss, Wide Random Features, Generalization.}
+    \newpage
+
+    \subsection*{Lecture 3b: Deep Learning and Ideas in Architecture} % Differentiable-Blah Flexibility in architecture.  Mention RNNs
+      \subsubsection*{``To Build It, Use It''}
+      \subsubsection*{Feature Hierarchy.  Learned ``subroutines''}
+      \subsubsection*{Ideas in Optimization: Backprop, Weight Initialization, Batch Normalization, ADAM, etc}
+      \subsubsection*{Getting Creative.  Skip Connections etc}
+      \subsubsection*{Curvature-Noise Interactions and Generalization}
+    \newpage
+
+    \subsection*{Lecture 3c: Symmetry and Locality: Convolution}
+      \subsubsection*{CNN forward encodes basic image priors.  Pooling.}
+      \subsubsection*{Backprop formulas}
+      \subsubsection*{What can K Layers of a CNN Represent?}
+      \subsubsection*{How GPUs Work}
+      \subsubsection*{Pottery Image.  Symmetries and Representations.  Sports.  Melodies.}
+    \newpage
+
+    \subsection*{Lecture 3d: Symmetry and Locality: Attention}
+      \subsubsection*{Attention forward encodes basic sequence/table priors (sparse).}
+      \subsubsection*{Bells and Whistles: Multiple Heads, Positional Encoding}
+      \subsubsection*{What is a Transformer?}
+      \subsubsection*{What can K Transformer Layers Represent?}
+      \subsubsection*{Differentiable Computers.  Stacks.  Graphs.}
+    \newpage
+
+    \subsection*{Coding Lecture 3: A Deep Image Classifier from Scratch}
+      \subsubsection*{Plan of what we need to write, picture of architecture}
+      \subsubsection*{Forward Model (Including conv layers)}
+      \subsubsection*{Backward Model (Including conv layers)}
+      \subsubsection*{Quick Checks for Silly Mistakes}
+      \subsubsection*{Training and Interpretation of Weights}
+    \newpage
+
+    \subsection*{Homework 3a: Decision Boundaries, Backpropagation}
+      \subsubsection*{Backprop for Simple, Fanciful Architecture}
+      \subsubsection*{Vanilla Neural Network Architecture}
+      \subsubsection*{VNN Backprop Formulas and Intuition}
+      \subsubsection*{Recognizing Decision Boundaries for Wide vs Deep}
+      \subsubsection*{Initialization of Weights, Match Comments to Lines in Training Code}
+    \newpage
+
+    \subsection*{Homework 3b: Zoo of Architectural Ideas} % Light Load.  Only few questions, all conceptual.
+      \subsubsection*{Word Embeddings}
+      \subsubsection*{Siamese, Metric, LeCun Representation Learners}
+      \subsubsection*{RNNs, LSTMs}
+      \subsubsection*{Differentiable X (Renderer etc)}
+      \subsubsection*{Learned Losses / Ecosystems (Wass GAN, etc)}
+    \newpage
+
+    \subsection*{Project 3a: An Image Sharpener (or maybe next-frame-in-video)?} % Perhaps Image Sharpener? % on both Digits and Face data?
+      \subsubsection*{U-Net Architecture (Pix2Pix but no GAN?)}
+      \subsubsection*{Forward Model}
+      \subsubsection*{Backward Model}
+      \subsubsection*{Training}
+      \subsubsection*{A word on Laplacian Pyramid and Diffusion Models.  Adapt to Image Generator and see bad.}
+    \newpage
+
+    \subsection*{Project 3b: Text Generation Through Classification}
+      \subsubsection*{Transformer Architecture, Meet the Data}
+      \subsubsection*{Run Training Code}
+      \subsubsection*{Interpreting Learned Weights}
+      \subsubsection*{Playing with Model on Out-of-Distr Data}
+      \subsubsection*{Text Compression Challenge}
+    \newpage
+
+  \section*{\sc Unit 4: Modeling Structured Uncertainties}
+    \subsection*{Lecture 4a: Square Loss Muddies, Probabilistic Models.  Examples: 3State Traffic, HMM, GMM}
+      \subsubsection*{Structured Uncertainties in the World.  Rapid Holmesian
+      Inferences.  Square Loss Muddies.  Recall prob interp of e.g. least
+      squares regfression.  Unsup Learning.}
+      \subsubsection*{Latents, Marginal Likelihood for Latents, Weights as Latents.}
+      \subsubsection*{Example: 3State Traffic.  Challenge of Normalization.}
+      \subsubsection*{Example: HMM.  0s and SoftLogic and backflow}
+      \subsubsection*{Example: GMM.  Metapriors, hierarchy, Transfer}
+    \newpage
+
+    \subsection*{Lecture 4b: Inference via Sampling} % MH, EM,
+      \subsubsection*{Challenge.  MH Algorithm.}
+      \subsubsection*{Visualizing MH.  Proposals Matter}
+      \subsubsection*{EM: 3State Traffic example}
+      \subsubsection*{EM: HMM example}
+      \subsubsection*{EM: GMM example}
+    \newpage
+
+    \subsection*{Lecture 4c: Inference via Variation} % MH, EM,
+      \subsubsection*{EM overview, 3State Traffic example}
+      \subsubsection*{ELBO bound and pingpong KL geometry}
+      \subsubsection*{EM: HMM example (more detail in coding example)}
+      \subsubsection*{EM: GMM example (more detail in pset)}
+      \subsubsection*{Variational Parts as Neural Net}
+    \newpage
+
+    \subsection*{Lecture 4d: Variational Autoencoders (or Encoders)} % so connects back to Unit 3
+      \subsubsection*{Architecture} % comparison to matrix factorization, etc
+      \subsubsection*{VAEs and ELBO}
+      \subsubsection*{Interpreting Update Intuitively}
+      \subsubsection*{Output side Noise Model (e.g. square loss)}
+      \subsubsection*{Conditional VAEs}
+    \newpage
+
+    \subsection*{Coding Lecture 4: Expectation-Maximization for Sequences}
+      \subsubsection*{HMM architecture.  Remark on RNNa}
+      \subsubsection*{E-step: dynamic programming}
+      \subsubsection*{M-step with regularization}
+      \subsubsection*{End-to-end reading and mimicry of cookbook text}
+      \subsubsection*{Investigation of State Meanings}
+    \newpage
+
+    \subsection*{Homework 4a: Gaussian Mixtures for Clustering} % k-means as limit
+      \subsubsection*{forward model}
+      \subsubsection*{E step and M step}
+      \subsubsection*{k-means as limit}
+      \subsubsection*{small-var regularization from prior}
+      \subsubsection*{convergence near minimum}
+    \newpage
+
+    \subsection*{Homework 4b: Bayes Nets.  NNs as Amortized Inference}
+      \subsubsection*{Marginalization over Latents}
+      \subsubsection*{Weights as Latents in Linear Classification (bowtie vs pipe)}
+      \subsubsection*{BIC and structural penalty}
+      \subsubsection*{Causal modeling}
+      \subsubsection*{Very Basic Occlusion Inference Object Net}
+    \newpage
+
+    \subsection*{Project 4a: Predicting Political Polls}
+      \subsubsection*{Meeting the Polling Data}
+      \subsubsection*{Forward Model}
+      \subsubsection*{Inference through Sampling}
+      \subsubsection*{Wrestling with Training Difficulties (burnin, etc)}
+      \subsubsection*{Interpreting Latents}
+    \newpage
+
+
+    \subsection*{Project 4b: A Deep Image Generator (VAE)}
+      \subsubsection*{Meeting the Face Data.  How to assess success?} % maybe met face data in previous unit?
+      \subsubsection*{Forward Model including reparam trick}
+      \subsubsection*{Backward model and intuitive interpretation}
+      \subsubsection*{Training and Testing}
+      \subsubsection*{Interpreting Latents.  Sources of Prejudice and Capriciousness}
+    \newpage
+
+  \section*{\sc Unit 5: Learning while Acting (and from Rewards)}
+    \subsection*{Lecture 5a: Rewards and States.  Explore-Exploit Challenge.}
+      \subsubsection*{Learning from Rewards: overview and goal to reduce to supervision}
+      \subsubsection*{Conditional Bandits are kin to Supervised Learning}
+      \subsubsection*{Explore-Exploit Challenge}
+      \subsubsection*{Optimism in Face of Uncertainty}
+      \subsubsection*{Introduction of State Concept.  Total Utility, Episodes,  Online blurs Train and Test}
+    \newpage
+
+    \subsection*{Lecture 5b: Qualitative Solutions to MDP.  Dynamic Programming, Idea of Bootstrap}
+      \subsubsection*{MDP framework again.  State Correlations (Credit-Assignment) Challenge}
+      \subsubsection*{Dynamic Programming}
+      \subsubsection*{Bootstrap: Online dynamic programming (SARSA)}
+      \subsubsection*{Example Policy in Gridworld}
+      \subsubsection*{Function Approximation (or Partial Observability)}
+    \newpage
+
+    \subsection*{Lecture 5c: Reduce to Supervision using Q-Learning.}
+      \subsubsection*{Q-Learning vs Naive SARSA}
+      \subsubsection*{Q-Learning plus Exploration Policy}
+      \subsubsection*{Featurization of Huge State (Deep Q-Learning)}
+      \subsubsection*{LSTM for non-Markov State}
+      \subsubsection*{Deadly Triad, Q-Delusion}
+    \newpage
+
+    \subsection*{Lecture 5d: Non-technical Discussion of: Curiosity, Language, Instruction, World-Models}
+      \subsubsection*{Curiosity Bonuses and Self-Curriculum} % mention Adversarial self-play?
+      \subsubsection*{Curricula in RL and Elsewhere}
+      \subsubsection*{Symbols, Contextual Learning in GPT, Instructions guide Symbol Search in World-Models}
+      \subsubsection*{Evolution of Programming.  Self-Coding Computers}
+      \subsubsection*{Speculations on Future of Learning}
+    \newpage
+
+    \subsection*{Coding Lecture 5: Q-Learning for a Gridworld, from Scratch}
+      \subsubsection*{World Simulator}
+      \subsubsection*{Q-Table (with flexibility to be function approx)}
+      \subsubsection*{Q-Learning Update}
+      \subsubsection*{Training and Reading out Policy}
+      \subsubsection*{Visualizing Learning curves as add challenges}
+    \newpage
+
+    \subsection*{Homework 5a: Bandits, Explore-Exploit, Conditional Bandits}
+      \subsubsection*{Epsilon Greedy for Known Timescale}
+      \subsubsection*{UCB Bound vs Epsilon Greedy at Various Timescales}
+      \subsubsection*{Function Approximation in Conditional Bandits}
+      \subsubsection*{Movie Recommendation Update (Linear Embeddings)}
+      \subsubsection*{A Very Basic Adversarial BoardGame Player}
+    \newpage
+
+    \subsection*{Homework 5b: Q-Learning, on-vs-off policy, Horizons}
+      \subsubsection*{Practice Modeling Situations by MDPs.  Get Rich Enough State Space for Markov Property!}
+      \subsubsection*{Manually Solve Various MDPs}
+      \subsubsection*{Computations of Q-Learning Convergence}
+      \subsubsection*{As Human, Explore a Maze.  Short Essay on Exploration Strategy}
+      \subsubsection*{Baud Rates for Learning Signals Comparison}
+    \newpage
+
+    \subsection*{Project 5a: Robotic Arm}
+      \subsubsection*{Robot Physics Overview.  Collisions?}
+      \subsubsection*{Clasping Reward Function (Helper to Smooth)}
+      \subsubsection*{Set up Q-learning for parameterized task (what are inputs to Q network etc?)} % mention policy gradient?
+      \subsubsection*{Training}
+      \subsubsection*{Visualize and Describe Motions}
+    \newpage
+
+    \subsection*{Project 5a: Simple Atari-Style Games} % (Fully Observed?  Partially Observed?)
+      \subsubsection*{Game Family Overview}
+      \subsubsection*{Function Approximation}
+      \subsubsection*{Experience Replay}
+      \subsubsection*{Creative Part: Design Featurization and Exploration Policy!}
+      \subsubsection*{Action Challenge: Learn an Unknown Game in Same Family!}
+    \newpage
+
+  \section*{\sc Unit 6: Farewell}
+    \subsection*{Bonus Lecture 6a: What We Learned}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+
+
+    \subsection*{Bonus Lecture 6b: What to Learn Next}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+      \subsubsection*{}
+    \newpage
+
+
+\part{Development Plan}
+
+\end{document}

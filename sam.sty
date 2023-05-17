@@ -1,0 +1,230 @@
+% author:   samtenka
+% change:   2023-03-28
+% create:   2022-05-11
+
+\newcommand{\picturedw}[2]{\includegraphics[width=#1]{#2}}
+\newcommand{\picturew}[2]{\includegraphics[width=#1]{figures/#2}}
+\newcommand{\pictureh}[2]{\includegraphics[height=#1]{figures/#2}}
+
+%==============================================================================
+%====  0.  DOCUMENT SETTINGS  ================================================
+%==============================================================================
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  0.0. About this Exposition  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%---------------------  0.0.1. math packages  ---------------------------------
+\newcommand\hmmax{0} % to allow for more fonts
+\newcommand\bmmax{0} % to allow for more fonts
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{bm}
+\usepackage{euler}
+
+\usepackage{array}   % for \newcolumntype macro
+\newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
+\newcolumntype{C}{>{$}c<{$}} % math-mode version of "c" column type
+\newcolumntype{R}{>{$}r<{$}} % math-mode version of "r" column type
+
+\newcolumntype{S}{ >{\centering\arraybackslash} m{3cm} } % vertically and horizontally centered
+
+%---------------------  0.0.2. graphics packages  -----------------------------
+\usepackage{graphicx, xcolor}
+\usepackage{float, capt-of}
+\usepackage{soul}
+
+%---------------------  0.0.3. packages for fancy text  -----------------------
+\usepackage{enumitem}\setlist{nosep}
+\usepackage{listings}
+\usepackage{xstring}
+\usepackage{fontawesome5}
+
+%---------------------  0.043. colors  ----------------------------------------
+
+% NOTE: we want to cater to colorblind readers
+
+% (LIGHT, MEDIUM, DARK) x (BLUE, ORANGE)
+\definecolor{msky}{rgb}{0.62, 0.82, 0.94} \newcommand{\sky}{\color{msky}}
+\definecolor{mpch}{rgb}{0.98, 0.86, 0.62} \newcommand{\pch}{\color{mpch}}
+
+\definecolor{mblu}{rgb}{0.05, 0.55, 0.85} \newcommand{\blu}{\color{mblu}}
+\definecolor{mrng}{rgb}{0.95, 0.65, 0.05} \newcommand{\rng}{\color{mrng}}
+
+\definecolor{msea}{rgb}{0.02, 0.22, 0.34} \newcommand{\sea}{\color{msea}}
+\definecolor{mbro}{rgb}{0.38, 0.26, 0.02} \newcommand{\bro}{\color{mbro}}
+
+% SHADES:
+\definecolor{mgre}{rgb}{0.55, 0.55, 0.55} \newcommand{\gre}{\color{mgre}}
+\definecolor{mdgre}{rgb}{0.35, 0.35, 0.35} \newcommand{\dgre}{\color{mdgre}}
+
+% UNFRIENDLY:
+\definecolor{mred}{rgb}{1.00, 0.00, 0.00} \newcommand{\red}{\color{mred}}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  0.1. Headers and References  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%---------------------  0.1.0. intra-document references  ---------------------
+\newcommand{\offour}[1]{
+    {\tiny \raisebox{0.04cm}{\scalebox{0.9}{$\substack{
+        \IfSubStr{#1}{0}{{\blacksquare}}{\square}
+        \IfSubStr{#1}{1}{{\blacksquare}}{\square} \\ 
+        \IfSubStr{#1}{2}{{\blacksquare}}{\square}
+        \IfSubStr{#1}{3}{{\blacksquare}}{\square}
+    }$}}}%
+}
+
+\newcommand{\offourline}[1]{
+    {\tiny \raisebox{0.04cm}{\scalebox{0.9}{$\substack{
+        \IfSubStr{#1}{0}{{\blacksquare}}{\square}
+        \IfSubStr{#1}{1}{{\blacksquare}}{\square}
+        \IfSubStr{#1}{2}{{\blacksquare}}{\square}
+        \IfSubStr{#1}{3}{{\blacksquare}}{\square}
+    }$}}}%
+}
+\newcommand{\notesam}[1]{{\blu \textsf{#1}}}
+\newcommand{\attn}[1]{{\blu \textsf{#1}}}
+\newcommand{\attnsam}[1]{{\red \textsf{#1}}}
+%\newcommand{\attnsam}[1]{}%{\red \textsf{#1}}}
+
+\newcommand{\blarr}{\hspace{-0.15cm}${\blu \leftarrow}\,$}
+\newcommand{\bcirc}{${\blu ^\circ}$}
+\newcommand{\bovinenote}[1]{\bcirc\marginnote{\blarr #1}}
+
+%---------------------  0.1.1. table of contents helpers  ---------------------
+\newcommand{\phdot}{\phantom{.}}
+
+%---------------------  0.1.2. section headers  -------------------------------
+\newcommand{\samtitle} [1]{
+  \par\noindent{\Huge \sf \blu #1}
+  \vspace{0.4cm}
+}
+
+\newcommand{\samquote} [2]{
+    \marginnote[-0.4cm]{\begin{flushright}
+    %\scriptsize
+        \gre {\it #1} \\ --- #2
+    \end{flushright}}
+}
+
+\newcommand{\sampart} [1]{
+  \vspace{0.5cm}
+  \par\noindent{\LARGE \sf \blu #1}
+  \vspace{0.1cm}\par
+}
+
+\newcommand{\samsection}[1]{
+  \vspace{0.3cm}
+  \par\noindent{\Large \sf \blu #1}
+  \vspace{0.1cm}\par
+}
+
+\newcommand{\sampassage}[1]{
+   \vspace{0.1cm}
+   \par\noindent{\hspace{-2cm}\normalsize \sc \gre #1} ---
+}
+
+%---------------------  0.1.3. clear the bibliography's header  ---------------
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*{\refname}}{}{}{}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  0.2. Math Symbols and Blocks  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%---------------------  0.2.0. general math operators  ------------------------
+\newcommand{\scirc}{\mathrel{\mathsmaller{\mathsmaller{\mathsmaller{\circ}}}}}
+\newcommand{\cmop}[2]{{(#1\!\to\!#2)}}
+\newcommand{\pr}{^\prime}
+\newcommand{\prpr}{^{\prime\prime}}
+
+\newcommand{\wrap}[1]{\left(#1\right)}
+
+%---------------------  0.2.1. probability symbols  ---------------------------
+\newcommand{\KL}{\text{KL}}
+\newcommand{\EN}{\text{H}}
+\newcommand{\note}[1]{{\blu \textsf{#1}}}
+
+%---------------------  0.2.2. losses averaged in various ways  ---------------
+\newcommand{\Ein}  {\text{trn}_{\sS}}
+\newcommand{\Einb} {\text{trn}_{\check\sS}}
+\newcommand{\Einc} {\text{trn}_{\sS\sqcup \check\sS}}
+\newcommand{\Egap} {\text{gap}_{\sS}}
+\newcommand{\Eout} {\text{tst}}
+
+%---------------------  0.2.3. double-struck and caligraphic upper letters  ---
+\newcommand{\Aa}{\mathbb{A}}\newcommand{\aA}{\mathcal{A}}
+\newcommand{\Bb}{\mathbb{B}}\newcommand{\bB}{\mathcal{B}}
+\newcommand{\Cc}{\mathbb{C}}\newcommand{\cC}{\mathcal{C}}
+\newcommand{\Dd}{\mathbb{D}}\newcommand{\dD}{\mathcal{D}}
+\newcommand{\Ee}{\mathbb{E}}\newcommand{\eE}{\mathcal{E}}
+\newcommand{\Ff}{\mathbb{F}}\newcommand{\fF}{\mathcal{F}}
+\newcommand{\Gg}{\mathbb{G}}\newcommand{\gG}{\mathcal{G}}
+\newcommand{\Hh}{\mathbb{H}}\newcommand{\hH}{\mathcal{H}}
+\newcommand{\Ii}{\mathbb{I}}\newcommand{\iI}{\mathcal{I}}
+\newcommand{\Jj}{\mathbb{J}}\newcommand{\jJ}{\mathcal{J}}
+\newcommand{\Kk}{\mathbb{K}}\newcommand{\kK}{\mathcal{K}}
+\newcommand{\Ll}{\mathbb{L}}\newcommand{\lL}{\mathcal{L}}
+\newcommand{\Mm}{\mathbb{M}}\newcommand{\mM}{\mathcal{M}}
+\newcommand{\Nn}{\mathbb{N}}\newcommand{\nN}{\mathcal{N}}
+\newcommand{\Oo}{\mathbb{O}}\newcommand{\oO}{\mathcal{O}}
+\newcommand{\Pp}{\mathbb{P}}\newcommand{\pP}{\mathcal{P}}
+\newcommand{\Qq}{\mathbb{Q}}\newcommand{\qQ}{\mathcal{Q}}
+\newcommand{\Rr}{\mathbb{R}}\newcommand{\rR}{\mathcal{R}}
+\newcommand{\Ss}{\mathbb{S}}\newcommand{\sS}{\mathcal{S}}
+\newcommand{\Tt}{\mathbb{T}}\newcommand{\tT}{\mathcal{T}}
+\newcommand{\Uu}{\mathbb{U}}\newcommand{\uU}{\mathcal{U}}
+\newcommand{\Vv}{\mathbb{V}}\newcommand{\vV}{\mathcal{V}}
+\newcommand{\Ww}{\mathbb{W}}\newcommand{\wW}{\mathcal{W}}
+\newcommand{\Xx}{\mathbb{X}}\newcommand{\xX}{\mathcal{X}}
+\newcommand{\Yy}{\mathbb{Y}}\newcommand{\yY}{\mathcal{Y}}
+\newcommand{\Zz}{\mathbb{Z}}\newcommand{\zZ}{\mathcal{Z}}
+
+%---------------------  0.2.4. sans serif and frak lower letters  -------------
+\newcommand{\sfa}{\mathsf{a}}\newcommand{\fra}{\mathfrak{a}}
+\newcommand{\sfb}{\mathsf{b}}\newcommand{\frb}{\mathfrak{b}}
+\newcommand{\sfc}{\mathsf{c}}\newcommand{\frc}{\mathfrak{c}}
+\newcommand{\sfd}{\mathsf{d}}\newcommand{\frd}{\mathfrak{d}}
+\newcommand{\sfe}{\mathsf{e}}\newcommand{\fre}{\mathfrak{e}}
+\newcommand{\sff}{\mathsf{f}}\newcommand{\frf}{\mathfrak{f}}
+\newcommand{\sfg}{\mathsf{g}}\newcommand{\frg}{\mathfrak{g}}
+\newcommand{\sfh}{\mathsf{h}}\newcommand{\frh}{\mathfrak{h}}
+\newcommand{\sfi}{\mathsf{i}}\newcommand{\fri}{\mathfrak{i}}
+\newcommand{\sfj}{\mathsf{j}}\newcommand{\frj}{\mathfrak{j}}
+\newcommand{\sfk}{\mathsf{k}}\newcommand{\frk}{\mathfrak{k}}
+\newcommand{\sfl}{\mathsf{l}}\newcommand{\frl}{\mathfrak{l}}
+\newcommand{\sfm}{\mathsf{m}}\newcommand{\frm}{\mathfrak{m}}
+\newcommand{\sfn}{\mathsf{n}}\newcommand{\frn}{\mathfrak{n}}
+\newcommand{\sfo}{\mathsf{o}}\newcommand{\fro}{\mathfrak{o}}
+\newcommand{\sfp}{\mathsf{p}}\newcommand{\frp}{\mathfrak{p}}
+\newcommand{\sfq}{\mathsf{q}}\newcommand{\frq}{\mathfrak{q}}
+\newcommand{\sfr}{\mathsf{r}}\newcommand{\frr}{\mathfrak{r}}
+\newcommand{\sfs}{\mathsf{s}}\newcommand{\frs}{\mathfrak{s}}
+\newcommand{\sft}{\mathsf{t}}\newcommand{\frt}{\mathfrak{t}}
+\newcommand{\sfu}{\mathsf{u}}\newcommand{\fru}{\mathfrak{u}}
+\newcommand{\sfv}{\mathsf{v}}\newcommand{\frv}{\mathfrak{v}}
+\newcommand{\sfw}{\mathsf{w}}\newcommand{\frw}{\mathfrak{w}}
+\newcommand{\sfx}{\mathsf{x}}\newcommand{\frx}{\mathfrak{x}}
+\newcommand{\sfy}{\mathsf{y}}\newcommand{\fry}{\mathfrak{y}}
+\newcommand{\sfz}{\mathsf{z}}\newcommand{\frz}{\mathfrak{z}}
+
+%---------------------  0.2.5. math environments  -----------------------------
+\newtheorem*{qst}{Question}
+\newtheorem*{thm}{Theorem}
+\newtheorem*{lem}{Lemma}
+% ...
+\theoremstyle{definition}
+\newtheorem*{dfn}{Definition}
+
+\newcommand{\exercise}[1]{%
+  \par\noindent%
+  \attn{Food For Thought:} #1%
+}
+\newcommand{\noparexercise}[1]{%
+  \attn{Food For Thought:} #1%
+}
+\newcommand{\objectives}[1]{%
+  \marginnote[-0.2cm]{%
+    By the end of this section, you'll be able to
+    \begin{itemize}#1\end{itemize}
+  }
+}
+
+
