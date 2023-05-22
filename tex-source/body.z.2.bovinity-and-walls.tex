@@ -1,0 +1,45 @@
+\objectives{%
+  \item \attnsam{FILLIN}
+  \item \attnsam{FILLIN}
+}
+
+% solving other classification tasks by the same method
+\sampassage{worked example: bovinity of reddit posts}
+  Digits are nice.  Let's solve a couple other tasks by the same method.  This
+  illustrates which aspects are design decisions and which aren't.  We'll start
+  with a text-classification task.
+
+  %\textbf{reddit posts about cows vs dogs}
+  We gather the text of $\sim 2000$ reddit posts, half from \texttt{r/cow} and
+  half from \texttt{r/dog}.  \emph{Can we predict from text alone which of the
+  two subreddits a post came from?}
+
+  Intuitively, words like
+  \texttt{cow},
+  \texttt{hoof},
+  \texttt{moo},
+    or
+  \texttt{dog},
+  \texttt{paw},
+  \texttt{bark}
+  are tell-tale signs.  So for our featurization, let's have a feature for
+  each $3$-letter and each $4$-letter word.  The feature for the word
+  \texttt{hoof} simply maps a text input $x$ in $\xX$ to a real number that's
+  $1$ if the word appears in the post and $0$ otherwise.  Likewise with the
+  other features.
+
+\sampassage{worked example: seeing around walls}
+  %\textbf{seeing around walls}
+  Let's collect 200 photos of a certain MIT hallway corner.  In half, there's
+  some large obstacle (e.g.\ a person) right around the corner.  In the other
+  half, there's no obstacle.  \emph{Can we distinguish these cases from pixels
+  alone?}
+
+  Intuitively, if this prediction is possible it'd be based on subtle shading
+  arising from multiply reflected light.  So we'll probably want to
+  invent features to do with brightness.
+
+% TODO : integrate approximation, optimization, generalization
+% into these two examples
+%\sampassage{improving approximation, optimization, generalization}
+

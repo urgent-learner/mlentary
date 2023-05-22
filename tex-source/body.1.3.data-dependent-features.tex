@@ -1,0 +1,574 @@
+\objectives{%
+  \item {featurize based on \emph{similarity} and \emph{low-rank approximation}s
+         %matrix factorization
+         to
+         present data in a form that makes learning complex patterns easy}
+  \item {use the kernel trick to quickly optimize
+         very-high-dimensional models}
+}
+
+%--
+%--
+%--
+%--
+
+\sampassage{landmarks and similarity}
+  The `black-hole' nonlinearity (Figure \ref{fig:blackhole2}) nicely separates
+  its training data.  When domain knowledge says some `landmark' in $\xX$ is
+  salient, we can make a `black-hole-shaped' feature centered on that landmark.
+  Intuitively, such a feature measures how \emph{similar} a given $x$ is to the
+  landmark.  (In general we define
+  $\text{similarity}$ using domain knowledge.) 
+  \begin{marginfigure}[-0cm]
+    %\centering
+    \picturew{0.99\textwidth}{black-hole.png}
+    \caption{%
+      \textbf{A nonlinear `black-hole' feature} (encountered previously).
+      We map raw $2$-D inputs $x$ to $3$-D feature-vectors $\varphi(x)$s,
+      defined as
+      $$
+        \varphi(x)=(x[0], x[1], f(x))
+      $$
+      for some complicated function $f$.  For example, maybe $f(x) = \exp(-\|x
+      - (3,4)\|^2)$, a smooth bump centered around the landmark $(3,4)$, which
+      domain knowledge says is salient.
+      %
+    }
+    \label{fig:blackhole2}
+  \end{marginfigure}
+
+  If something works well, it's worth trying it more (~\texttt{:p}~), so let's
+  now make multiple black-hole-shaped features, one centered around each of
+  \emph{several} landmarks!
+  %We get can use multiple landmarks, too.
+  %Inspired by the `black hole' nonlinearity (Figure \ref{fig:blackhole2}), we
+  %might want to center the black hole around a representative training point
+  %$x_\star$.
+  %
+  %
+  %This gives a potentially-very-useful feature that says for any
+  %input $x$ how similar is to $x_\star$, where we've somehow 
+  %
+  %
+  %In fact, why not do this for
+  %several training points to get several features?
+  If we use
+  three representative `landmarks' $x_\circ, x_\square, x_\star$, say, we get a
+  featurization
+  $$
+    %x \mapsto
+    \varphi(x) =
+              (\text{similarity}(x, x_\circ),
+               \text{similarity}(x, x_\square),
+               \text{similarity}(x, x_\star))
+    \in \Rr^3
+  $$
+  Here's what the decision boundary might look like if $\xX=\Rr^2$ and we
+  define $\text{similarity}(x,x\pr)$ to be big when $x,x\pr$ are closer than a
+  centimeter in Euclidean distance, but then to rapidly decay as $x,x\pr$ move
+  apart.  Our three \textbf{landmarks (black asterisks)} lie to the south-west,
+  north, east.  Our nonlinear $\varphi$ gives us a curvy boundary in raw $\xX$
+  space (left) from each \textbf{\gre linear hyperplane} through featurespace
+  (right).  Intuitively, the hyperplane's weights say, ``\emph{predict {\rng
+  orange} unless $x$ is much closer to the N and E landmarks than to the SW
+  landmark}'':
+  \begin{figure}[h]
+    \centering%
+    \vspace{-.5cm}%
+    \picturew{0.45\textwidth}{sim-trefoil-b-prob.png}%
+    \picturew{0.55\textwidth}{sim-trefoil-b-sol.png}%
+  \end{figure}
+    \vspace{-.25cm}%
+
+  This looks nice.  Very expressive.\bovinenote{%
+    \noparexercise{%
+      With the same three landmarks, find a hyperplane in feature-space that
+      produces these predictions:
+    }
+    \par\noindent
+    \centering
+    \picturew{0.45\columnwidth}{sim-trefoil-a-prob.png}%
+  }
+  \emph{But how do we choose our
+  landmarks?} That is: \emph{what if we lack domain knowledge specific enough
+  to tell us which reference-points in $\xX$ are important?}
+  %
+  Well, we might guess that some (we don't know which) of our $N$ training
+  points may be useful landmarks.  Since we don't know which, let's center
+  `black-holes' at \emph{every} training point at once!  Then we get $N$ new
+  features (and we'll rely on gradient descent to select which of these are
+  actually useful):
+  %Taking this to an extreme, we can use \textbf{all} $N$ training points as
+  %landmarks:
+  $$
+    \varphi(x) =
+              (\text{similarity}(x, x_0),
+               \text{similarity}(x, x_1),
+                \cdots
+               \text{similarity}(x, x_{N-1}))
+    \in \Rr^N
+  $$
+  This is a \emph{data-dependent} featurization: we adapt $\varphi$ to
+  training data.
+
+  At day's end, we'll use $\varphi$ to make predictions the same way as before,
+  namely via a hypothesis $(x \mapsto \text{sign}(w \cdot \varphi(x)))$.  That
+  is, we'll have a bunch of weights $w_i$ and we'll classify a fresh $x$
+  according to the sign of
+  $$
+    \textstyle\sum_i w_i \cdot (\text{$i$th feature of $x$})
+    =
+    \sum_i w_i \cdot \text{similarity}(x, x_i)
+  $$
+
+\newpage
+  \begin{marginfigure}%[-3cm]
+      \centering
+    \picturew{0.90\textwidth}{sim-trefoil-a-sol.png}%
+      \caption{
+        A hyperplane in feature-space that produces the predictions depicted in
+        the margin figure on the previous page.
+      }
+  \end{marginfigure}
+  With $N$ features for $N$ training points, $\hH$ will (usually) be very
+  expressive.
+  We (potentially) pay for this improved approximation by suffering worse
+  generalization:
+  expressivity means $\hH$ contains many hypotheses that well-fit
+  the training data but do horribly at testing time.
+  On the other hand, if we've done a good job choosing \emph{especially
+  informative} features, then $\hH$ will contain a hypothesis that does well on
+  both training and testing data.
+  Thus, regularization is crucial!
+
+
+  Below we show how regularization affects learning when we use similarity
+  features.  Here we'll define $\text{similarity}(x,x\pr) =
+  \exp(-\|x-x\pr\|^2/\sigma^2)$; this popular choice is called the
+  \textbf{Gaussian RBF kernel}.
+  %
+      We minimize our familiar friend $\lambda \|w\|^2 + \sum_{i} \max(0,1-y_i
+      w \cdot \varphi(x_i))$ for different settings of $\lambda, \sigma$.
+  %
+  \begin{figure}[h]
+      \centering%
+    %\picturew{0.40\textwidth}{sim-trefoil-a-v.png}%
+    \picturew{0.95\textwidth}{rbf-kernel.png}%
+    \caption{%
+      %\textbf{Both explicit regularization ($\lambda$) and feature design
+      %        ($\sigma$) affect model complexity and generalization.}
+      \textbf{The RBF kernel's $\sigma$ controls spatial resolution.}
+      %
+      %Here are some decision boundaries.
+        As expected, $\lambda$ controls model complexity.  But so
+        does $\sigma$!
+        %
+        \emph{Why?}  Well, $\sigma$ is a kind
+        of `blurring' parameter: the $i$th feature
+        $\varphi_i(x)=\exp(-\|x-x_i\|^2/\sigma^2)$ is nearly constant once $x$
+        gets closer than $\sigma$ to the landmark $x_i$.  \emph{Intuitively, $\varphi$
+        `throws away' spatial information at resolutions $<\sigma$.}
+        So for huge $\sigma$, the decision function will lack detailed wrinkles
+        (unless $w$ is huge).
+        %
+        Conversely, when $\|x-x_i\|$ far exceeds $\sigma$, $\varphi_i(x)$ decays
+        very rapidly.  So for tiny $\sigma$, $\varphi(x)$'s entries will
+        all be small --- but in relative terms, the entry for the
+        %corresponding to the
+        $x_k$ closest to $x$ will far exceed all other entries.
+        %
+        So for tiny $\sigma$ the hypothesis class easily expresses
+        \textbf{nearest neighbors} rules of the form ``predict whichever label
+        the closest training point has.''
+      %
+    }
+  \end{figure}
+  \exercise{%
+    Is training data featurized with the $\sigma=1$ Gaussian RBF kernel always
+    linearly separable?
+    That is, can we always achieve perfect training accuracy?
+    Assume, of course, that no training points overlap.
+    \emph{Hint}: use huge $w$s.
+  }
+  \exercise{%
+    Design a similarity function to help recognize spam emails.  For our
+    purposes, an email is
+    not just body text but also a timestamp, sender address, subject line, set
+    of attachments, etc.
+  }
+  %\exercise{%
+    % TODO: DIMPLES
+    \attnsam{TODO: DIMPLES EXERCISE}
+  %}
+  % TODO: philosophize about all ML being about weighted similarities.
+
+  %\vfill
+
+\newpage
+\sampassage{superpositions and kernels}%\marginnote{\veryoptional}
+  In this passage we'll discuss\bovinenote{%
+    This is probably the most challenging passage I'll write.
+    I worked hard to explain kernels as simply as possible but no simpler.
+    \attnsam{explain `superposition!'}
+  } how, once we've featurized our $x$s by
+  similarities, we'll select a hypothesis from $\hH$ based on training data.
+  As usual we can do ordinary gradient descent, the kind we're now used to.
+  But we'll here explore a different method, a special gradient descent.  The
+  method is important because it offers a fast way\bovinenote{%
+    Frankly, I don't know of modern projects where this `kernel trick' speedup
+    matters.  With GPUs and big data and deep learning, the main computing
+    bottlenecks lie elsewhere.  Still, the kernel trick rewards study: it's an
+    idea that continues to inspire modern techniques.
+  }
+  to solve seemingly different problems:
+  $$
+    \substack{\text{\small ordinary (slow) gradient descent}\\%
+              \text{\small on data featurized as we please,}\\%
+              \text{\small say by $x\mapsto \varphi(x)$}}
+    \quad\text{\emph{is equivalent to}}\quad
+    \substack{\text{\small special (fast) gradient descent}\\%
+              \text{\small on data featurized according to}\\%
+              \text{\small $\text{similarity}(x,x\pr)=\varphi(x)\cdot\varphi(x\pr)$}}
+  $$
+
+  Here's an analogy for the speedup.
+  We're quick-sorting an array
+  of objects-so-large-that copies are expensive.
+  %Instead of Swapping It's expensive to keep swapping such large objects.
+  Instead of directly sorting, we create and sort an array of pointers to the
+  original objects; only as a final step do we arrange the objects based on the
+  sorted pointers.  That way we do $N$ large-object-swaps instead of $N\log N$.\bovinenote{%
+    Instead of
+    using pointers to implicitly
+    arrange an array of memory-hogging objects
+    into an ordering
+    that helps compute a rank for a fresh $x$,
+    we'll
+    use numbers to implicitly
+    arrange a training set of high-dimensional featurevectors
+    into a formal linear combination
+    that helps compute a label for a fresh $x$.
+  }
+  %
+  Better yet, if the purpose of sorting was to allow us to quickly binary
+  search to count the array elements $x_k$ less than given $x$s,
+  then we can avoid large-object-swaps \emph{completely} (!) by binary
+  searching the array of pointers.
+
+  Now for the two methods, ordinary and special.  Both methods aim to reduce
+  the loss
+  %$\ell_k = \ell(y_k, d_k)$
+  $\ell(y_k, d_k)$
+  suffered at the $k$th training example (here we use the shorthand $d_i = w \cdot (\text{features of $x_i$})$
+  for the decision function value at the $i$th training input).
+  %
+  Whereas the ordinary method subtracts gradients of loss with respect to
+  ${\rng w}$, the special method subtracts gradients of loss with respect to
+  ${\blu d}$.  We can write both in terms of the partial derivative
+  $g_k = \partial \ell(y_k, d_k) / \partial d_k$:\bovinenote{%
+    We use a fact that looks advanced but that's obvious once you get past the
+    language:
+    $$
+      \begin{aligned}{\partial \, \ell(y_k, d_k)}/{\partial \, {\blu d}}
+          &= g_k \cdot (\text{$k$th one-hot vector})
+        \\&= (0,\cdots,0,g_k,0,\cdots,0)
+      \end{aligned}
+    $$
+    %
+    This says that, since $\ell(y_k, d_k)$ depends on ${\blu d}$ only through
+    the $k$th coordinate of ${\blu d}$, the gradient will be zero in every
+    direction except the $k$th one.  It's a case of the chain rule.
+    %
+    So \emph{the special update only changes the $k$th weight entry!}
+  }
+  \begin{table}\centering
+    \vspace{-0.5cm}
+  \begin{tabular}{cc}
+    \text{\gre ordinary, ${\rng w}$-based update}       &       \text{\gre special, ${\blu d}$-based update}\\
+    $\begin{aligned}w^{\text{new}}
+        &= w^{} - \eta \,
+    \frac
+    {\partial \, \ell(y_k, d_k)}
+    {\partial \, {\rng w}^{}}\\
+        &= w^{} - \eta \,g_k \cdot (\text{features of $x_k$})
+    \end{aligned}$
+    &
+    $\begin{aligned}w^{\text{new}}
+        &= w^{} - \eta \,
+    \frac
+    {\partial \, \ell(y_k, d_k)}
+    {\partial \, {\blu d}^{}}\\
+        &= w^{} - \eta \, g_k \cdot (\text{$k$th one-hot vector})
+    \end{aligned}$
+  \end{tabular}
+    %\vspace{0.2cm}
+  \end{table}
+  \par\noindent
+  Note that ${\rng w}$ has as many entries as there are features and ${\blu d}$ has as many
+  entries as there are training examples; so the special update only makes
+  sense because we've chosen feature-set indexed by training points!
+  %
+  Intuitively $d = X \cdot w$,\bovinenote{%
+    Here, $X$ is the $N\times N$ matrix whose $k$th row is the featurization
+    of the $k$th training input.  So $X_{ki} = \text{similarity}(x_k, x_i)$.
+  } so $w$ and $d$ are proportional and the
+  ordinary and special updates are just stretched versions of each other.
+  %
+  In multiple dimensions, different directions get stretched different amounts;
+  it's because of this that using the two updates to classify
+  similarity-featurized data gives different predictions at day's end.
+
+  But using the special update to classify similarity-featurized data gives the
+  \emph{same}\bovinenote{%
+    Why?  We'll see on the next page.  For now we briefly discuss the upshot
+    of this equivalence.
+  }
+  predictions as using the ordinary update to classify data
+  featurized as we please, say by $\varphi:\xX \to \Rr^F$, so long as
+  we define
+  $
+    \text{similarity}(x,x\pr)=\varphi(x)\cdot\varphi(x\pr)
+  $
+  to be a dot product.
+  %
+  In each ordinary update we do an $F$-dimensional dot product of weights with
+  $\varphi(x_k)$.  By contrast, in each special update we do an $N$-dimensional
+  dot product of weights with $x_k$'s similarity-features.  We get a speedup\bovinenote{%
+    \noparexercise{%
+    Say we have in RAM all $N\times F$ entries for the training
+    $\varphi$-feature vectors.
+    %
+    $T$ ordinary updates would take $FT$ multiplications;
+    $T$ special updates would take $FN^2 + NT$ multiplications.
+    \emph{Where does that $FN^2$ come from?}
+  }}
+  when there are many more features $F$ than training points $N$.
+  %
+  \exercise{%
+    Say $\xX=\Rr$.  We define a thousand features $\varphi_s(x) =
+    \sqrt{x^s/s!}$ for $0\leq s<F=1000$.  Compute $\text{similarity}(x,x)$
+    quickly, up to floating point error.  Compute
+    $\text{similarity}(x\pr,x\prpr)$ by comparing $x=x\pr, x=\prpr,
+    x=x\pr+x\prpr$.
+    %From the raw feature $x[0],x[1],x[2]$ we define  
+  }
+  \exercise{%
+    Say $\xX=\Rr^3$.  Let's define $\text{similarity}(x,x\pr) =
+    \exp(-\|x-x\pr\|^2)$.  Explain to a friend why `similarity' is a fair name
+    for that function.\bovinenote{%
+      This similarity is called the \textbf{Gaussian RBF kernel}.
+      We can also scale $\|x-x\pr\|$ (i.e., measure distance in different units)
+      before exponentiating.
+    }
+    Find a $\varphi:\xX\to\Rr^{1000}$ so that 
+    $\text{similarity}(x,x\pr)=\varphi(x)\cdot\varphi(x\pr)$ up to floating
+    point error.
+  }
+  %But \attnsam{speedup}
+
+  \newpage
+  %\attnsam{Representer Theorem}
+  Each ordinary update adds some linear combination of training inputs to the
+  weights, so (if we initialize weights to zero) we can after any number of
+  steps write
+  $w = \sum_i \alpha_i \varphi(x_i)$.\bovinenote{%
+      those $\alpha$s change as we change the weights
+  }
+  Then the decision function value for any $x$ is
+  $$
+    d = w \cdot \varphi(x)
+      = \sum_i \alpha_i \varphi(x_i)\cdot\varphi(x)
+      = \sum_i \alpha_i \text{similarity}(x_i, x)
+  $$
+  We recognize this a sum of similarity-based features, weighted by $\alpha$s!
+  In other words, the $F$-dimensional weight vector $w=\sum_i \alpha_i
+  \varphi(x_i)$ \emph{makes the same predictions} on $\varphi$-featurized data
+  as the $N$-dimensional weight vector $(\alpha_0, \cdots, \alpha_{N-1})$ makes
+  on similarity-featurized data!
+
+  So our two scenarios have (effectively)\bovinenote{%
+    I say `effectively' because the ordinary-with-$\varphi$ scenario could have
+    many more hypotheses corresponding to weight vectors not of the form
+    $\sum_i \alpha_i \varphi(x_i)$.  But gradient descent in that scenario
+    wouldn't select those hypotheses anyway.
+    %
+    %\attnsam{profound!  curse of dimensionality!  a bit of implicit reg...}
+  }
+  the same hypothesis class.  To see why they moreover select from this
+  class \emph{the same} hypothesis, we compare the ordinary update for weight
+  ${\rng w}$ against the special update for weight ${\blu \alpha}$:
+  %
+  \begin{table}\centering
+    \vspace{-0.4cm}
+  \begin{tabular}{cc}
+    \text{\gre ordinary update on ${\rng w}$}       &       \text{\gre special update on ${\blu \alpha}$}\\
+    $\begin{aligned}{\rng w}^{\text{new}}
+        &= {\rng w} - \eta \,g_k \cdot \varphi(x_k)
+    \end{aligned}$
+    &
+    $\begin{aligned}{\blu \alpha}^{\text{new}}_k
+        &= {\blu \alpha}_k - \eta \, g_k
+    \end{aligned}$
+  \end{tabular}
+    %\vspace{0.2cm}
+  \end{table}
+  \par\noindent
+  and then substitute ${\rng w}=\sum_i {\blu \alpha}_i \varphi(x_i)$.
+  This whole idea is the \textbf{KERNEL TRICK}.
+
+  Okay, that's a lot to absorb.  Let's see how it works for
+  perceptron loss.  Here $g_k = \partial \ell(y_k, d_k) / \partial d_k$ is
+  $-y_k \cdot \text{step}(-d_k)$: zero if $d_k>0$ and $-y_k$ otherwise.
+  \begin{table}\centering
+    \vspace{-0.4cm}
+  \begin{tabular}{cc}
+    \text{\gre ordinary perceptron}
+    &
+    \text{\gre kernelized perceptron}
+    \\
+    $\begin{aligned}
+        {\rng w}^{\text{new}} &= {\rng w} + \eta y_k \text{step}(-d_k) \cdot \varphi(x_k)
+        \\
+        d_k &= {\rng w} \cdot \varphi(x_k)
+    \end{aligned}$
+    &
+    $\begin{aligned}
+        {\blu \alpha}^{\text{new}}_k &= {\blu \alpha}_k + \eta y_k \text{step}(-d_k)
+        \\
+        d_k &= \textstyle \sum_i \alpha_i \text{similarity}(x_i, x_k)
+    \end{aligned}$
+    %\\
+    %$\begin{aligned}
+    %\end{aligned}$
+    %&
+    %$\begin{aligned}
+    %\end{aligned}$
+  \end{tabular}
+    %\vspace{0.2cm}
+  \end{table}
+  In code, the kernelized perceptron looks like this:\bovinenote{%
+      We call \texttt{similarity\_features(x[42])} again each
+      time we update based on the $(k=42)$nd example.  This wastes time.
+      It's faster instead to
+      precompute the training examples' similarity features once and for all.
+  }
+  %if predict(alpha, x[k]) == y[k]: continue
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+  similarity_features = lambda x: np.array([similarity(x,x[k]) for k in range(N)])
+  predict = lambda alpha, x: np.sign(np.dot(alpha, similarity_features(x)))
+  alpha = np.zeros(N)
+  for k in IDXS: # sequence of training examples indices to update based on
+    alpha[k] = alpha[k] + ETA * y[k] * (1 if predict(alpha, x[k]) != y[k] else 0)
+  \end{lstlisting}
+  The program never refers explicitly to $\varphi$; it only calls
+  \texttt{similarity}.\bovinenote{We call such a program \textbf{kernelized}.}
+  \exercise{%
+    Write a kernelized program to minimize hinge\bovinenote{%
+      i.e., $\ell(y,d) = \max(0,1-yd)$, remember?
+    } loss.
+  }
+  \exercise{%
+    That ${w}=\sum_i {\alpha}_i \varphi(x_i)$ suggests two different L2
+    regularizers: $\lambda \|w\|^2$ or $\lambda \|\alpha\|^2$.
+    %
+    Write kernelized programs to minimize (hinge loss plus either regularizer).
+    The $\lambda \|w\|^2$ is trickier.
+  }
+
+%#-------  _  ------------------------------------------------------------------
+
+  We have flexibility in designing our function
+  $\text{similarity}:\xX\times\xX\to\Rr$.  But for the function to be worthy
+  of the name, it should at least satisfy these two rules:
+  %\bovinenote{%
+  %  These generalize to stronger, subtler conditions that we'll discuss in the
+  %  next passage.
+  %}
+  (\textbf{symmetry}) $x$ is as similar to $x\pr$ as $x\pr$ is to
+  $x$
+  and (\textbf{positivity}) $x$ is similar to itself.\bovinenote{%
+    In symbols, symmetry says
+    $\text{similarity}(x,x\pr) = \text{similarity}(x\pr,x)$
+    and positivity says
+    $\text{similarity}(x,x) \geq 0$.
+  }
+  %%%
+  \exercise{%
+    \emph{Show that, if our $\text{similarity}$ function disobeys the positivity
+    rule, then a kernelized perceptron update on $x_k$ can \emph{worsen} the prediction
+    for $x_k$!}
+  }
+
+  So the positivity rule helps learning.  That rule generalizes to
+  a yet more helpful one (``\textbf{Mercer's}''):
+  %That rule generalizes to
+  %a subtle condition ,
+  if we expand our L2 regularizer $\lambda \|{w}\|^2=\lambda \|\sum_i
+  {\alpha}_i \varphi(x_i)\|^2$ into a weighted sum of $\text{similarities}$,
+  that sum should never be negative.\bovinenote{%
+    You might say: the answer is $\lambda \|w\|^2$, so it can't be negative!
+    That's true when we derive $\text{similarity}$ from $\varphi$ (for example,
+    $\text{similarity}(x,x\pr) = \exp(-\|x-x\pr\|^2)$ obeys Mercer).  But my
+    point is that we can invent $\text{similarity}$ functions in other
+    ways; those functions might or might not obey Mercer.
+    %
+    Optimization works better when they obey Mercer.
+  }
+  \exercise{%
+    %Say $\xX=\Rr^2$.  Does $\text{similarity}(x,x\pr) =
+    %\exp(-\|x-x\pr\|^2)$ obey Mercer's rule?
+    Say $\xX=\Rr^2$.  Does $\text{similarity}(x,x\pr) = 1 + \|x-x\pr\|$ obey
+    Mercer's rule?  Our $N=2$ training points are
+      $\{(x_0, y_0=+1), (x_1, y_1=-1)\}$
+      with $x_0$ far from $x_1$.
+    Manually work out one gradient step
+    on the \emph{total} perceptron loss.
+    Sketch the decision boundary.  Notice that it goes `the wrong way'!
+  }
+
+\newpage
+\sampassage{quantiles and decision trees}\marginnote{\veryoptional}
+  There are many other good ideas for choosing featurizations based on data.
+  Here's one: \emph{rescale a feature based on the distributions of its values
+  in the training data}.
+
+  \attnsam{From quantiles to binning.}
+
+  We won't discuss them in lecture, but \textbf{decision trees} can be very
+  practical: at their best they offer fast learning, fast prediction,
+  interpretable models, and robust generalization.  Trees are discrete so we
+  can't use plain gradient descent; instead, we train decision trees by
+  greedily growing branches from a stump.  We typically make predictions by
+  averaging over ensembles --- ``forests'' --- of several decision trees each
+  trained on the training data using different random seeds.
+
+  \attnsam{GENERALIZATION COST OF data-dependent featurization!}
+
+\sampassage{linear dimension-reduction}
+  There are many other good ideas for choosing featurizations based on data.
+  Here's one: \emph{if some raw features are (on the training data) highly
+  correlated}, collapse them into a single feature.  Beyond saving computation
+  time, this can improve generalization by reducing the number of parameters to
+  learn.  We lose information in the collapse --- the small deviations of those
+  raw features from their average\bovinenote{%
+     or more precisely, from a properly scaled average
+  } --- so to warrant this collapse we'd want justification from domain knowledge
+  that those small deviations are mostly irrelevant noise.
+
+  \attnsam{More generally, we might want to}
+
+%\sampassage{matrix factorization and pca}\marginnote{veryoptional}
+  One way of understanding such linear dimension-reduction is matrix
+  factorization.  I mean that we want to approximate our $N\times D$ matrix $X$
+  of raw features as $X \approx F C$, a product of an $N\times R$ matrix $F$ of
+  processed features with an $R\times D$ matrix $C$ that defines each processed
+  feature as a combination of the raw features.
+
+  There's \textbf{principal component analysis}.
+
+  As a fun application, we can fix a corrupted row (i.e., vector of raw
+  features for some data point) of $X$ by replacing it with the corresponding
+  row of $F C$.  We expect this to help when the character of the corruption
+  fits our notion of ``$\approx$''.  For example, if the corruption is small
+  in an L2 sense then PCA is appropriate.
+  \attnsam{collaborative filtering}

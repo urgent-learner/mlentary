@@ -1,0 +1,294 @@
+\objectives{%
+  \item \attnsam{FILLIN}
+  \item \attnsam{FILLIN}
+}
+
+%--
+%--
+%--
+%--
+
+\sampassage{landmarks and kernels}
+  Inspired by that `black hole' image, we might want to center the black hole
+  around a representative training point $x_\star$.
+  This gives a potentially-very-useful feature that says for any input $x$
+  how similar is to $x_\star$, where we've somehow defined
+  $\text{similarity}$ using domain knowledge.
+  In fact, why not do this for several training
+  points to get several features?  For example, if we use three representative
+  `landmarks' $x_\circ, x_\square, x_\star$ then we get a featurization
+  $$
+    x \mapsto (\text{similarity}(x, x_\circ),
+               \text{similarity}(x, x_\square),
+               \text{similarity}(x, x_\star))
+    \in \Rr^3
+  $$
+  Taking this to an extreme, we can use all $N$ training points as landmarks:
+  $$
+    x \mapsto (\text{similarity}(x, x_0),
+               \text{similarity}(x, x_1),
+                \cdots
+               \text{similarity}(x, x_{N-1}))
+    \in \Rr^N
+  $$
+  Though we chose our features cleverly, at the end of a day, we'll use them
+  to make predictions the same way as before: we'll have a bunch of weights
+  $w_i$, one for each feature and we'll classify a fresh $x$ according to the
+  sign of
+  $$
+    \sum_i w_i \cdot (\text{$i$th feature of $x$})
+    =
+    \sum_i w_i \cdot \text{similarity}(x, x_i)
+  $$
+  That's our hypothesis class $\hH$.
+
+  With $N$ features for $N$ training points, $\hH$ will (usually) be very
+  expressive.
+  On one hand, expressivity means $\hH$ contains many hypotheses that well-fit
+  the training data but do horribly at testing time.
+  On the other hand, if we've done a good job choosing \emph{especially
+  informative} features, then $\hH$ will contain a hypothesis that does well on
+  both training and testing data.
+  Thus, regularization is crucial!\bovinenote{%
+    We pay some generalization cost in return for reducing approximation cost.
+  }
+
+\newpage
+\sampassage{superpositions and kernels}%\marginnote{\veryoptional}
+  In this passage we'll discuss how, once we've featurized our $x$s by
+  similarities, we'll select a hypothesis from $\hH$ based on
+  training data.  As usual we can do ordinary gradient descent, the kind we're
+  now used to.  But we'll here explore a different method, a special gradient descent.  The method
+  is important because it offers a fast way to solve a seemingly different
+  problem:
+  $$
+    \substack{\text{\small ordinary (slow) gradient descent}\\%
+              \text{\small on data featurized as we please,}\\%
+              \text{\small say by $x\mapsto \varphi(x)$}}
+    \quad\text{\emph{is equivalent to}}\quad
+    \substack{\text{\small special (fast) gradient descent}\\%
+              \text{\small on data featurized according to}\\%
+              \text{\small $\text{similarity}(x,x\pr)=\varphi(x)\cdot\varphi(x\pr)$}}
+  $$
+
+  Here's an analogy for the speedup.\bovinenote{%
+    Instead of
+    using pointers to implicitly
+    arrange an array of high-memory-footprint objects
+    into an ordering
+    that helps compute a rank for a fresh $x$,
+    we'll
+    use numbers to implicitly
+    arrange a training set of high-dimensional featurevectors
+    into a formal linear combination
+    that helps compute a label for a fresh $x$.
+  }
+  Imagine we are quick-sorting some array $[x_0, \cdots,
+  x_{N-1}]$ of large objects.  It's expensive to keep swapping such large
+  objects.  So instead, we cleverly create an array of pointers to the original
+  objects, then sort those pointers, and only as a final step arrange the
+  objects based on the sorted pointers.  That way we do $N$ large-object-swaps
+  instead of $N\log N$.
+  %
+  Better yet, if the point of sorting was to allow us to quickly binary search
+  to count how many array elements $x_k$ are less than any given $x$, then we
+  can avoid large-object-swaps \emph{completely} (!) by binary searching
+  through the array of pointers.
+
+  Now for the two methods, ordinary and special.  Well, as
+  we've seen already we can subtract gradients of loss with respect to $w$ ---
+  let's write this out as a reminder.
+  First, use
+  $d_i = w \cdot (\text{features of $x_i$})$
+  as shorthand for the decision function value at the $i$th training input.
+  Then, to reduce the loss $\ell_k = \ell(y_k, d_k)$ suffered at the $k$th training example,
+  we use the derivative $g_k = \partial \ell(y_k, d_k) / \partial d_k$:
+  \begin{table}\centering
+    \vspace{-0.2cm}
+  \begin{tabular}{cc}
+    \text{\gre ordinary, ${\rng w}$-based update}       &       \text{\gre special, ${\blu d}$-based update}\\
+    $\begin{aligned}w^{\text{new}}
+        &= w^{} - \eta \,
+    \frac
+    {\partial \, \ell_k}
+    {\partial \, {\rng w}^{}}\\
+        &= w^{} - \eta \,g_k (\text{features of $x_k$})
+    \end{aligned}$
+    &
+    $\begin{aligned}w^{\text{new}}
+        &= w^{} - \eta \,
+    \frac
+    {\partial \, \ell_k}
+    {\partial \, {\blu d}^{}}\\
+        &= w^{} - \eta \,
+      g_k (\text{$k$th one-hot vector})
+    \end{aligned}$
+  \end{tabular}
+    \vspace{0.2cm}
+  \end{table}
+
+  Note that $w$ has as many entries as there are features and $d$ has as many
+  entries as there are training examples; so th special update only makes sense
+  because we've cleverly chosen a collection of features that is indexed by
+  training points!
+  %
+  Intuitively $d = X \cdot w$,\bovinenote{%
+    Here, $X$ is the $N\times N$ matrix whose $k$th row is the featurization
+    of the $k$th training input.  So $X_{ki} = \text{similarity}(x_k, x_i)$.
+  } so $w$ and $d$ are proportional and the
+  ordinary and special updates are just stretched versions of each other.
+  %
+  In multiple dimensions, different directions get stretched
+  different amounts; it's because of this that the two updates are
+  inequivalent and lead to different predictions at the end of the day.
+
+  \emph{Why the heck would we want to do this?}
+  One answer is that we can transform expensive ordinary updates into a
+  mathematically-equivalent-but-computationally-cheap computations.  And those
+  computations are special updates.
+
+  More precisely, say we have some featurization $\varphi:\xX\to \Rr^s$, for
+  instance the kind that you already knew about before we discussed
+  `similarity' and want to use ordinary updates to find $s$ many weights.  If
+  the number $s$ of features is huge, then each update will take a lot of time,
+  since it'll involve multiplying each of $s$ many features by a coefficient.
+  That's what we mean by `expensive'.
+  %
+  Each ordinary update adds some linear combination of training inputs to the
+  weights, so (if we initialize weights to zero) we can after any number of
+  steps write $\text{weightvector} = \sum_i \alpha_i \varphi(x_i)$.  But
+
+  we define similarity as a dot product:
+  $$
+    \text{similarity}(x,x\pr) = \varphi(x) \cdot \varphi(x\pr)
+  $$ 
+
+
+into equivalent, cheap special updates
+  for a similarity-based featurization.
+  %One answer is that we can transform an ordinary update for inputs featurized
+  %by some $\varphi:\xX\to \Rr^s$
+  %into an \emph{equivalent} special update for inputs featurized according
+  %to similarity.
+  In this case, we define similarity as a dot product:
+  $$
+    \text{similarity}(x,x\pr) = \varphi(x) \cdot \varphi(x\pr)
+  $$ 
+
+  One answer is that the special ${\blu d}$-based update for our similarity
+  features is equivalent to an ordinary update for different features.
+
+  Intuitively, this says 
+
+
+  %
+  %
+  %%But because our features are now indexed by training points, there's
+  %%\emph{another}, inequivalent method!  The idea is to represent a hypothesis
+  %%not by the weight values $w_0, \cdots, w_{\text{number of features}-1)$
+  %%but instead by the decision function values $d_0, \cdots, d_{\text{number of training points}-1)$
+  %%on the training set: $d_i = w \cdot (\text{features of $x_i$})$.  Since
+  %%$\text{number of training points} = \text{number of features}$ this is probably
+  %%an okay parameterization.
+  %%Then we can subtract gradients with respect to $d$:
+  %%$$
+  %%  d^{\text{new}}
+  %%  = d^{\text{old}} - \eta \,
+  %%  \frac
+  %%  {\partial \, \ell(y_k, d_k^{\text{old}})}
+  %%  {\partial \, d^{\text{old}}}
+  %%$$
+  %%This just means 
+
+  %For example, to reduce perceptron loss we'd make an updates
+  %\begin{align*}
+  %  w_i^{\text{new}}
+  %  &= w_i^{\text{old}} + y_k \times (\text{$i$th feature of $x_k$}) \times (\text{$1$ if $w^{\text{old}}$ misclassifies $(y_k, x_k)$ else $0$})
+  %  \\&= w_i^{\text{old}} + y_k \times \text{similarity}(x_k, x_i)\times (\text{$1$ if $w^{\text{old}}$ misclassifies $(y_k, x_k)$ else $0$})
+  %\end{align*}
+  %when $w^{\text{old}}$ misclassifies training example $(y_k, x_k)$.
+
+  We have flexibility in designing our function
+  $\text{similarity}:\xX\times\xX\to\Rr$.  But for the function to be worthy
+  of the name, it should at least satisfy these two rules:\bovinenote{%
+    These generalize to stronger, subtler conditions that we'll discuss in the
+    next passage.
+  }
+  $x$ is as similar to $x\pr$ as $x\pr$ is to $x$
+  ($\text{similarity}(x,x\pr) = \text{similarity}(x\pr,x)$)
+  and $x$ is similar to itself
+  ($\text{similarity}(x,x) \geq 0$).
+  %
+  \attnsam{What happens if $x$ isn't similar to itself?  Perceptron goes
+  the wrong way!!}
+
+  Let's look more into this.
+  Though we invented these features cleverly, we may use them the same
+  way as before.  For example, we can choose our weights $w$ using the
+  perceptron algorithm, if we wish.  This says that if we misclassify a training
+  example $(y_k, x_k)$ then we update
+  $$
+    w_i^{\text{new}}
+    = w_i^{\text{old}} + y_k \times (\text{$i$th feature of $x_k$})
+    = w_i^{\text{old}} + y_k \times \text{similarity}(x_k, x_i)
+  $$
+
+  %
+
+  There is a beautiful alternative view on kernels.
+
+  Now, let's say a \textbf{superposition} is a formal combination like
+  $2 x_\circ - 0.1 x_\square + 0 x_\star$.  Here the addition and scalings
+  are just book-keeping devices.  Even if the $x$s are pretzels or french text
+  -- things we can't \emph{actually} add --- we can still write that formal
+  combination as a book-keeping device.  And when we \emph{do} have some
+  ordinary way of adding the $x$s --- maybe they are vectors --- we still
+  don't want to use that way of adding in this context.
+
+  The point of a superposition
+
+\sampassage{quantiles and decision trees}\marginnote{veryoptional}
+  There are many other good ideas for choosing featurizations based on data.
+  Here's one: \emph{rescale a feature based on the distributions of its values
+  in the training data}.
+
+  From quantiles to binning.
+
+
+
+  We won't discuss them in lecture, but \textbf{decision trees} can be very
+  practical: at their best they offer fast learning, fast prediction,
+  interpretable models, and robust generalization.  Trees are discrete so we
+  can't use plain gradient descent; instead, we train decision trees by
+  greedily growing branches from a stump.  We typically make predictions by
+  averaging over ensembles --- ``forests'' --- of several decision trees each
+  trained on the training data using different random seeds.
+
+\sampassage{linear dimension-reduction}
+  There are many other good ideas for choosing featurizations based on data.
+  Here's one: \emph{if some raw features are (on the training data) highly
+  correlated}, collapse them into a single feature.  Beyond saving computation
+  time, this can improve generalization by reducing the number of parameters to
+  learn.  We lose information in the collapse --- the small deviations of those
+  raw features from their average\bovinenote{%
+     or more precisely, from a properly scaled average
+  } --- so to warrant this collapse we'd want justification from domain knowledge
+  that those small deviations are mostly irrelevant noise.
+
+  More generally, we might want to 
+
+%\sampassage{matrix factorization and pca}\marginnote{veryoptional}
+  One way of understanding such linear dimension-reduction is matrix
+  factorization.  I mean that we want to approximate our $N\times D$ matrix $X$
+  of raw features as $X \approx F C$, a product of an $N\times R$ matrix $F$ of
+  processed features with an $R\times D$ matrix $C$ that defines each processed
+  feature as a combination of the raw features.
+
+  There's \textbf{principal component analysis}.
+
+  As a fun application, we can fix a corrupted row (i.e., vector of raw
+  features for some data point) of $X$ by replacing it with the corresponding
+  row of $F C$.  We expect this to help when the character of the corruption
+  fits our notion of ``$\approx$''.  For example, if the corruption is small
+  in an L2 sense then PCA is appropriate.
+  \attnsam{collaborative filtering}

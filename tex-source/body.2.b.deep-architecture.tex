@@ -1,0 +1,242 @@
+\objectives{%
+  \item
+  \item
+  \item
+}
+
+%-------  _  ------------------------------------------------------------------
+\sampassage{lamarckism, locality, dependence}%
+The key theme of deep learning is what I'll cheekily call the Lamarckian motto:
+\textbf{To build a tool, use it!}.  It's as if hitting a flabby, asymmetrical
+hammer against a lot of nails gradually calloused the hammer to be exactly the
+right hardness and shape to drive the nails straight and deep, or as if we
+could lift ourselves by our bootstraps.  For example, in last section's shallow
+neural network we wanted to build a featurization useful for linear
+classification.  To \emph{build} that featurization, we \emph{used} it: we
+piped a differentiably parameterized featurizing layer's output into a linear
+classifier and we trained both the featurizer and the classifier using gradient
+descent.
+
+We can summarize the situation by drawing learned functions as dashed arrows
+and hardcoded functions as solid arrows (see margin).
+%\bovinenote{%
+%  (this notation, uncommon in ML research, is useful showing relationships at a
+%  glance).
+%}
+Thus, we have a natural distribution over \emph{labeled images}, from which
+one function maps to labels and another maps to images (two solid arrows).  Our
+shallow neural network consists of a featurizer and a classifier (two dashed
+arrows).  We can get from a labeled image to a label by two paths: (a) directly,
+or (b) by mapping to just the image, then featurizing, then classifying.  The
+condition we use to frame our machine learning problem ---
+and the objective of gradient descent --- is that the function (a) and the
+composition-of-functions (b) should be nearly equal when evaluated on naturally
+occuring labeled images.
+\begin{marginfigure}[-3.5cm]
+$$
+{\normalsize
+\begin{tikzcd}
+\text{labeled image} \arrow[d] \arrow[rr] &  & \text{label}                    \\
+\text{image} \arrow[rr, dashed]           &  & \text{feat.s} \arrow[u, dashed]
+\end{tikzcd}
+}
+$$
+\caption{Architecture diagram of shallow neural classifier.  There are two ways to get from the upper left to the lower right corner; we want them to agree.}
+\end{marginfigure}
+That's all a complicated way of saying that we can improve raw features into
+classifier-friendlier features by gradient descent.  Gradient descent on
+what?  Not on the raw-to-friendly function in isolation, but on its composition
+with a classifier.  We can evaluate how well the composition fits the training
+data but not how well the raw-to-friendly function by itself fits the data.\bovinenote{%
+  There aren't any paths in the diagram that, like the diagram's bottom edge,
+  go from images to features!  So there's no path to directly compare that
+  function to.  This talk about paths is a complicated way of saying something
+  that here is obvious.  But path language can clarify more complicated situations.
+}
+This is one of multiple connotations
+of the jargon adjective \textbf{end-to-end} when applied to architecture.
+
+So we can improve raw features into classifier-friendlier features.  If
+something is fun, let's try it more!  Let's do multiple layers of improvement.
+That is, instead of learning to turn raw inputs into features that are easy
+to classify, let's learn to turn raw inputs into ``low-level features'' that
+are easy to turn into ``high-level features'' that in turn are easy to classify.
+We can keep going.  Here is how the idea looks if we have low, medium, and
+high features (as before, dashed arrows
+depict learned functions):
+$$
+\begin{tikzcd}
+\text{labeled image} \arrow[rrr] \arrow[d] &                                  &                                     & \text{label}                      \\
+\text{image} \arrow[r, dashed]             & \text{low f.s} \arrow[r, dashed] & \text{medium f.s} \arrow[r, dashed] & \text{high f.s} \arrow[u, dashed]
+\end{tikzcd}
+$$
+
+Concretely, this binary classifier could have a formula such
+as:\bovinenote{%
+  Here, $\sigma$ is the logistic function, $f$ is an nonlinearity such as
+  componentwise-leaky-ReLU-followed-by-bias-trick, and $A,B,C,D$ are matrices.
+  We write $\cdot$ instead of $\cdot$ for function composition, to reduce
+  clutter.  We annotate functions and matrices by a superscript
+  $\text{dimension of output}$ and a subscript $\text{dimension of input}$.
+}
+$$
+  \hat p(y\!=\!+1\,|\,x) \,=\,
+  (\sigma^{1}_{1} \cdot
+  A^{1}_{h+1} \cdot
+  f^{h+1}_{h} \cdot
+  B^{h}_{\tilde h+1} \cdot
+  f^{\tilde h+1}_{\tilde h} \cdot
+  C^{\tilde h}_{\hat h+1} \cdot
+  f^{\hat h+1}_{\hat h} \cdot
+  D^{\hat h}_{d})(x)
+$$
+Here, $f(D(x))$ gives the low-level features, $f(C(f(D(x))))$ gives the
+medium-level features, and so on.  The matrix $A$ does familiar Unit-1-style
+linear classification of the super-duper learned features $f(B(f(C(f(D(x))))))$.
+%
+Intuitively, a single featurization layer such as $f\cdot D$ can't do much by
+itself (at least, for computationally practical hidden dimensions and training
+cycles), so sequencing such layers helps simple transforms to accumulate into
+complex transforms.  It's a bit like origami --- simple folds build on simple
+folds to give a beautiful crane.  By increasing depth, we give gradient descent
+a deeper hierarchy of folds to play around with as it tries to invent a crane.
+
+\attnsam{I'm unhappy with the lack of categorical product below for the collection
+of features as inputs to `high`}
+%$$
+%\begin{tikzcd}
+%\text{img} \arrow[r] \arrow[rd] \arrow[rdd] \arrow[rrrr, "training data" description, bend left] & \text{northeast} \arrow[r, dashed] & \text{NE low} \arrow[r, dashed] & \text{NE medium} \arrow[rd] & \text{label}                  \\
+%                                                                                                 & \text{northwest} \arrow[r, dashed] & \text{NW low} \arrow[r, dashed] & \text{NW medium} \arrow[r]  & \text{high} \arrow[u, dashed] \\
+%                                                                                                 & \text{southwest} \arrow[r, dashed] & \text{SW low} \arrow[r, dashed] & \text{SW medium} \arrow[ru] &
+%\end{tikzcd}
+%$$
+
+\attnsam{in subsequent diagrams, single arrows may have many layers}
+
+On with examples of the Lamarckian motto of building parts by exercising them
+in context.  Let's say we want to learn how to turn an image of a natural scene
+(say, a photo of some furniture) into a depth map\bovinenote{i.e., an array
+that says for each pixel in the original photo how many meters away from the
+camera the surface depicted by that pixel is; for convenience we'll also regard
+the depth map as containing the data of the original image, too}.  As is often
+the case in ML, we have huge amounts of data \emph{but not huge amounts of data
+directly and reliably labeled for our task of interest}.  Perhaps instead we
+have just plain images, or maybe, slightly better, pairs of slightly different
+shots of the same scenes.  We want to be clever about squeezing learning signals
+from this data.  From an individual image we might not always be able
+to specify the depth map uniquely, but at least we should have a consistency
+condition: there ought to exist some 3d mesh shape that induces the depth map and
+that renders to the given image (this rules out depth maps that are television-noise or M.C.Escherian,
+but it imposes constraints on our learned functions beyond this).  So
+let's \emph{learn} a depth-to-3dshape function so that we may express this consistency
+condition.  It's okay if the learned function ends up being imperfect; it's
+a helper function to refine the learning of our depth map.
+%
+And
+a pair of slightly different shots of the same scene should in principle usually
+have enough information to determine the depth map for both shots, as well as
+determining a small rotation to turn one shot into the other shot.  So we have
+two kinds of consistency condition:
+% Synthetic data!!
+$$
+\begin{tikzcd}
+\text{img} \arrow[rrr, dashed]                                &                                                                                 &                                                   & \text{depth} \arrow[lld, dashed]                                                            \\
+\text{pair of views} \arrow[d] \arrow[u] \arrow[rrrd, dashed] & \text{3d shape} \arrow[r, equal] \arrow[lu, "\texttt{render}", sloped] & \text{3d shape} \arrow[ru, "\texttt{project}", sloped] &                                                                                             \\
+\text{img'}                                                   &                                                                                 &                                                   & {\text{img, depth, rotn}} \arrow[uu] \arrow[lll, "\texttt{parallax}", sloped] \arrow[lu, dashed]
+\end{tikzcd}
+$$
+
+Zooming out, this key theme of deep learning suggests that we can
+build sophisticated systems by imposing consistency conditions between their
+parts.
+
+\newpage
+Here are six further examples of the key theme:
+\par\noindent
+\begin{table}
+\centering
+\begin{tabular}{cc}
+%\textsc{}
+%&
+%\textsc{text summarization}
+%\\
+%\\
+\textsc{unpaired translation}
+&
+\textsc{robust classification}
+\\
+$$
+\begin{tikzcd}
+\text{english} \arrow[rr, dashed] \arrow[dd, equal]       &                                                        & \text{french} \arrow[dd, equal]                    \\
+                                                          & \{\star\} \arrow[lu] \arrow[rd] &                                                          \\
+\text{english}                                      &                                                        & \text{french} \arrow[ll, dashed]
+\end{tikzcd}
+$$
+    &
+$$
+    \begin{tikzcd}[column sep=1.25em]
+    \text{labeled img} \arrow[rrr, equal] \arrow[ddd] &  &  & \text{labeled img} \arrow[ddd, "\texttt{parse}", dashed,sloped] \\
+                                                                                                                                    &  &  &                                                                                \\
+                                                                                                                                    &  &  &                                                                                \\
+\text{image} \arrow[rrruuu, dashed]                                                        &  &  & \text{orient'n} \arrow[lll, "\texttt{render}",sloped]
+\end{tikzcd}
+$$
+\\
+\\
+\textsc{word embedding}
+&
+\textsc{concept hints}
+\\
+$$
+\begin{tikzcd}[row sep=3em]
+\text{sentence} \arrow[d, "\texttt{redact}", sloped] \arrow[rrr] &  &  & \text{sentence}                                                                         \\
+\text{word list} \arrow[rrr, "\texttt{embed}", dashed]               &  &  & \text{featurized} \arrow[u, dashed] \arrow[d] \\
+\text{analogy Q} \arrow[u] \arrow[rrr]                                        &  &  & \text{analogy A}
+\end{tikzcd}
+$$
+&
+$$
+\begin{tikzcd}[column sep=0, row sep=3em]
+\text{song audio} \arrow[rd] \arrow[dd] \arrow[rr, dashed] &               & \text{med features} \arrow[dd, dashed] \arrow[ld, dashed] \\
+                                                           & \text{chords} &                                                           \\
+\text{emotion}                                             &               & \text{hi features} \arrow[ll, dashed] \arrow[lu, dashed]
+\end{tikzcd}
+$$
+\\
+\\
+\textsc{image generation}
+&
+\textsc{board gameplay}
+\\
+$$
+\begin{tikzcd}[row sep=3em]
+\{\star\} \arrow[d] \arrow[r, equal]                & \{\star\} \arrow[r, equal] \arrow[d]             & \{\star\} \arrow[d]                           \\
+\text{small img} \arrow[r, dashed] \arrow[d, equal] & \text{med img} \arrow[r, dashed] \arrow[d, equal] & \text{big img} \arrow[d, equal] \\
+\text{small  img}                                                 & \text{med img} \arrow[l]                                        & \text{big img} \arrow[l]
+\end{tikzcd}
+$$
+    &
+    $$
+    \begin{tikzcd}[column sep=1.25em, row sep=3em]
+\text{board} \arrow[rr, "\texttt{move}"] \arrow[rd] \arrow[dd, dashed] &              & \text{boards} \arrow[dd, dashed]                \\
+                                                              & \text{wins?} &                                                 \\
+\text{value} \arrow[ru]                                       &              & \text{values} \arrow[ll, "\texttt{max or min}"]
+\end{tikzcd}
+    $$
+\end{tabular}
+\end{table}
+
+%Dall-E
+%GPT
+
+\newpage
+%-------  _  ------------------------------------------------------------------
+\sampassage{symmetry, convolution, attention}
+
+%-------  _  ------------------------------------------------------------------
+\sampassage{hierarchy, representations, transfer}
+
+
+%-------  _  ------------------------------------------------------------------
+\sampassage{uncertainty, structure, generation}
+

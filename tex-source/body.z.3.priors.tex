@@ -1,0 +1,266 @@
+\objectives{%
+  \item {explain how regularization, in its incarnation as
+         margin-maximization, counters data terms to improve generalization}
+  \item {write a regularized ML program (namely, an SVM),
+                 to classify high-dimensional data}
+}
+
+\sampassage{how good is a hypothesis?  plausibility}
+  Now to define intrinsic plausiblity, also known as a \textbf{regularizer}.
+  %term.
+  We find a hypothesis more plausible when its ``total amount of
+  dependence'' on the features is small.
+  %
+  So we'll focus for now on capturing this intution:
+  \emph{a hypothesis that depends a lot on many features is less
+  plausible}.\bovinenote{%
+    There are many other aspects we might design a regularizer
+    to capture, e.g.\ a domain's symmetry.
+    The regularizer is in practice a key point where we inject domain
+    knowledge.
+  }
+  %
+  We may conveniently quantify this as
+  proportional to a sum of squared weights (jargon: \textbf{L2}):\bovinenote{%
+    \noparexercise{%
+      When $(a,b)$ represent weights for brightness-width digits features, how
+      do hypotheses with small $a^2 + b^2$ visually differ from ones with
+      small $6.86 a^2+b^2$ (a perfectly fine variant of our
+      `implausibility')?
+    }
+  }
+  $
+    \text{implausibility of $h=(a,b, \cdots)$}
+    =
+    \lambda (a^2 + b^2 + \cdots)
+  $.  In code:
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+    LAMBDA = 1.
+    def implausibility(a,b):
+      return LAMBDA * np.sum(np.square([a,b]))
+  \end{lstlisting}
+  Intuitively, the constant $\lambda$=\texttt{LAMBDA} tells us how much we care
+  about plausibility relative to goodness-of-fit-to-data.
+
+  Here's what the formula means.
+  Each of three friends has a theory\bovinenote{%
+  \textbf{AJ}
+    insists a bird with a wings shorter than 1ft can't fly far, so it's
+    \emph{sure} to sing; Conversely, birds with longer wings never sing.
+  \textbf{Pat}
+    checks if the bird grows red feathers, eats shrimp, lives near ice, wakes
+    in the night, and has a bill.  If and only if an even number of these $5$
+    qualities are true, the bird probably sings.
+  \textbf{Sandy}
+    says shorter wings and nocturnality both make a bird somewhat more likely
+    to sing.
+    }
+  about which birds sing.
+  %
+  Which theory do we prefer?  Well, \textbf{AJ} seems too confident.  Wingspan
+  may matter but probably not so decisively.  \textbf{Pat} avoids
+  black-and-white claims, but Pat's predictions depend substantively on many
+  features: flipping any one quality flips their prediction.  This seems
+  implausible.  By contrast, \textbf{Sandy}'s hypothesis doesn't depend too
+  strongly on too many features.  To me, a bird non-expert, Sandy's seems most
+  plausible.
+
+  Now we can define the overall undesirability of a hypothesis:\bovinenote{%
+    We'll use SVM loss but feel free to plug in other losses to get
+    different learning behaviors!
+  }
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+    def objective_function(examples,a,b):
+      data_term = np.sum([svm_loss(x,y,a,b) for x,y in examples])
+      regularizer = implausibility(a, b)
+      return data_term + regularizer
+  \end{lstlisting}
+
+\sampassage{margins}
+  To build intuition
+  %about which hypotheses are most desirable according to that metric,
+  let's suppose $\lambda$ is a tiny positive number.  Then
+  minimizing the objective function is the same as minimizing the data term,
+  the total SVM loss: our notion of implausibility breaks ties.
+
+  \begin{marginfigure}[0cm]
+    \centering
+    \picturew{0.99\textwidth}{margin}
+    \caption{%
+      \textbf{Balancing goodness-of-fit against intrinsic plausibility leads
+      to hypotheses with large margins.}
+      %\textbf{IGNORE the rightmost {\rng orange point} until we say otherwise!}
+        A hypothesis's \textbf{margin} is its distance to the closest correctly
+        classified training point(s).  Short stems depict these distances for
+        two hypotheses (\textbf{black}, {\gre\textbf{gray}}).
+        %
+        If not for the rightmost {\rng orange point}, we'd prefer \textbf{black} over
+        {\gre\textbf{gray}} since it has larger margins.  With large $\lambda$ (i.e., strong
+        regularization), we might prefer black over gray even with that
+        rightmost {\rng orange point} included, since expanding the margin
+        is worth the single misclassification.
+      %For convenience we set the origin to the intersection of the two
+      %hypotheses.  That way we can still say that every hypothesis's decision
+      %boundary goes through
+      %the origin.
+    }
+  \end{marginfigure}
+
+  Now, how does it break ties?  Momentarily ignore the Figure's rightmost {\rng
+  orange point} and consider the black hypothesis; its predictions depend only
+  on an input's first (vertical) coordinate, so it comes from weights of the
+  form $(a,b) = (a,0)$.
+  %
+  The $(a,0)$ pairs differ in SVM loss.  If
+  $a\approx 0$, each point has leeway close to $0$
+  and thus SVM loss close to $1$; conversely, if $a$ is huge, each
+  point has leeway very positive and thus SVM loss equal to
+  the imposed floor: $0$.  So SVM loss is $0$ as long as
+  $a$ is so big that each leeway to exceed $1$.
+
+  Imagine sliding a point through the plane.  Its leeway is $0$ at the
+  black line and changes by $a$ for every unit we slide vertically.
+  %
+  So the farther the point is from the black line, the less $a$
+  must be before leeway exceeds $1$ --- and the happier is
+  the regularizer, which wants $a$ small.
+  % TODO BEACH, WATER, SLOPE story
+  % TODO Interpreting leeway as a measure of confidence.
+  So \emph{minimizing SVM loss with an L2 regularizer favors decision
+  boundaries far from even the closest correctly classified points!}  The black
+  line's margins exceed the gray's, so we favor black.
+
+  For large $\lambda$, then this margin-maximization tendency can be so
+  strong that it overrides the data term.  Thus, even when we bring back
+  the rightmost {\rng orange point} we ignored, we might prefer the black
+  hypothesis to the gray one.
+
+\newpage
+  Now for some really good intuition-building brain-food!
+  \exercise{%
+    Identify which point on the {\gre gray curve} to the right corresponds to
+    $\lambda=0$.  How about $\lambda=\infty$?
+  }
+  \exercise{%
+    We have two weight coefficients (corresponding to the horizontal and
+    vertical axes of the Figure).  Based on the {\blu fit-to-data} term, which
+    coefficient is the loss more sensitive to?
+    %(That is, if we are at an optimum for $\lambda=0$, then )
+  }
+  \exercise{%
+    Observe that the weight-vs-$\lambda$ {\gre trajectory} is curved: it
+    doesn't interpolate linearly between its $\lambda=0$ and $\lambda=\infty$
+    values.  Which weight (horizontal or vertical) gets suppressed `first'
+    as we increase $\lambda$ from $0$?
+  }
+  \exercise{%
+    By thinking about points at which {\blu blue} and {\rng orange} contours
+    are mutually tangent, sketch the weight-vs-$\lambda$ trajectory described
+    in the Figure.  That is: check that the Figure is right!
+  }
+  \begin{marginfigure}[-2cm]
+    \centering
+    \picturew{0.99\textwidth}{quad-reg.png}%
+    \caption{%
+      \textbf{Regularization suppresses
+      different features \emph{by different amounts}.}
+      %
+      We show a contour plot of loss terms over 2D weight space: an {\rng L2
+      regularizer} and a {\blu fit-to-data} term.  As we vary $\lambda$ from
+      $0$ ({\rng L2} doesn't matter) toward $\infty$ ({\blu data } doesn't
+      matter), the optimal weight changes.  We show this weight-vs-$\lambda$
+      trajectory in {\gre gray}.
+      %
+      \textbf{Warning}:
+      For the perceptron and hinge notions of fit-to-data, the latter term
+      won't look so smooth.  Still, the moral about regularization applies.
+      (And future models
+      we'll discuss (logistic models, least-squares regression, etc) \emph{are}
+      smooth.)
+      \attnsam{TODO: expand on caption}
+    }
+  \end{marginfigure}
+
+
+
+
+  \vfill
+\sampassage{optimization}
+  Now that we've defined our objective function,
+  %(repeated below for easy
+  %reference),
+  we want to find a hypothesis $h=(a,b)$ that minimizes it.
+  %
+  We've already discussed how to nudge the weight vector to reduce the badness-of-fit for a datapoint.
+  How do we nudge it to reduce the implausibility?
+  Well, we reduce the $\lambda$ term simply by moving $a,b$ closer to $0$!
+  That is, we combine an update of the form
+  $$
+    w^{\text{new}}
+    =w^{\text{old}} - \lambda w^{\text{old}}
+  $$
+  with the data update.
+
+  %\bovinenote{%
+  (
+    To get this to match our objective exactly, we should actually write $2\lambda/N$ instead
+    of $\lambda$.  The $2$ comes from the second power in L2's definition; the $1/N$,
+    more importantly, comes from the fact that we have $N$ data terms but just
+    $1$ plausiblity term.  So if we work row-by-row (datapoint-by-datapoint),
+    we ought to divvy up the plausibility term into $N$ many terms, each of strength $\lambda/N$.
+    %
+    At this point, we can just abstract this reasoning away by defining a new
+    constant --- say $L$ --- that secretly is $2\lambda/N$.
+    Later, it'll be good to know where $L$ comes from.
+    )
+  %}
+
+  %
+  We end up with
+  %
+  %Well, we can reduce a row's $\lambda/N$ term by moving $a,b$ closer to $0$.
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+    ETA = 0.01
+    ab = initialize()
+    for t in range(10000):
+      xfeatures, y = fetch_datapoint_from(training_examples)
+      ab = ab + ETA * ( - L * ab
+                        + y * xfeats * (0 if max(0., y*ab.dot(xfeatures))==0 else 1) )
+  \end{lstlisting}
+  This is the \textbf{pegasos algorithm} we'll see in the project.
+  Soon we'll formalize and generalize this algorithm using calculus.
+  \begin{marginfigure}[-8cm]
+    \centering
+    \picturedw{0.99\textwidth}{example-mnist/train-weights-HingeReg}
+    \caption{%
+        \attnsam{REPLACE}
+      With $\lambda=0.02$ the objective visibly prefers weights near $0$.
+      We develop an algorithm to take steps in this plane
+      toward the minimum, `rolling down' the hill so to speak.
+    }
+  \end{marginfigure}
+
+
+
+  \exercise{%
+    We've discussed the L2 regularizer.  Also common is the L1 regularizer:
+    $
+      \text{implausibility of $h=(a,b, \cdots)$}
+      =
+      \lambda (|a| + |b| + \cdots)
+    $.
+    Hypotheses optimized with strong L1 regularization will tend to have
+    zero dependence on many features.  Explain to yourself and then to a friend
+    what the previous sentence means, why it is true, and how we might exploit
+    it in practice.
+  }
+
+
+
+\newpage
+  \vfill
+\sampassage{occam's razor}\marginnote{\veryoptional}
+  Did you feel not-quite-convinced by the AJ-Pat-Sandy example above?
+  We said: ``\emph{Pat's predictions depend substantively on many
+  features: flipping any one quality flips their prediction.  This seems
+  implausible.}'' --- does this really feel implausible, and if so, why?

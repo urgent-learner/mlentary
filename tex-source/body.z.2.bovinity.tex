@@ -1,0 +1,31 @@
+\objectives{%
+  \item \attnsam{FILLIN}
+  \item \attnsam{FILLIN}
+}
+
+% solving other classification tasks by the same method
+\sampassage{worked example: bovinity of reddit posts}
+  Digits are nice.  Let's solve a couple other tasks by the same method.  This
+  illustrates which aspects are design decisions and which aren't.  We'll start
+  with a text-classification task.
+
+  %\textbf{reddit posts about cows vs dogs}
+  We gather the text of $\sim 2000$ reddit posts, half from \texttt{r/cow} and
+  half from \texttt{r/dog}.  \emph{Can we predict from text alone which of the
+  two subreddits a post came from?}
+
+  Intuitively, words like
+  \texttt{cow},
+  \texttt{hoof},
+  \texttt{moo},
+    or
+  \texttt{dog},
+  \texttt{paw},
+  \texttt{bark}
+  are tell-tale signs.  So for our featurization, let's have a feature for
+  each $3$-letter and each $4$-letter word.  The feature for the word
+  \texttt{hoof} simply maps a text input $x$ in $\xX$ to a real number that's
+  $1$ if the word appears in the post and $0$ otherwise.  Likewise with the
+  other features.
+
+

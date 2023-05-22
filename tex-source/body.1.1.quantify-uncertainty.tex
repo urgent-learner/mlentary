@@ -1,0 +1,430 @@
+\objectives{%
+  \item define a class of linear, probabilistic hypotheses appropriate
+        to a given classification or regression task
+        %by selecting a probability
+        %model (logistic, perceptron, SVM, least-squares).
+  \item compute the loss suffered by a probabilistic hypothesis on given data
+}
+
+%-- what it means for "dogness vs catness" to vary linearly (log probabilities as the thing-to-approximate)
+%-- linear geometry of feature space
+%-- humble models (svm, perceptron, etc)
+%-- featurization and readout //  richer outputs : regression and adt structure
+
+\sampassage{two thirds between dog and cow}
+  Remember: our Unit 1 motto is to \emph{learn linearities flanked by hand-coded
+  nonlinearities}:
+  \[
+    \xX   \xrightarrow[\text{\color{gray}not learned}]{\text{featurize}}
+    \Rr^2 \xrightarrow[\text{\textbf{learned!}}]{\text{linearly combine}}
+    \Rr^1 \xrightarrow[\text{\color{gray}not learned}]{\text{read out}}
+    \yY
+    %\text{DistributionsOn}(\yY)
+  \]
+  %
+  We design the nonlinearities to capture domain knowledge
+  about our data and goals.  Here we'll design nonlinearities to help
+  model \emph{uncertainty}
+  over $\yY$.  We can do this by choosing a different read-out function.  For
+  example, representing distributions by objects \texttt{\{3:prob\_of\_three,
+  1:prob\_of\_one\}}, we could choose:
+  %    prediction = ({9:0.8, 1:0.2} if threeness[0]>0. else {1:0.8, 9:0.2})
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+      prediction = {3 : 0.8 if threeness[0]>0. else 0.2,
+                    1 : 0.2 if threeness[0]>0. else 0.8 }
+  \end{lstlisting}
+  If before we'd have predicted ``the label is ${\rng 3}$'', we now
+  predict ``the label is ${\rng 3}$ with 80\% chance and ${\blu 1}$ with 20\% chance''.
+  This hard-coded 80\% \emph{could} suffice.\bovinenote{%
+    As always, it depends on what specific thing we're trying to do!
+  }
+%{\blu{1}}$ or
+%      $y={\rng{9}}
+  But
+  let's do better: intuitively, a {\rng{3}} is more likely when
+  \texttt{threeness} is huge than when \texttt{threeness} is nearly zero.  So
+  let's replace that 80\% by some smooth function of
+  \texttt{threeness}.  A popular,
+  theoretically warranted choice is $\sigma(z) = 1/(1+\exp(-z))$:\bovinenote{%
+    $\sigma$, the \textbf{logistic} or \textbf{sigmoid} function, has linear log-odds: $\sigma(z)/(1\!-\!\sigma(z))=\exp(z)/1$.
+    %It squashes its input range $(-\infty, +\infty)$ to an output range $(0.,
+    %1.)$.
+    It tends exponentially to the step function.
+    %$0, 1$ as $z \to -\infty, +\infty$.
+    It's symmetrical: $\sigma(-z)=1\!-\!\sigma(z)$.  Its derivative
+    concentrates near zero: $\sigma\pr(z) = \sigma(z)\sigma(-z)$.
+    %It pervades ML.
+    \exercise{Plot $\sigma(z)$
+    %= 1/(1+\exp(-z))$
+    by hand.}
+  }
+  %  sigma = lambda z : 1./(1.+np.exp(z))
+  %  def predict(x):
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+      sigma = lambda z : 1./(1.+np.exp(-z))
+      prediction = {3 :    sigma(threeness[0]),
+                    1 : 1.-sigma(threeness[0]) }
+  \end{lstlisting}
+  %\bovinenote{%
+  %    \attnsam{PICTURE OF CONTOURS! (two angles; different confidences)}
+  %}
+  Given training inputs $x_i$, a hypothesis will have ``hunches'' about the
+  training outputs $y_i$.  Three hypotheses $h_{\text{three!}}$,
+  $h_{\text{three}}$, and $h_{\text{one}}$ might, respectively, confidently
+  assert $y_{42}={\rng{3}}$; merely lean toward $y_{42}={\rng{3}}$; and think $y_{42}={\blu{1}}$.  If
+  in reality $y_{42}={\blu{1}}$ then we'd say $h_{\text{one}}$ did a good job, $h_{\text{three}}$ a bad
+  job, and $h_{\text{three!}}$ a very bad job on the $42$nd example.
+  %
+  So the training set ``surprises'' different hypotheses to different degrees.
+  We may seek a hypothesis $h_\star$ that is minimally surprised, i.e., usually
+  confidently right and when wrong not confidently so.
+  %sense to ask for a hypothesis that maximizes probability.
+  In short, by outputting probabilities instead of mere labels, we've earned
+  this awesome upshot: \emph{the machine can automatically calibrate its
+  confidence levels!}
+  %\bovinenote{%
+    It's easy to imagine how important this calibration is in language, self-driving, etc.
+  %}
+
+  %Now, what does this all mean?  \emph{What does it mean for ``dogness vs
+  %cowness'' to vary ``linearly''?}
+
+  \attnsam{Confidence on mnist example!}
+  \attnsam{(2 pictures, left and right: hypotheses and (a,b plane)}
+  %\vspace{8cm}
+
+
+      %increases dimension by one.
+      %\textbf{coordinate transforms} --- e.g.\ arctan.
+  %\end{description}
+
+  %Caution: a feature $A(\sfx)$ that is statistically independent from
+  %$\sfy$ may still be relevant for predicting $\sfy$.\bovinenote{%
+  %  Example.  Consider the uniform distribution on the four corners of a
+  %  tetrahedron embedded within the corners of a cube \attnsam{TODO:
+  %  graphic}.  The three spatial coordinates give three bit-valued random
+  %  variables.  Any two of these variables are independent.  But the
+  %  three together are dependent.
+  %  \attnsam{TODO: also do a decision boundary (simpsons style) graph
+  %  illustrating this phenomenon}
+  %}
+  %For example, if
+  %$A, B$ are two features, it is possible that $A(\sfx), \sfy$ are
+  %independent and that $B(\sfx), \sfy$ are independent and yet
+  %$A(\sfx),B(\sfx), \sfy$ are \emph{dependent}!
+
+  %\attnsam{TODO: example featurization (e.g. MNIST again?)}
+
+
+
+  %\par\noindent
+  %\attn{Exercise:} {How might our ${\rng{9}}$ vs ${\blu{1}}$ model fail
+  %to generalize to photos of unevenly lit paper?  Photos of lined paper?
+  %Of chalk on slate?  Of $7$-segment digital displays?
+  %\par\noindent
+  %\attn{Exercise:} {How might they fail for classifying $3$ vs $8$?}
+
+
+  \newpage
+\sampassage{humble models}
+  Let's modify logistic classification to allow for \emph{unknown
+  unknowns}. We'll do this by allowing a classifier to allot probability
+  mass not only among labels in $\yY$ but also to a special class $\star$
+  that means ``no comment'' or ``alien input''.  A logistic classifier
+  always sets $p_{\sfy|\sfx}[\star|x] = 0$, but
+  %
+  other probability models may put nonzero mass on ``no comment''.
+  Different probability models give different learning programs.
+  %
+  In fact, two simple probability models give us the perceptron and hinge
+  losses we saw previously!
+  %For example, consider:
+  \newcommand{\zp}{\oplus}%u^{\!+\!}}
+  \newcommand{\zm}{\ominus}%u^{\!-\!}}
+  \begin{table}
+    \centering
+    %\small
+    \vspace{-0.3cm}
+    \begin{tabular}{RCCCC}
+                                  & \textsc{logistic}     & \textsc{perceptron}       & \textsc{svm}              \\\hline %& \textsc{gauss}
+        p_{\sfy|\sfx}[+1| x]      & \zp/(\zm+\zp)         &\zp\cdot(\zm\wedge\zp)/2   &\zp\cdot(\zm\wedge\zp/e)/2 \\       %&\zp \cdot \epsilon e^{-d^2/4}
+        p_{\sfy|\sfx}[-1| x]      & \zm/(\zm+\zp)         &\zm\cdot(\zm\wedge\zp)/2   &\zm\cdot(\zm/e\wedge\zp)/2 \\       %&\zm \cdot \epsilon e^{-d^2/4}
+        p_{\sfy|\sfx}[\star| x]   & 1 - ~\text{above}=0   &1 - ~\text{above}          &1 - ~\text{above}          \\\hline %&1 - ~\text{above}
+            %                                                                                                                    %
+      \text{outliers}             &\text{responsive}      &\text{robust}              &\text{robust}              \\       %&\text{vulnerable}
+      \text{inliers}              &\text{sensitive}       &\text{blind}               &\text{sensitive}           \\       %&\text{blind}
+      %\text{humility}             &\text{low}             &\text{low}                 &\text{high-ish}            \\ 
+      \text{acc bnd}              &\text{good}            &\text{bad}                 &\text{good}              \\\hline
+%                                                                                                                    %
+      \text{loss name}            &\text{softplus}(\cdot) &\text{srelu}(\cdot)        &\text{hinge}(\cdot)        \\       %&\text{parab}(\cdot)
+      \text{formula}              &\log_2(1+e^{(\cdot)})  &\max(1,\cdot+1)            &\max(0,\cdot+1)            \\       %&(\cdot+1)^2
+      \text{update}               &1/(1+e^{+y\frd})          &\text{step}(-y\frd)           &\text{step}(1-y\frd)            %&2(1-yd)
+      %\text{humility}             &\text{low}             &\text{medium}              &\text{high}
+      % TODO: split outliers/inliers by good or bad (erroneously classified or not?)  so 4 rows instead of 2?
+    \end{tabular}
+    \caption{%
+      \textbf{Three popular models for binary classification.}
+      %
+      \textbf{Top rows:} Modeled chance given $x$ that $y=+1$, $-1$,
+      $\star$.  We use $\frd = \vec w\cdot \vec x$,
+      $\oplus=e^{+\frd/2}, \ominus = e^{-\frd/2}$,
+      %$u^{\!\pm\!}$ = $e^{\!\pm\! d/2}$,
+      $a\wedge b = \min(a,b)$ to save ink.
+      %
+      \textbf{Middle rows:} All models respond to misclassifications.
+      But are they robust
+      to well-classified outliers?
+      Sensitive to well-classified inliers?
+      %
+      \textbf{Bottom rows:} For optimization, which we'll
+      discuss later, we list (negative log-probability) losses.
+      %that arise when maximize likelihood using these models.
+      An SGD step looks like
+      $$
+        \vec w_{t+1} = \vec w_t + \eta \cdot \text{update} \cdot y \vec x
+      $$
+      %
+    }
+    \vspace{+0.3cm}
+  \end{table}
+  %
+  \exercise{For each of the three models, plot $p_{\sfy|\sfx}[+1| x]$ and
+  $p_{\sfy|\sfx}[-1| x]$ against the decision function value $\frd$.  For which
+  decision function values $\frd$ does the svm model allocate chance to the
+  ``no-comment'' outcome $\star$?  Relate to the margin.}
+  %
+
+  MLE with the perceptron model or svm model minimizes
+  the same thing, but with
+  $\text{srelu}(z) = \text{max}(1,1+z)$ or
+  $\text{hinge}(z) = \text{max}(0,1+z)$
+  instead of $\text{softplus}(z)$.
+  %https://www.desmos.com/calculator/3yak0ozell
+
+  Two essential properties of $\text{softplus}$ are that:
+  (a) it is convex\bovinenote{%
+    A function is \textbf{convex} when its graph is bowl-shaped rather than
+    wriggly.  It's easy to minimize convex functions by `rolling downhill',
+    since we'll never get stuck in a local wriggle.  Don't worry about
+    remembering or understanding this word.
+  }
+  and
+  (b) it upper bounds the step function.
+  Note that $\text{srelu}$ and $\text{hinge}$ also enjoy
+  these properties.  Property (a) ensures that the optimization problem
+  is relatively easy --- under mild conditions, gradient descent will
+  find a global minimum.  By property (b), the total loss
+  on a training set upper bounds the rate of erroneous classification on
+  that training set.  So loss is a \emph{surrogate} for (in)accuracy: if
+  the minimized loss is nearly zero, then the training accuracy is nearly
+  $100\%$.\bovinenote{%
+    The perceptron satisfies (b) in a trivial way that yields a vacuous
+    bound of $100\%$ on the error rate.
+  }
+
+    \attnsam{Relate probabilities to losses for SVM, perceptron!}
+
+  So we have a family of related models: \textbf{logistic},
+  \textbf{perceptron}, and \textbf{SVM}.  In Project 1 we'll find hypotheses
+  optimal with respect to the perceptron and SVM models (the latter under a
+  historical name of \textbf{pegasos}), but soon we'll focus mainly on
+  logistic models, since they fit best with deep learning.
+
+  %\attnsam{training behavior!!}
+  %\attnsam{response to outliers}
+  %\attnsam{support vectors}
+
+  \attnsam{DEFINE NOTION OF LOSS (relate to neg log likelihood)!}
+  \attnsam{PRIOR PROB as REGULARIZER!}
+
+
+
+%\sampassage{more classes and beyond}
+\sampassage{richer outputs: multiple classes}%\marginnote{\veryoptional}%: larger $\yY$
+  We've explored hypotheses
+  $
+    f_{W}(x) = \text{readout}(W \cdot \text{featurize}(x))
+  $
+  where $W$ represents the linear-combination step we tune to data.
+  We began with \textbf{hard binary classification}, wherein we map inputs
+  to definite labels (say, $y=\text{cow}$ or $y=\text{dog}$):
+  $$
+    \text{readout}(\frd) = \text{``$\text{cow}$ if $0\!<\!\frd$ else $\text{dog}$''}
+  $$
+  We then made this probabilistic using $\sigma$.  In such \textbf{soft binary
+  classification} we return (for each given input) a \emph{distribution} over labels:
+  $$
+    \text{readout}(\frd) =
+    \text{``chance $\sigma(\frd)$ of $\text{cow}$;
+            chance $1\!-\!\sigma(\frd)$ of $\text{dog}$''}
+  $$
+  Remembering that $\sigma(\frd) : (1-\sigma(\frd))$ are in the ratio
+  $\exp(\frd) : 1$, we rewrite:
+  $$
+    \text{readout}(\frd) =
+    \text{``chance of $\text{cow}$ is $\exp(\frd)/Z_\frd$;
+            of $\text{dog}$, $\exp(0)/Z_\frd$''}
+  $$
+
+  %Now, I hope you feel bugged by the above formulas' asymmetry --- why
+  %should one class count as positive?! --- and does not immediately
+  %generalize to multiple classes.
+
+  I hope some of you felt bugged by the above formulas' asymmetry: $W$ measures
+  ``cow-ishness minus dog-ishness'' --- why not the other way around?  Let's
+  describe the same set of hypotheses but in a more symmetrical way.  A common
+  theme in mathematical problem solving is to trade irredundancy for symmetry
+  (or vice versa).  So let's posit both
+  a $W_{\text{cow}}$ \emph{and}
+  a $W_{\text{dog}}$.  One measures ``cow-ishness''; the other,
+  ``dog-ishness''.  They assemble to give $W$, which is now a matrix of shape
+  $2\!\times\!\text{number-of-features}$.  So $\frd$ is now a list of $2$ numbers:
+  $\frd_{\text{cow}}$ and
+  $\frd_{\text{dog}}$.
+  Now $\frd_{\text{cow}} - \frd_{\text{dog}}$ plays the role that $\frd$
+  used to play.
+
+  Then we can do hard classification by:
+  $$
+    \text{readout}(\frd) = \text{argmax}_{y} \frd_y
+  $$
+  and soft classification by:
+  $$
+    \text{readout}(\frd) = \text{``chance of $y$ is $\exp(\frd_y)/Z_\frd$''}
+  $$
+  To make probabilities add to one, we divide by $Z_\frd = \sum_y
+  \exp(\frd_y)$.
+
+  Behold!  By rewriting our soft and hard hypotheses for binary classification,
+  we've found formulas that also make sense for more than two classes!  The
+  above readout for \textbf{soft multi-class classification} is called
+  \textbf{softmax}.
+  \begin{marginfigure}
+    \attnsam{softmax plot}\\
+      %\vspace{4cm}\\
+    \attnsam{softmax plot}
+  \end{marginfigure}
+
+
+
+  %For \emph{multi-output soft classification}, we want to report
+  %probabilities instead of general real-valued scores.  Probabilities
+  %ought to be non-negative and ought to sum to one.  A nice way to turn
+  %general numbers to non-negative (in fact, positive) ones is to apply
+  %$\exp$.  A nice way to get positive numbers to sum to $1$ is to divide
+  %by their sum.  This leads us to \textbf{softmax}:
+  %$$
+  %  \text{softmax}(\omega_k ~:~ 0\leq k<K) = \left(\frac{\exp(\omega_k)}{\sum_{k^\prime} \exp(\omega_{k^\prime})} ~:~ 0\leq k<K\right)
+  %$$
+
+\sampassage{richer outputs: regression}%\marginnote{\veryoptional}%: larger $\yY$
+  By the way, if we're trying to predict a real-valued output instead of a
+  binary label --- this is called \textbf{hard one-output regression} --- we can
+  simply return $\frd$ itself as our readout:
+  $$
+    \text{readout}(\frd) = \frd
+  $$
+  This is far from the only choice!
+  For example, if we know that the true
+  $y$s will always be positive, then $\text{readout}(\frd) = \exp(\frd)$ may
+  make more sense.
+    I've encountered a learning task (about alternating current in power lines)
+    where what domain knowledge suggested --- and what ended up working best ---
+    were trigonometric functions for featurization and readout!
+  There are also many ways to return a distribution instead of a number.  One
+  way to do such \textbf{soft one-output regression} is to use normal distributions:
+  %\bovinenote{%
+  %  Ask on the forum about the world of alternatives and how they
+  %  influence learning!
+  %}
+  $$
+    \text{readout}(\frd) = \text{``normal distribution with mean $\frd$ and variance $25$''}
+  $$
+  %
+  By now we know how to do \textbf{multi-output regression}, soft or hard: just
+  %turn $W$ into a matrix of shape
+  %$\text{number-of-outputted-numbers}\times\text{number-of-features}$.
+  promote $W$ to a matrix with more output dimensions.
+
+  We can define the goodness-of-fit (of a probabilistic model to data) to be
+  the log of the probability that model would have given to the data.  Since
+  log of a gaussian is quadratic in the distance between mean and data, our
+  loss is quadratic in the same.  But in our readout the mean is just the
+  decision function value $\frd$.  So minimizing loss means minimizing the
+  squared distance $(\frd-y)^2$.
+  \exercise{%
+    We can avoid hardcoding constant variances by making $\frd$ two-dimensional
+    and saying $\cdots \text{mean $\frd_0$ and variance $\exp(\frd_1)$}$.
+    Express loss in terms of the training data and the $2\times (\text{features})$
+    weight matrix $W$.
+  }
+  \begin{marginfigure}[-4cm]
+    \picturew{0.99\textwidth}{regression-beach.png}%
+    \caption{
+      Minimizing loss means
+          minimizing the squared distance $(\frd-y)^2$.
+      We shade those distances \textbf{black}.
+      Vertical axis: decision function value $\frd$.
+      Horizontal axes: featurespace.
+      {\gre Gray hexagon}: (part of) the graph of the decision function
+        $(x\mapsto w\cdot x=\frd)$; the graph intersects $\frd=0$ at the
+        decision boundary ({\gre gray line}).
+      Inputs $x$ are in {\dgre dark gray}; labeled pairs $(x, y)$ are in
+      {\rng orange} and {\blu blue} depending on $y$'s sign.  In regression,
+      $y$ can be any real number.
+    }
+  \end{marginfigure}
+
+    %\attnsam{softmax plot}\\
+    %  %\vspace{4cm}\\
+    %\attnsam{softmax plot}
+
+  \attnsam{TODO: show pictures of 3 classes, 4 classes (e.g. digits 0,1,8,9)}
+
+
+  \newpage
+\sampassage{richer outputs: beyond classification}\marginnote{\veryoptional}%: larger $\yY$
+  Okay, so now we know how to use our methods to predict discrete labels or
+  real numbers.  But what if we want to output structured data like text?  A
+  useful principle is to factor the task of generating such ``variable-length''
+  data into many smaller, simpler predictions, each potentially depending on
+  what's generated so far.  For example, instead of using $W$ to tell us how to
+  go from (features of) an image $x$ to a whole string $y$ of characters, we
+  can use $W$ to tell us, based on an image $x$ together with a partial string
+  $y\pr$, either what the next character is OR that the string should end.  So
+  if there are $27$ possible characters (letters and space) then this is a
+  $(27+1+1)$-way classification problem:
+  $$
+    (\text{Images} \times \text{Strings}) \to
+    \Rr^{\cdots} \to
+    \Rr^{28} \to
+    \text{DistributionsOn}(\{\text{'a'}, \cdots, \text{'z'}, \text{' '}, \text{STOP}\})
+  $$
+  We could decide to implement this function as some hand-crafted featurization
+  function from $\text{Images} \times \text{Strings}$ to fixed-length vectors,
+  followed by a learned $W$, followed by softmax.  Deciding on this kind of
+  thing is part of \textbf{architecture}.
+
+  %\exercise{
+  %  An ``symbolic expression tree'' is something that looks like
+  %  \texttt{(((0.686 + x)*4.2)*x)} or
+  %  \texttt{((x*5.9) + (x*x + x*(6.036*x)))}.
+  %  That is, a tree is either (a tree \texttt{plus} a tree) OR (a tree
+  %  \texttt{times} a tree) OR (the symbol \texttt{x}) OR (some real number).
+  %  Propose an architecture that, given a short mathematical word problem,
+  %  predicts a symbolic expression tree.
+  %  Don't worry about featurization.
+  %}
+
+  \exercise{%
+     A ``phylogenetic tree'' is something that looks like
+     $$\texttt{(dog.5mya.(cow.2mya.raccoon))}$$
+     or
+     $$\texttt{((chicken.63mya.snake).64mya.(cow)).120mya.(snail.1mya.slug)}$$
+     That is, a tree is either a pair of trees together with a real number OR a
+     species name.  The numbers represent how long ago various clades diverged.
+     Propose an architecture that, given a list of species, predicts a
+     phylogenetic tree for that species.
+     Don't worry about featurization.
+  }
+

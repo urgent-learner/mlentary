@@ -1,0 +1,375 @@
+\objectives{%
+  \item tailor a hypothesis class by designing features that reflect
+        domain knowledge
+  \item recognize the geometric patterns that common nonlinear featurizations
+        help express
+}
+
+%-- what it means for "dogness vs catness" to vary linearly (log probabilities as the thing-to-approximate)
+%-- linear geometry of feature space
+%-- humble models (svm, perceptron, etc)
+%-- featurization and readout //  richer outputs : regression and adt structure
+
+\sampassage{designing featurizations}%\marginnote{\veryoptional}% as an art
+%\samquote{%
+%  He had bought a large map representing the sea,\\
+%  Without the least vestige of land:             \\
+%  And the crew were much pleased                 \\
+%  when they found it to be                       \\
+%  A map they could all understand.
+%}{charles dodgson}%
+  Remember: our motto in Units 1 and 2 is to \emph{learn linear maps flanked by
+  hand-coded nonlinearities}.  That is, we consider hypotheses of this format:
+  \[
+    \xX                         \xrightarrow[\text{\color{gray}not learned}]{\text{featurize}}
+    \Rr^{\# \text{features}}    \xrightarrow[\text{\textbf{learned!}}]{\text{linearly combine}}
+    \Rr^{\# \text{outputs}}     \xrightarrow[\text{\color{gray}not learned}]{\text{read out}}
+    \yY
+  \]
+  %
+  %where those dimensions $2$ and $1$ more generally count our features and
+  %count how many numbers we want to output, respectively.
+  %
+  In this section and the next we'll design those non-learned functions --- the
+  featurizers and readouts, respectively --- to construct a hypothesis class
+  $\hH$ suitable given our domain knowledge and our goals.  In this section,
+  we'll discuss how the design of features determines the patterns that the
+  machine is able to express; feature design can thus make or break an ML
+  project.
+  %In the next section we'll design readout functions to model uncertainty over
+  %$\yY$.
+
+  %\marginnote{%
+  %We represent our input $x$ as a fixed-length list of numbers so that we can
+  %``do math'' to $x$.  For instance, we could represent a $28\times 28$ photo
+  %by $2$ numbers: its overall brightness and its dark part's width.  Or we
+  %could represent it by $784$ numbers, one for the brightness at each of the
+  %$28\cdot 28=784$ many pixels.  Or by $10$ numbers that respectively measure
+  %the overlap of $x$'s ink with that of ``representative'' photos of the digits
+  %$0$ through $9$.
+  %}
+
+  A way to represent $x$ as a fixed-length list of numbers is a
+  \textbf{featurization}.  Each map from raw inputs to numbers is
+  a \textbf{feature}.
+  %For example, brightness and width are two features.
+  %
+  %\attnsam{TODO: mention one-hot, etc}
+  %\attnsam{TODO: mention LOWRANK (sketching; also, for multiregression)}
+  %
+  Different featurizations make different
+  patterns easier to learn.
+  %
+  %\marginnote{%
+  %    \attnsam{data-based featurizations via kernels}
+  %    \attnsam{will soon learn featurizations}
+  %    \attnsam{hand featurization in kaggle and medicine}
+  %}
+  We judge a featurization not in a vacuum but with respect to the kinds of
+  patterns we use it to learn. % Good featurizations make task-relevant
+  information easy for the machine to use (e.g.\ through apt nonlinearities)
+  and throw away task-irrelevant information (e.g. by turning $784$ pixel
+  darknesses to $2$ meaningful numbers).
+  %\attnsam{TODO: graphic of separability; and how projection can reduce it}
+
+  Here are two themes in the engineering art of featurization.\bovinenote{%
+    For now, we imagine hand-coding our features rather
+    than adapting them to training data.
+    %
+    We'll later discuss adapted features; simple examples
+    include thresholding into \textbf{quantiles} based on sorted training data (\emph{Is $x$ more than
+    the median training point?}), and choosing
+    coordinate transforms that measure similarity to \textbf{landmarks}
+    (\emph{How far is $x$ from each of these $5$ ``representative'' training
+    points?}).  Deep learning is a fancy example.
+  }
+
+\sampassage{predicates}
+  If domain knowledge suggests some subset
+  $S \subseteq \xX$ is salient, then we can define the feature
+  $$
+    x \mapsto \text{$1$ if $x$ lies in $S$ else $0$}
+  $$
+  The most important case helps us featurize \emph{categorical} attributes
+  (e.g.\ kind-of-chess-piece, biological sex, or letter-of-the-alphabet):
+  if an attribute takes $K$ possible values, then each value induces a
+  subset of $\xX$ and thus a feature.  These features assemble into a map
+  $\xX\to\Rr^K$.  This \textbf{one-hot encoding} is simple, powerful, and
+  common.
+  %
+  Likewise, if some attribute is \emph{ordered} (e.g.\ $\xX$
+  contains
+      %people and $x<x\pr$ when $x$ descends from $x\pr$.
+  geological strata)
+  then interesting predicates may include \textbf{thresholds}.
+  %
+  %\textbf{Binning}.  Conversely, .
+  % discrete <--> continuous by softmax, onehot
+
+    %\attnsam{DISTINGUISH BETWEEN TRAINING POINT INDEX vs DIMENSIONS!}
+
+\newpage
+\sampassage{coordinate transforms}
+    Applying our favorite highschool math functions gives new features
+    $
+        \tanh(x[0])-x[1],\, |x[1]x[0]| \exp(- x[2]^2),\, \cdots
+    $
+    from old features $x[0], x[1], \cdots$.
+    We choose these functions based on
+    domain knowledge; e.g.\ if $x[0], x[1]$ represent two spatial positions,
+    then the distance $|x[0]-x[1]|$ may be a useful feature.
+    %positions in space, for instance, then we might want
+    %    $(x_{20}-x[-])^2 + (x_{21}-x_{1})^2$
+    %gives
+    %their squared distance.
+    %
+    One systematic way to include nonlinearities is to include all
+    the \textbf{monomials} (such as $x[0] x[1]^2$) with not too many factors ---
+    then linear combinations are polynomials.
+        %so we call this a \textbf{polynomial featurization}.
+    %
+    The most important nonlinear coordinate transform uses all monomial
+    features with $0$ or $1$ many factors --- said plainly, this maps
+    $$
+      x \mapsto (1, x)
+    $$
+    This
+    is the \textbf{bias trick}.  Intuitively, it allows the machine to learn
+    the threshold above which three-ishness implies a three.
+  \begin{marginfigure}[-4cm]
+    \centering
+    \picturew{0.99\textwidth}{bias-trick}
+    \caption{%
+        %\textsc{Above}:
+        \textbf{The bias trick helps us model `offset' decision boundaries.}
+        Here, the origin is the lower right corner closer to the camera.  Our
+        raw inputs $x=(x[0],x[1])$ are $2$-D; we can imagine them
+        sitting on the bottom face of the plot (bottom ends of the vertical
+        stems).  But, within that face, no line through the origin separates
+        the data well.  By contrast, when we use a featurization
+        $(1,x[0],x[1])$, our data lies on the top face of the plot; now a plane
+        through the origin (shown) successfully separates the data.
+        %
+        %\\
+        %\textsc{Below}:
+    }
+  \end{marginfigure}
+
+  This bias trick is non-linear in that it shifts the origin.  Fancier
+  non-linearities enrich our vocabulary of hypotheses in fancier ways.  Take a
+  look these decision boundaries using a degree-$2$ monomial feature (left) and
+  (right) a non-polynomial `black hole' feature for two cartoon datasets:
+  \begin{figure}[h]
+    \centering
+    \picturew{0.45\textwidth}{quadratic-features}%
+    \picturew{0.48\textwidth}{black-hole}%
+    \caption{%
+      \textbf{Fancier nonlinearities help us model curvy patterns using linear weights.}
+      \textbf{Left}:
+      Using a quadratic feature (and the bias trick, too) we can
+      learn to classify points in $\xX=\Rr^1$ by whether they are in some
+      \emph{interval} {\textbf{\dgre gray region}}.  We don't know the interval
+      beforehand, but fortunately, different linear decision boundaries
+      (\textbf{black lines}) in feature-space give rise to \emph{all possible}
+      intervals!  We may optimize as usual to find the best interval.
+      %
+      %%You might say: \emph{why sweat through all that work
+      %%with polynomials when we could just describe the intervals directly?}.
+      %%Answer: real-world data is high-dimensional and we often want to capture
+      %%patterns trickier than intervals.  Polynomials and other smooth functions
+      %%make modeling high-dimensional patterns almost as easy as modeling
+      %%intervals.  We'll especially see this in Unit 3.
+      %
+      \\
+      \textbf{Right}:
+      No line through $\xX=\Rr^2$ separates our raw data.  But a
+      \textbf{(black) hyperplane} \emph{does} separate our featurized data.  We
+      are thus able to learn a hypothesis that predicts the {\blu blue} label
+      for $x$s inside the {\textbf{\dgre gray region}}.
+      Intuitively, the `black hole' feature measures whether an input $x$ is
+      nearby a certain point in $\xX$.
+      %
+      \exercise{%
+        Our `black hole' decision boundary actually has two parts, one
+        finite and one infinite.  The infinite part is slightly `off-screen'.
+        Sketch the full situation out!
+      }
+    }
+  \end{figure}
+  \begin{marginfigure}[+4cm]
+    \centering
+    \picturew{0.70\textwidth}{satellite-2}%
+  \end{marginfigure}
+
+  Say $\xX=\Rr^2$ has as its two raw features the latitude of low-orbit
+  satellite and the latitude of a ground-based receiver, measured in
+  degrees-from-the-equator.  So the satellite is in earth's north or southern
+  hemisphere and likewise for the receiver.  We believe that whether or not the
+  two objects are in the \emph{same} hemisphere --- call this situation
+  `visible' --- is highly relevant to our ultimate prediction task.
+  \exercise{%
+    For practice, we'll first try to classify $x$s by visibility.
+    %
+    Define a degree-$2$ monomial feature $\varphi:\xX\to \Rr^1$ whose sign
+    ($\pm 1$) tells us whether $x$ is visible.\bovinenote{%
+      Thus, degree-$2$ monomials help model $2$-way interactions
+      between features.
+      %Likewise for higher degres.
+    }
+    %
+    \emph{Can direct linear use of $x$, even with the bias trick, predict the
+  same?}
+  }
+  \par\noindent
+  In reality we're interested in a more complex binary classification task on
+  $\xX$.  For this we choose as features all monomials of degrees $0,1,2$ to
+  get $\varphi:\xX\to\Rr^6$.\bovinenote{%
+    \noparexercise{%
+      $\varphi$ maps to $\Rr^6$, i.e., we have exactly $6$ monomials.  Verify this!
+    }
+  }
+  \exercise{%
+    %
+    Qualitatively describe which input-output rules $h:\xX\to\{+1,-1\}$ we can
+    express.  For
+    instance, which of these rules in the margin\bovinenote{%
+      \textsc{Rule A}
+        ``{$+1$ exactly when the satellite is between the Tropics of Cancer and of Capricorn}''
+      \textsc{Rule B}
+        ``{$+1$ exactly when satellite and receiver are at the same latitude, up to $3^\circ$ of error}''
+      \textsc{Rule C}
+        ``{$+1$ exactly when both objects are above the Arctic Circle}''
+        }
+    can we express?
+    (Formally, we can `express' $h$ if
+    $h(x)=\text{sign}(w\cdot \varphi(x))$ for some $w$.)
+  }
+  \par\noindent
+
+\newpage
+\sampassage{interpreting weights}
+  The features we design ultimately get used
+  according to a weight vector.
+  So we stand to gain from deeper understanding of what weights `mean'.
+  Here we'll discuss three aspects of the `intuitive logic' of weights.
+
+  First, \textbf{weights are not correlations}.
+  %
+  A feature may correlate with a positive label ({say, $y={\blu +1}$})
+  yet fail to have a positive weight.
+  %coefficient in an optimal weight vector.
+  That is: the \emph{blah}-feature could correlate with $y={\blu +1}$ in the
+  training set and yet, according to the best hypothesis for that
+  training set, the bigger a fresh input's \emph{blah} feature is, the
+  \emph{less} likely its label is to be ${\blu +1}$, all else being equal.
+  That last phrase ``all else being equal'' is crucial, since it refers to our
+  choice of coordinates.
+
+  In Figure \ref{fig:interpreting-weights}'s center-left panel, the weight for brightness is negative
+  even though both features positively correlate with {\blu blue}!  This is
+  because brightness correlates \emph{even better} with the
+  \emph{error} of soley-width-based prediction.  So the
+  optimal hypothesis, intuitively, uses the brightness as a `correction'
+  to width.
+  %
+  This contrasts with the top-left panel, where the both correlations are still
+  positive and both weights are positive.  Intuitively,
+  the optimal hypothesis here reduces noise by averaging a solely-brightness-based
+  prediction with a solely-width-based one.
+
+  \begin{marginfigure}[-.6cm]
+    \centering
+    \picturew{0.99\textwidth}{depshear}%
+    \caption{%
+      \textbf{Relations between feature statistics and optimal weights.}
+      Each panel shows a different 2D binary classification task
+      and a maximum-margin hypothesis.  We shade margin-achieving points.
+      To save ink we refer to the vertical and horizontal features
+      as \textbf{brightness} and \textbf{width};
+      but you should be more imaginative.
+      %In these examples, \emph{optimal}
+      %means ``achieves minimal training error, even if we jiggle the training
+      %points a bit''.  That is, we want the dividing line to be as far from
+      %the training points as possible, so that small jiggles don't lead to
+      %misclassifications.  Intuitively, testing points are jiggled versions of
+      %training points, so this seems like a reasonable criterion.  Later we'll
+      %see how this arises from theory.
+      %---
+      \textbf{Left:} \emph{positive weights are consistent with positive, negative,
+      or zero correlation!}
+      %---
+      \textbf{Right:}  \emph{presenting the same information in different
+      coordinates (here, all 2D) alters predictions!}
+      \exercise{%
+        Think of
+        classification tasks (and feature-pairs) that could
+        plausibly give rise to the data depicted in each panel.
+        %the depicted data.
+      }
+    }
+    \label{fig:interpreting-weights}
+  \end{marginfigure}
+
+  %\attnsam{Note on interpreting weights}
+  %% dependence
+
+  Second, \textbf{representing the same information two different ways can alter
+  predictions}.  A featurization doesn't just supply raw data: it
+  also suggests to the machine which patterns are possible and, among those,
+  which are plausible.
+
+  The bias trick and other nonlinear coordinate transforms illustrate this.
+  % shearing
+  But even \emph{linear}, origin-preserving coordinate-transforms can alter
+  predictions.
+  For example, if we shear two features together --- say, by using
+  $\{$preptime-plus-cooktime and cooktime$\}$ as features rather than
+  $\{$preptime and cooktime$\}$ --- this can impact the decision boundary.
+  %
+  Of course, the decision boundary will look different because we're in
+  new coordinates; but we mean something more profound:
+    if we train in old coordinates and then predict a datapoint represented in old coordinates,
+  we might get a different prediction than
+    if we train in new coordinates and then predict a datapoint represented in new coordinates!
+  %
+  See the right three panels:
+  the intersection of the two {\gre gray lines} implicitly marks
+  a testing point for which we predict different labels
+  as we
+  change
+  %adopt different
+  coordinates.
+  %
+  \emph{Intuitively, the more stretched out a feature axis is, the more the
+  learned hypothesis will rely on that feature.}\bovinenote{%
+    \noparexercise{%
+      Explain the preceding intuition in terms of the L2 regularizer.
+    }
+  }
+
+  Third, \textbf{features interact}.
+  It's useful to think about `the goodness' of individual features,
+  but it's also good to realize that the reality is messier: a feature's
+  predictive usefulness depends on which other features are present!
+
+  That is, a whole can be more (or less!) than the sum of its parts: the
+  usefulness of a set of features ain't `additive' the way the weight of a set
+  of books is.  Here's a simple example: let's flip two fair coins.  We want to
+  predict whether they ended up the same or not.  Knowing the value of just the
+  first coin is totally useless to prediction!  Same with the value of just the
+  second coin.  BUT the two coins together help us predict 100\% correctly.\bovinenote{%
+    \noparexercise{%
+      Find an analogue of the coins story where the whole
+      is less than the sum of its parts, predictivity-wise.
+    }
+  }
+  Likewise, in the bottom-left panel the width is \emph{independent} of the
+  class label but not \emph{conditionally-independent}-given-brightness.
+  %
+  It's this that explains why we can't just compute the correlation of each
+  feature with the predictand and then call it day.
+
+
+
+
+
