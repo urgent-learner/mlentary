@@ -1,0 +1,314 @@
+\documentclass[12pt]{article}
+
+\include{sam.sty}
+
+\usepackage{amssymb}
+\usepackage{wrapfig}
+
+\begin{document}
+
+%\begin{center}
+%  \huge
+%    686 course revision, 2023
+%\end{center}
+
+\newcommand{\defined}[1]{\textbf{#1}}
+
+  \section*{\sc Unit 4: Modeling Structured Uncertainties}
+    \subsection*{Lecture 4a: Square Loss Muddies, Probabilistic Models.}
+      \subsubsection*{Square Loss Ain't Enough.  Marginalization.  Probabilistic Models}
+
+        % Structured Uncertainties in the World.  Rapid Holmesian
+        % Inferences.  Square Loss Muddies.  Recall prob interp of e.g. least
+        % squares regfression.  Unsup Learning.
+
+        % all SL so far
+
+        \paragraph{\sf} --- Our architectures so far model uncertainty crudely.
+        For example, when we train a neural network regression model $f$ with
+        weights $\theta$ and square loss, we are maximizing the following
+        likelihood function (with independence assumption on training data):
+        % no NNs and linear reg
+        % folks have not read previous notes in detail
+        $$
+          p_{\sfy|\sfx}(y|x;\theta) = \text{gaussian distribution with mean $f(x;\theta)$ and variance $1$}
+        $$
+        % or two examples
+        In many real-world scenarios, however, the ``true'' distribution of
+        $\sfy$ conditioned on $\sfx=x$ is much richer than a gaussian
+        distribution: it might have multiple humps, heavier tails, or
+        correlations with other predictands.  Think, for instance, of
+        predicting the a person's distribution of daily-app-usages based on
+        their age and job and country (but not on the day): for a musician
+        maybe some days have a lot of tuning and sheet music usage and other
+        days (vacations) have none, but with no days having intermediate
+        levels.  This is non-gaussian.
+
+        \paragraph{\sf} ---
+        When the space $Y$ of possible outputs
+        is high-dimensional (e.g., a space of all images), there are even more
+        ways for the true likelihood functions' shapes shape to differ from a
+        gaussian.
+
+        FILLIN images
+
+        The distribution of all natural grayscale images is not gaussian when
+        we represent images in ``raw'' pixel-brightness coordinates.  I mean
+        that we are thinking about multi-variate gaussians with as many
+        dimensions as there are pixels.  Natural images are all and only those
+        photographs taken by professional photographers in the past four
+        decades, made into grayscale, and cropped to a standard shape.
+        %
+        \par
+        FOODFORTHOUGHT: What would a gaussian distribution in image space look
+        like with spherical covariance?  Arbitrary covariance?  (Don't worry
+        much about overflow beyond the maximum and minimum brightnesses).
+        %
+        \par
+        What
+        are qualitative aspects of the distribution of natural images that this
+        does not model?
+        %
+        In a scenario where the distribution over natural images is gaussian,
+        then the pixelwise average of any two images would be more probable
+        than at least one of the images.  But if (in aforementioned
+        coordinates) we average a cat image and a dog image, we get an unclear
+        image (rather than a clear image of an imaginary hybrid mammal).
+        This means MULTIPLE MODES.
+        PICTURE OF GAUSSIAN PROPERTY
+        %
+        (This rhymes with non-convexity of the log probability landscape)
+
+        \paragraph{\sf} --- So in this unit, we want to treat the construction
+        of richer, more domain-appropriate probability models as a design
+        challenge, a degree of freedom we have as engineers.  We'll go beyond
+        the defaults such as square loss implicit in previous units.  In doing
+        so, we will engage with new facets of approximation.  And the language
+        we develop will clarify for us aspects of generalization that pertain
+        to this as well as previous units, which will suggest to us a new and
+        harder optimization goal.  So we will then develop new ideas in
+        optimization toward that goal.
+
+        That's abstract.  The models we'll think about concretely in this unit
+        are combinations of deterministic transforms and sampling statements.
+        For example, the following is a model of length-$N$ lists $[y_0,
+        \cdots, y_{N-1}]$ of numbers.
+        \begin{table*}[h]
+        \begin{tabular}{l}
+            %   \text{sample $c_a$ from a normal distribution with mean $0$ and variance $10$}
+            %\\ \text{sample $c_b$ from a normal distribution with mean $0$ and variance $10$}
+               \text{given is a number $c_a$}
+            \\ \text{given is a number $c_b$}
+            \\ \text{for $0\leq n<N$:}
+            \\ \text{~~~~~~~~sample $f_n$ by a coin flip that lands $a$ with chance $0.8$ else $b$}
+            \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $c_{f_n}$ and variance $1$}
+        \end{tabular}
+        \end{table*}
+        FOODFORTHOUGHT: For $c_a=-5$ and $c_b=+5$, what might a 1D
+        scatterplot of $y_n$s look like?
+
+        To model $(x,y)$ pairs we might do something like:
+        \begin{table*}[h]
+        \begin{tabular}{l}
+            \text{given is a weight vector $\theta_a$}
+            \text{given is a weight vector $\theta_b$}
+            \\ \text{for $0\leq n<N$:}
+            \\ \text{~~~~~~~~sample $f_n$ by a coin flip that lands $a$ with chance $0.8$ else $b$}
+            \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $\theta_{f_n} \cdot x_n$ and variance $1$}
+        \end{tabular}
+        \end{table*}
+
+        By contrast, the models we have looked at in previous units don't
+        really do sampling except of $y$ at the end (and maybe of $\theta$
+        at the beginning, for the prior).
+
+        TODO: compare (discuss conditional, compare to supervised; initial samplers priors and regularizer?)
+        %\begin{table*}[h]
+        %\begin{tabular}{l}
+        %    \text{sample $\theta_a$ from a normal distribution with mean $0$ and variance $10$}
+        %    \\ \text{sample $\theta_b$ from a normal distribution with mean $0$ and variance $10$}
+        %    \\ \text{for $0\leq n<N$:}
+        %    \\ \text{~~~~~~~~sample $c_n$ by a coin flip that lands $a$ with chance $0.9$ else $b$}
+        %    \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $\theta_{c_n}$ and variance $1$}
+        %\end{tabular}
+        %\end{table*}
+
+        \paragraph{\sf} ---
+        marginalization and generalization
+
+        \paragraph{\sf} ---
+        As you can see,
+        focus on unsupervised learning
+
+      \subsubsection*{Example: 3State Traffic.  Challenge of Normalization.}
+        \paragraph{\sf} --- Now we describe a toy example we'll use throughout
+        this Unit.  There are $3$ possible weathers each day in each city:
+        Sunny, Hailing, and Foggy (SHF).  We choose a city of kind in $[0,1]$
+        from Warm thru Cold.  And there are $2$ possible traffics: $-$ (no jam)
+        or $+$ (jam).   For
+        In a completely Warm city or a completely Cool city,
+        the probabilities of weather-traffic pairs are proportional to:
+        \begin{table}[h]
+            \centering
+            \begin{tabular}{cc}
+                Noj & Jam \\%\hrule
+                 .5 & 0 \\
+                 0  &.25\\
+                 0  &.25
+            \end{tabular}
+            %
+            \begin{tabular}{cc}
+                Noj & Jam \\%\hrule
+               .05 &.05\\
+               .4  &.05\\
+               .4  &.05
+            \end{tabular}
+        \end{table}
+
+        %Therefore, the conditional probabilities of weather given NoJam vs Jam
+        %are, for completely Warm and Completely Cool:
+        %\begin{table}[h]
+        %    \centering
+        %    \begin{tabular}{cc}
+        %         0 & 1 \\
+        %         .5& 0 \\
+        %         .5& 0
+        %    \end{tabular}
+        %    %
+        %    \begin{tabular}{cc}
+        %       .33&.33\\
+        %       .33&.33\\
+        %       .33&.33
+        %    \end{tabular}
+        %\end{table}
+
+
+
+        GRAPHICAL NOTATION
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} ---
+        \paragraph{\sf} --- Normalization
+
+      \subsubsection*{Example: GMM.  Metapriors, hierarchy, Transfer}
+        \paragraph{\sf} --- Here is an example of a probabilistic model for
+        generating sequences.
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+
+      \subsubsection*{Example: HMM.  0s and SoftLogic and backflow}
+        \paragraph{\sf} --- Here is an example of a probabilistic model for
+        generating length-$T+1$ sequences of labels from a finite set $Y$ of
+        label values.
+        \begin{table*}[h]
+        \begin{tabular}{l}
+               \text{given is a distribution $\iota(\cdot)$ on $Y$}
+            \\ \text{given is a conditional distribution $\tau(\cdot|\cdot)$ from $Y$ to $Y$}
+            \\ \text{sample $y_0$ from $\iota(\cdot)$}
+            \\ \text{for $0\leq t<T$:}
+            \\ \text{~~~~~~~~sample $y_{t+1}$ from $\tau(\cdot|y_t)$}
+        \end{tabular}
+        \end{table*}
+        MARKOV PROPERTY
+
+        \paragraph{\sf} --- Adding a layer of sophistication, we might imagine
+        that our observation at timestep $t$ is related to but not the same as
+        the evolving state.
+        \begin{table*}[h]
+        \begin{tabular}{l}
+               \text{given is a distribution $\iota(\cdot)$ on $Z$}
+            \\ \text{given is a conditional distribution $\tau(\cdot|\cdot)$ from $Z$ to $Z$}
+            \\ \text{given is a conditional distribution $\epsilon(\cdot|\cdot)$ from $Z$ to $Y$}
+            \\ \text{sample $z_0$ from $\iota(\cdot)$}
+            \\ \text{for $0\leq t<T$:}
+            \\ \text{~~~~~~~~sample $z_{t+1}$ from $\tau(\cdot|z_t)$}
+            \\ \text{for $0\leq t\leq T$:}
+            \\ \text{~~~~~~~~sample $y_{t}$ from $\epsilon(\cdot|z_t)$}
+        \end{tabular}
+        \end{table*}
+
+        FAILURE OF MARKOV PROPERTY
+
+        \paragraph{\sf} --- Expressivity: Generating Cool Sequences
+        \paragraph{\sf} --- Inference given Weights: 0s and Softlogic and Backflow
+        \paragraph{\sf} --- Inference of Weights, Qualitatively
+
+      \subsubsection*{Latents, Marginal Likelihood for Latents, Weights as Latents.}
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+        \paragraph{\sf} --- Mo
+
+    \newpage
+
+    \subsection*{Lecture 4b: Inference via Variation} % MH, EM,
+      \subsubsection*{EM overview, 3State Traffic example}
+      \subsubsection*{ELBO bound and pingpong KL geometry}
+      \subsubsection*{EM: HMM example (more detail in coding example)}
+      \subsubsection*{EM: GMM example (more detail in pset)}
+      \subsubsection*{Variational Parts as Neural Net}
+    \newpage
+
+    \subsection*{Lecture 4c: Inference via Sampling} % MH, EM,
+      \subsubsection*{Challenge.  MH Algorithm.  Diffusion.}
+        Okay, so we have a probabilistic model and some data.  How do we do
+        inference?  We want an approximate posterior over part of the model
+        conditioned on the data.
+      \subsubsection*{Visualizing MH.  Proposals Matter}
+      \subsubsection*{MH: 3State Traffic example}
+      \subsubsection*{MH: HMM and GM example}
+      \subsubsection*{On Deep Learning and Noise}
+    \newpage
+
+    \subsection*{Lecture 4d: Variational Autoencoders (or Encoders)} % so connects back to Unit 3
+      \subsubsection*{Architecture} % comparison to matrix factorization, etc
+      \subsubsection*{VAEs and ELBO}
+      \subsubsection*{Interpreting Update Intuitively}
+      \subsubsection*{Output side Noise Model (e.g. square loss)}
+      \subsubsection*{Conditional VAEs}
+    \newpage
+
+    \subsection*{Coding Lecture 4: Expectation-Maximization for Sequences}
+      \subsubsection*{HMM architecture.  Remark on RNN}
+      \subsubsection*{E-step: dynamic programming}
+      \subsubsection*{M-step with regularization}
+      \subsubsection*{End-to-end reading and mimicry of cookbook text}
+      \subsubsection*{Investigation of State Meanings}
+    \newpage
+
+    \subsection*{Homework 4a: Gaussian Mixtures for Clustering} % k-means as limit
+      \subsubsection*{forward model}
+      \subsubsection*{E step and M step}
+      \subsubsection*{k-means as limit}
+      \subsubsection*{small-var regularization from prior}
+      \subsubsection*{convergence near minimum}
+    \newpage
+
+    \subsection*{Homework 4b: Bayes Nets.  NNs as Amortized Inference}
+      \subsubsection*{Marginalization over Latents}
+      \subsubsection*{Weights as Latents in Linear Classification (bowtie vs pipe)}
+      \subsubsection*{BIC and structural penalty}
+      \subsubsection*{Causal modeling}
+      \subsubsection*{Very Basic Occlusion Inference Object Net}
+    \newpage
+
+    \subsection*{Project 4a: Predicting Political Polls}
+      \subsubsection*{Meeting the Polling Data}
+      \subsubsection*{Forward Model}
+      \subsubsection*{Inference through Sampling}
+      \subsubsection*{Wrestling with Training Difficulties (burnin, etc)}
+      \subsubsection*{Interpreting Latents}
+    \newpage
+
+    \subsection*{Project 4b: A Deep Image Generator (VAE)}
+      \subsubsection*{Meeting the Face Data.  How to assess success?} % maybe met face data in previous unit?
+      \subsubsection*{Forward Model including reparam trick}
+      \subsubsection*{Backward model and intuitive interpretation}
+      \subsubsection*{Training and Testing}
+      \subsubsection*{Interpreting Latents.  Sources of Prejudice and Capriciousness}
+    \newpage
+
+\end{document}

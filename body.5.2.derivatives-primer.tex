@@ -1,0 +1,101 @@
+
+    \samsection{calculus and optimization}%gradients
+      \samquote{
+        The self is not something ready-made, but something in continuous
+        formation through choice of action.
+      }{john dewey}
+
+      Throughout this section, $X$ and $Y$ will refer to two normed real
+      vector spaces of finite dimension.
+
+      \sampassage{asymptotic notation}
+        When analyzing algorithms or data, we often wish to consider extremes
+        of the very small or the very large.  Such thought experiments isolate
+        how behaviors of interest depend on the variables we take to extreme
+        values.
+
+        We say \textbf{$f:X\to Y$ is negligible compared to $g:X\to Y$
+        for sufficiently small\bovinenote{%
+          The notion that ``\emph{$f$ is negligible compared to $g$ for
+          sufficiently small inputs}'' is the most important of a $2\times 2$
+          grid of variants:
+          we may change
+          $$\text{sufficiently small} \rightsquigarrow \text{sufficiently large}$$
+          by replacing
+          $$\text{``$0<\|x\|<\delta$''} \rightsquigarrow \text{``$\delta<\|x\|$''}$$
+          and/or we may change
+          \begin{align*}
+              &\text{is negligible compared to}\\
+              \rightsquigarrow~
+              &\text{never overwhelms}
+          \end{align*}
+          by replacing
+          \begin{align*}
+              &\text{``For any positive number $\epsilon$''}\\
+              \rightsquigarrow~
+              &\text{``There exists a positive number $\epsilon$''}
+          \end{align*}
+          %
+          The class of $f$s that never ovewhelm $g$ is called $O(g)$ --- pronounced
+          \textbf{big-Oh}.  Clearly, $o(g) \subsetneq O(g)$.
+          Confusingly, folks use the same notation $o(g), O(g)$
+          when considering small inputs and large inputs;
+          which sense we mean should be clear from context.
+        } inputs}
+        when the ratio $\|f\|/\|g\|$ is tiny for small inputs --- that is, when:
+        \begin{align*}
+            &\hspace{0cm}\text{For any positive number $\epsilon$}\\
+            &\hspace{1cm}\text{there exists a positive number $\delta$ so that,}\\
+            &\hspace{2cm}\text{whenever $0<\|x\|<\delta$,}\\
+            &\hspace{3cm}\text{we also have $\|f(x)\| < \epsilon \|g(x)\|$.}
+        \end{align*}
+        The class of $f$s that are negligible compared to $g$ we denote by
+        $$
+            o(g)
+        $$
+        or, when abusing notation, by $o(g(x))$ even though $x$
+        isn't defined.  This is \textbf{little-oh} notation.
+
+        For example, if $p,q$ are positive real numbers
+        then $|x|^p$ is negligible compared
+        to $|x|^q$ if and only if $p<q$:
+        $$
+            (x \mapsto |x|^3)     \in o(x \mapsto |x|^2)
+            \quad\quad
+            (x \mapsto |x|^3) \not\in o(x \mapsto |x|^4)
+        $$
+
+        \par\noindent
+        \attn{Exercise:} {Is $\sin(x) \in o(1)$?  How about $o(x)$?}
+
+        \par\noindent
+        \attn{Exercise:} {Is $\max(0,x) \in o(1)$?  How about $o(x)$?}
+
+        \par\noindent
+        \attn{Exercise:} {Is $\log |x| \in o(1/x)$?  (Ignore $x=0$.)}
+
+        \par\noindent
+        \attn{Exercise:} {Is $\exp(-1/|x|) \in o(x)$?  (Ignore $x=0$.)}
+
+      \sampassage{derivatives}
+        If $f:X\to Y$ is a (potentially nonlinear) function between two
+        finite-dimensional real vector spaces, we may wish to approximate $f$
+        by a linear function (plus a constant).  It is often unreasonable to
+        ask that the approximation is good for all inputs; instead, we ask that
+        the approximation is good near some specific input $x:X$:
+        $$
+            f(x+h) \approx f(x) + (Df_x)(h)
+        $$
+        Here, $(Df_x):X\to Y$ is a linear map that translates changes $h$ in
+        $f$'s input to changes $(Df_x)(h)$ in $f$'s output.  We want the
+        approximation to be good for small $h$ in the sense that the error
+        vanishes faster than linearly as $h$ shrinks:
+        $$
+            \|f(x) + (Df_x)(h) - f(x+h)\| \in o(\|h\|)
+        $$
+        Intuitively, $Df_x$ exists when $f$ varies smoothly.
+
+      \sampassage{integrals}
+      \sampassage{}
+
+
