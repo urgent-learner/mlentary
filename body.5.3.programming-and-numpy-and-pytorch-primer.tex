@@ -1,0 +1,293 @@
+
+%==============================================================================
+%====  7.  PROGRAMMING REFRESHER  ============================================
+%==============================================================================
+
+  \newpage
+  \sampart{G. (python) programming refresher}\label{chap:programming}
+
+    \samsection{python setup}
+      \samquote{
+        If I have not seen as far as others, it is because giants were standing
+        on my shoulders.
+      }{hal abelson}
+
+      \sampassage{what's python?}
+        Python is a programming language.  Its heart is the
+        \textbf{Python interpreter}, a computer program that takes a plain
+        text file such as this two-liner\bcirc\marginnote{%
+          \blarr The instruction \texttt{print} just displays some text
+          onto our screen.  For example, the first line of this program
+          displays \texttt{hello, world!} onto our screen.  This instruction
+          doesn't rely on or activate any ink-on-paper printing machines.
+        } ---
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          print('hello, world!')
+          print('cows and dogs are fluffy')
+        \end{lstlisting}
+        --- and executes the instructions contained in that text file.  We
+        call these textual instructions are \textbf{source code}.
+
+        The instructions have to be in a certain, extremely rigid format in
+        order for the interpreter to understand and execute them.  That's why
+        they call Python a \emph{language}: it has its own rigid grammar
+        and its own limited vocabulary.  If the
+        interpreter encounters incorrectly formatted instructions --- if even a
+        single punctuation mark is missing or a --- the interpreter will display a
+        bit of text in addition to the word \texttt{Error} and immediately
+        after abort its mission.\bcirc\marginnote{%
+          \blarr Adventure boldly when learning Python!  It might feel
+          catastrophic when you encounter an error and the interpreter
+          `dies'.  But (unless you go out of your way to use special
+          instructions we won't teach in class) these errors won't hurt your
+          computer.  There aren't any lasting effects.
+          %
+          So \textbf{errors are hints, not penalties}.
+          If you encounter an
+          error, just modify your instructions to address that error, then run
+          the interpreter again.
+          %
+          Engage in a fast feedback cycle (\emph{I'll try this... error...
+          okay how about this...  different error... hmm let's think...})
+          to learn to program well.
+        }
+
+        We'll use Python in 6.86x to instruct our computer to analyze data.
+        The gigantic project of instructing a computer is a bit like teaching a
+        person by mail.  We never see them; we exchange only written words.
+        They have never seen a horse, and yet we want to teach them to
+        distinguish horses from zebras from donkeys from tapirs from rhinos.
+        Though severely limited in their vocabulary and their ability to
+        appreciate analogies and similarities, they are extraordinarily
+        meticulous, patient, and efficient.
+        %
+        That's what programming will be like.
+
+        At this point, you might have several questions:
+        \begin{description}
+          \item[\textbf{Picking up the pen:}] How do I install and use the Python
+               interpreter?
+          \item[\textbf{Writing sentences:}] What syntax rules must my
+               instructions obey in order for the interpreter to understand
+                that I want it do such-and-such task?
+          \item[\textbf{Composing essays:}] How do I organize large programs?
+          \item[\textbf{Teaching via mail:}] What instructions
+               make the computer analyze data?
+        \end{description}
+        This and the next three sections address these four
+        questions in turn.
+
+      \sampassage{which things we'll set up}
+        Let's set up Python by installing the Python interpreter.
+        %
+        Actually, I should say \emph{a} Python interpreter: each of the many
+        software tools we'll use in 6.86x has a zillion versions; it can get
+        confusing tracking which versions coexist and which clash.  We will use
+        \textbf{Python version 3.8} throughout 6.86x.
+
+        Beyond the Python interpreter, there is an ecosystem of useful tools:
+        machine learning modules that help us avoid reinventing the wheel; a
+        rainbow of feature-rich text editors specialized for writing Python code;
+        and a package manager called \texttt{conda} that eases the logistics
+        nightmare of coordinating the versions we have of each tool.
+
+      \sampassage{setup on windows}
+        \attnsam{Mohamed, please fill this out}
+        \attnsam{(mention windows 10 and higher's `linux subsystem?')}
+
+      \sampassage{setup on macOS}
+        \attnsam{Karene, please fill this out}
+
+      \sampassage{setup on linux}
+        I'll assume we're working with Ubuntu 20.04.  If you're on a
+        different Linux, then similar steps should work --- google search to
+        figure out how.
+
+      \sampassage{checking the setup}
+        Let's create a new plain text file containing this single line:\bcirc\marginnote{%
+          \blarr This line contains \textbf{Python source code}.  When we include
+          Python source code in these notes, we will format it for readability,
+          e.g.\ by making key parts of it bold.  However, this depiction of
+          source code is supposed to represent \emph{plain text}.
+        }
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          print('hello, world!')
+        \end{lstlisting}
+        We can name the file whatever we want --- say, \texttt{greetings.py}.
+        Then in your terminal (navigate to the same directory as the file and)
+        enter this command:
+        \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+          python3 greetings.py
+        \end{lstlisting}
+        A new line should appear in your terminal:
+        \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+          hello, world!
+        \end{lstlisting}
+        After that line should be another shell prompt.
+
+        Now append three lines to the file \texttt{greetings.py} so that its
+        contents look like:
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          print('hello, world!')
+          fahr = int(input('please enter a number... '))
+          celc = int((fahr - 32.0) * 5.0/9.0)
+          print('{} fahrenheit is roughly {} celcius'.format(fahr, celc))
+        \end{lstlisting}
+        Again, enter the following command in your terminal:
+        \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+          python3 greetings.py
+        \end{lstlisting}
+        Two new lines should appear in your terminal:
+        \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+          hello, world!
+          please enter a number...
+        \end{lstlisting}
+        Enter some number --- say, $72$; a new line should appear in your
+        terminal so that the overall session looks something like:
+        \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+          hello, world!
+          please enter a number... 72
+          72 fahrenheit is roughly 22 celcius
+        \end{lstlisting}
+        After that line should be another shell prompt.
+
+        If you did the above but something different from the predicted lines
+        appeared, that means something is amiss with Python setup.  Please let
+        us know in this case!  We can try to help fix.
+
+
+    \samsection{elements of programming}
+      \samquote{
+        Displace one note and there would be diminishment, displace one phrase
+        and the structure would fall.
+      }{antonio salieri, on wolfgang mozart's music, as untruthfully portrayed in \emph{Amadeus}}
+
+        %% use-mention distinction; syntax-semantic.s  Asimov ROBOT
+        %\attnsam{finite state automata; skip, abort}
+        %\attnsam{variable cube; assignment}
+        %\marginnote{%
+        %  Once you learn how to program, I recommend reading Edsger
+        %  Dijkstra's \emph{A Discipline of Programming}.  That book contains
+        %  many beautiful insights that made me a better programmer.
+        %}
+        %%
+        %\attnsam{sequencing}
+        %\attnsam{conditionals} % also mention trivalent CHOICE operator?
+        %\attnsam{iteratives}
+        %\marginnote{%
+        %  % for-range idiom; break, continue, else in loops
+        %}
+        %\attnsam{nesting, (scope?,) indentation}
+        %%\attnsam{mention SCOPE somewhere (perhaps earlier than this passage?)}
+
+      \sampassage{state and control flow}
+
+
+      \sampassage{routines}
+        Say there's an operation we do a lot.  Maybe it's fahrenheit-to-celcius
+        conversion.  Instead of typing out the formula each time, we can
+        \emph{name} that formula and then invoke it by typing its name.  Like
+        so:
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          celc_from_fahr = lambda f: (f-32.)*(5./9.)
+          print(celc_from_fahr( 32.)) # prints   0.
+          print(celc_from_fahr(212.)) # prints 100.
+        \end{lstlisting}
+        Introducing such abstraction aligns the code's structure with our
+        mental conceptual structure, yielding two related advantages:
+        (a) it makes our source code easier to reason about (easier to read,
+        easier to check correctness of, easier to change);
+        (b) hierarchies of such formulae allows us to express concisely what
+        otherwise would be an intractably long program.
+
+        To illustrate (a)
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          celc_from_fahr = lambda f: (f-32.)*(5./9.)
+          kelv_from_celc = lambda c: c - 273.15
+          kelv_from_fahr = lambda f: kelv_from_celc(celc_from_fahr(f))
+          kelv_from_kelv = lambda k: k
+          kelv_from_str  = lambda s: {'K':kelv_from_kelv,
+                                      'C':kelv_from_celc,
+                                      'F':kelv_from_fahr}[s[-1]](float(s[:-1]))
+          kelvs_from_csv = lambda ss: max(kelv_from_str(s.strip())
+                                          for s in ss.split(','))
+          #
+          avg        = lambda ts: sum(ts)/len(ts)
+          avg_square = lambda ts: average([t**2 for t in ts])
+          max_min_avg= lambda ts: (max(ts), min(ts), average(ts))
+          fancy_stats= lambda ts: (lambda mx,mn,av: {'max'     :mx,
+                                                     'min'     :mn,
+                                                     'avg':    :av,
+                                                     'variance':avg_square(ts)-av**2,
+                                                     'skew'    :av-(mn+mx)/2})(max_min_avg(ts))
+          #
+          csv = '50 C, 40 F, 200 K, 90 F, 80 F, 70 F'
+          print(max_temp(kelvs_from_csv(csv)))
+        \end{lstlisting}
+
+        For more complicated routines, we can use this notation:
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          def celc_from_fahr(f):
+            return (f-32.)*(5./9.)
+        \end{lstlisting}
+        We can use multiple lines and include assignments and control flow:
+        \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+          def celc_from_fahr(f):
+            shifted = f-32.
+            if shifted < 0:
+              print('brrr!')
+            return shifted*(5./9.)
+        \end{lstlisting}
+
+        Sometimes we want to
+        %\attnsam{lambdas}
+        %\attnsam{\texttt{def}d functions (ordinary args, return)}
+        %\attnsam{interfaces: (kwargs; None as default return value; sentinels; more)}
+        %\attnsam{code architecture and hygiene}
+
+      \sampassage{data in aggregate}%container structures}
+        \attnsam{lists and numpy arrays} % no tuples
+        \attnsam{dictionaries} % no sets; mention cacheing (and hence also global scope??)
+        \attnsam{comprehensions}
+        \attnsam{functional idioms}
+
+      \sampassage{input/output}
+        \attnsam{print formatting and flushing}
+        \attnsam{basic string manipulations (strip, join, etc)}
+        \attnsam{file io}
+        \attnsam{command line arguments}
+        \attnsam{example: read csv}
+        %
+        \attnsam{random generation and seeds??}
+
+    \samsection{how not to invent the wheel}
+      \samquote{
+          \begin{flushleft}
+          \texttt{\phantom{}def get\_random\_number():} \\
+          \texttt{\phantom{....}return 4 \# chosen by a fair dice roll} \\
+          \texttt{\phantom{.............}\# guaranteed to be random}
+          \end{flushleft}\phantom{.}
+      }{randall munroe, translated by sam to Python}
+
+      \sampassage{os, numpy, matplotlib, etc}
+        \attnsam{matplotlib.plot}
+        \attnsam{numpy}
+        \attnsam{os}
+        \attnsam{package managers etc}
+      \sampassage{arrays aka tensors}
+        \attnsam{}
+        \attnsam{}
+        \attnsam{}
+        \attnsam{}
+      \sampassage{pytorch idioms}
+      \sampassage{git for version control}
+
+    \samsection{how to increase confidence in correctness}
+      \samquote{
+        So little of what could happen does happen.
+      }{salvador dal\'i}
+      \sampassage{deduction: }
+      \sampassage{induction: isolation and bisection} % i.e. unit tests and regression
+      \sampassage{periodic table of common errors} % with `families' as error messages
+
+

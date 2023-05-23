@@ -1,0 +1,109 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  1.6. error analysis  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{error analysis}
+        Intuitively, our testing error of $18\%$ comes from three sources:
+        \textbf{(a)} the failure of our training set to be representative of our testing set;
+        \textbf{(b)} the failure of our program to exactly minimize training error over $\hH$; and
+        \textbf{(c)} the failure of our hypothesis set $\hH$ to contain ``the true'' pattern.
+
+        These are respectively errors of
+        \textbf{generalization},
+        \textbf{optimization},
+        \textbf{approximation}.
+
+        Here, we got optimization error $\approx 0\%$ (albeit by
+        \emph{unscalable brute-force}).  Because optimization error is zero in
+        our case, the approximation error and training error are the same:
+        $\approx12\%$.  The approximation error is so high because our straight
+        lines are \emph{too simple}: height and darkness lose useful
+        information and the ``true'' boundary between training digits looks
+        curved.
+        %
+        Finally, our testing error $\approx 18\%$ exceeds our training error.
+        We thus suffer a generalization error of $\approx 6\%$: we \emph{didn't
+        perfectly extrapolate} from training to testing situations.
+        %
+        In 6.86x we'll address all three italicized issues.
+
+        \noindent
+        \attn{Exercise:} {why is generalization error usually positive?}
+
+    %\samsection{3. supervised learning framework}
+
+      \sampassage{formalism}
+        Here's how we can describe learning and our error decomposition in
+        symbols.
+        %
+        Draw training examples $\sS : (\xX\times \yY)^N$
+        from nature's distribution $\dD$ on $\xX\times \yY$.  A pattern
+        $f:\xX\to \yY$ has \textbf{training error}
+        $
+           \Ein(f) = \Pp_{(x,y)\sim \red{\sS}}[f(x)\neq y]
+        $, an average over examples; and \textbf{testing error}
+        $
+           \Eout(f) = \Pp_{(x,y)\sim \red{\dD}}[f(x)\neq y]
+        $, an average over nature.  A \emph{learning program} is a function
+        $
+            \lL : (\xX\times \yY)^N \to (\xX\to \yY)
+        $; we want to design $\lL$ so that it maps typical $\sS$s to $f$s with
+        low $\Eout(f)$.\marginnote{%
+          %  TODO: mention extereme class-imbalance and bayesian *decision* theory
+        }
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  1.8. learning error  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      %\sampassage{learning error}
+        %As in the previous section's tiny example,
+        So
+        we often define
+        $\lL$ to roughly
+        minimize $\Ein$ over a
+        set $\hH \subseteq (\xX\to \yY)$ of candidate patterns.  Then $\Eout$
+        decomposes
+        into the failures
+        of
+        $\Ein$ to estimate $\Eout$ (generalization),
+        of
+        $\lL$ to minimize $\Ein$ (optimization), and
+        of
+        $\hH$ to contain
+        nature's
+        truth (approximation):
+        \newcommand{\minf}[1]{{\inf}_{\hH}}
+        \begin{align*}
+            \Eout(\lL(\sS))
+            =~&\Eout(\lL(\sS))      &-\,\,\,&      \Ein(\lL(\sS)) &~\}~~& \text{\textbf{generalization} error} \\
+            +~&\Ein(\lL(\sS))       &-\,\,\,& \minf{\hH}(\Ein(f)) &~\}~~& \text{\textbf{optimization} error} \\
+            +~&\minf{\hH}(\Ein(f))  &       &                     &~\}~~& \text{\textbf{approximation} error}
+        \end{align*}
+        These terms are in tension.  For example, as $\hH$ grows, the
+        approx.\ error may decrease while the gen.\ error may
+        increase --- this is the ``\textbf{bias-variance} tradeoff''.
+
+        %\marginnote{%
+        %  \parbox{\textwidth}{
+        %  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+        %    def width(x):
+        %      return np.std([row for col in range(SIDE)
+        %                         for row in range(SIDE)
+        %                         if 0.5 < x[row][col]  ])/(SIDE/2.0)
+        %    def holiness(x):
+        %      return np.mean([1 if (np.max(x[:row,:col]) > x[row,col] and
+        %                            np.max(x[:row,col:]) > x[row,col] and
+        %                            np.max(x[row:,:col]) > x[row,col] and
+        %                            np.max(x[row:,col:]) > x[row,col]    ) else 0
+        %                        for col in range(1,SIDE-1)
+        %                        for row in range(1,SIDE-1)                       ])
+        %    def topheaviness(x):
+        %      return (np.mean(x[:int(SIDE/2)])-np.mean(x[int(SIDE/2):]) + 1.0)/2
+        %    #def overlap_one(x):
+        %    #  return np.sum()
+        %    #def overlap_nine(x):
+        %  \end{lstlisting}
+        %  We normalized all features so that they output values in $[0.0,1.0]$.
+        %}
+        %}
+
+

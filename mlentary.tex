@@ -1,0 +1,220 @@
+% author:   sam tenka
+% change:   2022-07-29
+% create:   2022-05-11
+
+\documentclass[11pt, justified]{tufte-book}
+\input{sam.sty}
+
+\begin{document}\samtitle{%
+    mlentary: basics of machine learning
+  }
+
+  These are optional notes for 6.86x.
+  \marginnote[0cm]{%
+    \textsc{Clickable Table of Contents}\vspace{0.05cm}
+    \begin{description}
+      \item[A. prologue]                                            \phdot  \hfill\pageref{part:A}
+        \begin{description}
+          \item[\hyperlink{A0}{what is learning}]
+          \item[\hyperlink{A1}{our first learning algorithm}]
+          \item[\hyperlink{A2}{how well did we do}]
+          \item[\hyperlink{A3}{how can we do better}]
+        \end{description}
+      \item[B. auto-predict by fitting lines to examples]           \phdot  \hfill\pageref{part:B}
+        \begin{description}
+          \item[\hyperlink{B0}{linear approximation}]
+          \item[\hyperlink{B1}{iterative optimization}]
+          \item[\hyperlink{B2}{priors and optimization}]
+          \item[\hyperlink{B3}{model selection}]
+        \end{description}
+      \item[C. bend those lines to capture rich patterns]           \phdot  \hfill\pageref{part:C}
+        \begin{description}
+          \item[\hyperlink{C0}{featurization}]
+          \item[\hyperlink{C1}{learned featurizations}]
+          \item[\hyperlink{C2}{locality and symmetry in architecture}]
+          \item[\hyperlink{C3}{dependencies in architecture}]
+        \end{description}
+      \item[D. thicken those lines to quantify uncertainty]         \phdot  \hfill\pageref{part:D}
+        \begin{description}
+          \item[\hyperlink{D0}{bayesian models}]
+          \item[\hyperlink{D1}{examples of bayesian models}]
+          \item[\hyperlink{D2}{inference algorithms for bayesian models}]
+          \item[\hyperlink{D3}{combining with deep learning}]
+        \end{description}
+      \item[E. beyond learning-from-examples]                       \phdot  \hfill\pageref{part:E}
+        \begin{description}
+          \item[\hyperlink{E0}{reinforcement}]
+          \item[\hyperlink{E1}{state}]
+          \item[\hyperlink{E2}{deep q learning}]
+          \item[\hyperlink{E3}{learning from instructions}]
+        \end{description}
+      \item[] \vspace{0.05cm} \hrule \vspace{-0.05cm}
+      \item[F. appendices]                                          \phdot  \hfill\pageref{part:F}
+        \begin{description}
+          \item[\hyperlink{F0}{probability primer}]
+          \item[\hyperlink{F1}{linear algebra primer}]
+          \item[\hyperlink{F2}{derivatives primer}]
+          \item[\hyperlink{F3}{programming and numpy and pytorch primer}]
+        \end{description}
+    \end{description}
+  }
+  You can do all your assignments without
+  these notes.  These notes are here as a study aid.  They are terse and don't
+  cover all our topics.  I'm happy to answer questions about the notes on
+  Piazza.  If you want to help improve these notes, ask me; I'll be happy to
+  list your name among the contributors to these notes!
+
+  \newpage
+
+  \sampart{A. prologue}
+    \phantomsection\label{part:A}
+    \samsection{what is learning?}
+      \hypertarget{A2}{}
+      \input{body.0.0.what-is-learning}
+    \samsection{our first learning algorithm}
+      \hypertarget{A2}{}
+      \input{body.0.1.our-first-learning-algorithm}
+    \samsection{how well did we do?  (3 kinds of error : opt, approx, gen)}
+      \hypertarget{A2}{}
+      \input{body.0.2.how-well-did-we-do}
+    \samsection{how can we do better?  (survey of rest of notes)}
+      \hypertarget{A2}{}
+      \input{body.0.3.how-can-we-do-better}
+
+  \sampart{B. auto-predict by fitting lines to examples (unit 1)}
+    \phantomsection\label{part:B}
+    \samsection{linear approximation}
+      \hypertarget{B0}{}
+      \input{body.1.0.linear-approximation}
+        %-- what it means for "dogness vs catness" to vary linearly
+        %-- log probabilities as the thing-to-approximate
+        %-- humble models (svm, perceptron, etc)
+        %-- richer outputs : regression and adt structure
+    \samsection{iterative optimization}
+      \hypertarget{B1}{}
+      \input{body.1.1.iterative-optimization}
+        %-- gradients
+        %-- writing out the code : a key exercise ; batches
+        %-- setting initialization and learning rate; local minima
+        %-- visualizing noise and curvature
+    \samsection{priors and generalization}
+      \hypertarget{B2}{}
+      \input{body.1.2.priors-and-optimization}
+        %-- optimization as MAP
+        %-- lp priors and sparsity
+        %-- generalization as defect of MAP's point estimation (unhumble!)
+        %-- pictures of generalization gap vs number of training points
+    \samsection{model selection}
+      \hypertarget{B3}{}
+      \input{body.1.3.model-selection}
+        %-- featurization
+        %-- generalization bounds and BC
+        %-- hyperparameter search
+        %-- double descent
+
+  \sampart{C. bend those lines to capture rich patterns (units 2,3)}
+    \phantomsection\label{part:C}
+    \samsection{featurization}
+      \hypertarget{C0}{}
+      \input{body.2.0.featurization}
+        %-- linear preprocessing (emphasis; feature extraction and pca)
+        %-- kernels enrich approximations
+        %-- decision trees, polynomials, binning, and other nonlinear ideas
+        %-- random sketching
+    \samsection{learned featurizations}
+      \hypertarget{C1}{}
+      \input{body.2.1.learned-featurizations}
+        %-- one hidden layer ; activ.s/pools/flows as creative engineering
+        %-- fancier gradient-based methods (nesterov, adam, etc)
+        %-- multi-layer and skip connections : width vs depth
+        %-- hierarchical features appear
+    \samsection{locality and symmetry in architecture}
+      \hypertarget{C2}{}
+      \input{body.2.2.locality-and-symmetry-in-architecture}
+        %-- convolutions
+        %-- attention and transformers
+        %-- gnns
+        %-- survey of approaches to symmetry
+    \samsection{dependencies in architecture}
+      \hypertarget{C3}{}
+      \input{body.2.3.dependencies-in-architecture}
+        %-- siamese and masked nets
+        %-- rnns (also philosophy of ntms and stack lstms?)
+        %-- autoencoders
+        %-- "downstream" representation learning
+
+  \sampart{D. thicken those lines to quantify uncertainty (unit 4)}
+    \phantomsection\label{part:D}
+    \samsection{bayesian models}
+      \hypertarget{D0}{}
+      \input{body.3.0.bayesian-models}
+        %-- example; graphical notation
+        %-- explaining away and the forward-backward flow of information
+        %-- the `logic` of probability
+        %-- hierarchy and transfer
+    \samsection{examples of bayesian models}
+      \hypertarget{D1}{}
+      \input{body.3.1.examples-of-bayesian-models}
+        %-- gmms for clustering ; limit of k-means
+        %-- hmms
+        %-- fonts, glyphs, occlusion (rendering)
+        %-- feras time-series-from-programs
+    \samsection{inference algorithms for bayesian models}
+      \hypertarget{D2}{}
+      \input{body.3.2.inference-algorithms-for-bayesian-models}
+        %-- variational : expectation maximization
+        %-- more on variational : expectation maximization
+        %-- sampling : hmmcmc
+        %-- more on sampling : hmmcmc
+    \samsection{combining with deep learning}
+      \hypertarget{D3}{}
+      \input{body.3.3.combining-with-deep-learning}
+        %-- neural nets for amortized inference
+        %-- variational autoencoders
+        %-- richer probabilistic outputs
+        %-- analysis by synthesis
+
+  \sampart{E. beyond learning-from-examples (unit 5)}
+    \phantomsection\label{part:E}
+    \samsection{reinforcement ; bandits}
+      \hypertarget{E0}{}
+      \input{body.4.0.reinforcement}
+    \samsection{state (dependence on prev xs and on actions ) ; RL ; partial observations}
+      \hypertarget{E1}{}
+      \input{body.4.1.state}
+    \samsection{deep q learning}
+      \hypertarget{E2}{}
+      \input{body.4.2.deep-q-learning}
+    \samsection{learning-from-instructions ; farewell}
+      \hypertarget{E3}{}
+      \input{body.4.1.learning-from-instructions}
+
+  %\sampart{F. appendices (unit 0; LOW PRIORITY; assemble from old piazza posts)}
+  % \phantomsection\label{part:F}
+  %  \samsection{probability primer}
+  %   \hypertarget{F0}{}
+  %    \input{body.5.0.probability-primer}
+  %      %-- fundamentals; frequentism vs bayesianism
+  %      %-- 2 sharp tools: independence and averaging
+  %      %-- log loss and friends
+  %      %-- common families of distributions
+  %  \samsection{linear algebra primer}
+  %   \hypertarget{F1}{}
+  %    \input{body.5.1.linear-algebra-primer}
+  %      %-- linear "spaces" and linear "maps"
+  %      %-- dimension, trace, determinant, visually
+  %      %-- vectors, covectors, higher tensors
+  %      %-- dot product, angles, and svd, visually
+  %  \samsection{derivatives primer}
+  %   \hypertarget{F2}{}
+  %    \input{body.5.2.derivatives-primer}
+  %      %-- derivatives are best linear appro.s: chain rule and linearity
+  %      %-- product rule, visually
+  %      %-- optimization : critical points, lagrange, higher derivatives
+  %      %-- write your own automatic differentiator: a short exercise
+  %  \samsection{programming and numpy and pytorch primer}
+  %   \hypertarget{F3}{}
+  %    \input{body.5.3.programming-and-numpy-and-pytorch-primer}
+
+\end{document}
+

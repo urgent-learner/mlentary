@@ -1,0 +1,219 @@
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.12. taking stock so far  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{taking stock so far}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.13. grid/random search  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{grid/random search}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.14. selecting prior strength  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{selecting prior strength}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.15. overfitting on a validation set  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{overfitting on a validation set}
+
+      \newpage
+    \samsection{4. generalization bounds}
+      \samquote{
+        A foreign philosopher rides a train in Scotland.  Looking out the window,
+        they see a black sheep; they exclaim: ``wow!  at least one side of one sheep is black in Scotland!''
+      }{unknown}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.16. dot products and generalization  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{dot products and generalization}
+      %\sampassage{perceptron bound}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.17. dimension bound  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      %\sampassage{hypothesis-class-based bounds}
+      \sampassage{hypothesis-geometry bounds}
+        Suppose we are doing binary linear classification with $N$ training
+        samples of dimension $d< N$.  Then with probability at least $1-\eta$
+        the gen gap is at most:
+        %\bcirc\marginnote{%
+        %    %\blarr We write $\log_{\!+}(z)$ for $\log(\max(1,z))$.
+        %    %\blarr we write $a^\cdot, a^{\cdot\cdot}$ for $(a+1), (a+2)$ to
+        %    %avoid overemphasizing annoying constants.
+        %}
+        $$
+          \sqrt{\frac{d\log(6N/d) + \log(4/\eta)}{N}}
+        $$
+        For example, with $d=16$ features and tolerance $\eta=1/1000$, we
+        can achieve a gen.\ gap of less than $5\%$ once we have more than
+        $N\approx 64000$ samples.  This is pretty lousy.  It's a worst case
+        bound in the sense that it doesn't make any assumptions about how
+        orderly or gnarly the data is.
+
+        If we normalize so that $\|x_i\|\leq R$ and we insist on classifiers
+        with margin at least $0<m\leq R$, then we may replace $d$ by
+        $\lceil 1+(R/m)^2 \rceil$ if we wish, so long as we count each
+        margin-violator as a training error, even if it is correctly
+        classified.
+
+        \attnsam{CHECK ABOVE!}
+
+        Thus, if $R=1$ and $1 \leq Nm$ then with chance at least $1-\eta$:
+        \begin{align*}
+            \text{testing error} \leq &~\frac{\text{(number of margin violators)}}{N}
+          +\\
+            &~\sqrt{\frac{(2/m^2) \log(6N m^2) + \log(4/\eta)}{N}}
+        \end{align*}
+
+        \attnsam{dimension/margin}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.18. margin bound  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{optimization-based bounds}
+        Another way to estimate testing error is through \textbf{leave-one-out
+        cross validation} (LOOCV).  This requires sacrifice of a single
+        training point in the sense that we need $N+1$ data points to do LOOCV
+        for an algorithm that learns from $N$ training points.
+        %
+       %
+        The idea is that after training on the $N$, the
+        testing-accuracy-of-hypotheses-learned-from-a-random-training-sample is
+        unbiasedly estimated by the learned hypothesis's accuracy on the
+        remaining data point.  This is a very coarse, high-variance estimate.
+        To address the variance, we can average over all $N+1$
+        choices\bcirc\marginnote{%
+          \blarr In principle, LOOCV requires training our model $N+1$ many times; we'll
+          soon see ways around this for the models we've talked about.
+        }
+        of which data point to remove from the training set.  When the
+        different estimates are sufficiently uncorrelated, this drastically
+        reduces the variance of our estimate.
+
+        Our key to establishing sufficient un-correlation lies in
+        \emph{algorithmic stability}: the hypothesis shouldn't change too much
+        as a function of small changes to the training set; thus, most of the
+        variance in each LOOCV estimate is due to the testing points, which by
+        assumption are independent.
+
+        If all $x$s, train or test, have length at most $R$, then
+        we have that with chance at least $1-\eta$:
+        $$
+            \Ee_{\sS}
+            \text{testing error}
+            \leq
+            \Ee_{\sS}
+            \text{LOOCV error}
+            +
+            \sqrt{\frac{1+6R^2/\lambda}{2N\eta}}
+        $$
+
+        %together with the
+        %boundedness and lipschitzness of the ramp function, the LOOCV estimate
+        %probably does not severely underestimate the true testing error:
+        %$$
+        %    \sqrt{\frac{1+6R^2/\lambda}{2N\delta}}
+        %    +
+        %    \sum_{i} \text{ramp}\left(\frac{\nu^i}{\lambda} \|x^i\|^2 - y^i w\cdot x^i\right)
+        %$$
+
+
+        %% support/sensitiviy bounds
+        %Leave-one-out cross-validation gives an unbiased (but not quite
+        %1/root n) estimate of generalization gap for N one less than true.
+        %%
+        %We can proceed further when we're optimizing
+        %$$
+        %    \lL(w) = \frac{\lambda}{2} \|w\|^2 + \sum_i \ell(-y^i w\cdot x^i)
+        %$$
+        %where $\ell:\Rr\to\Rr$ is a convex function such as $\text{hinge}$ or
+        %$\text{softplus}$.  Suppose that $\ell(d)\geq 0$ and $\ell(d)\to 0$ as
+        %its $d\to-\infty$ and $\ell(d)-d \to C$ as $d\to+\infty$ (so slope $1$).
+
+        %The idea is that the optimal $w$ for one less training point shouldn't
+        %be that different from the optimal $w$.  If at a training point $i$ we
+        %have $d\ell(-y^i w\cdot x^i)/dw$ has norm $\nu^i\|x^i\|$ (largest
+        %subgradient--- aka the ``supportiveness of training point i''), then
+        %taking out that point shifts $w$ by a distance at most $\nu^i\|x^i\|/\lambda$.
+        %So an upper bound for the LOOCV unbiased estimate of the testing
+        %error (for N one less) is:
+        %$$
+        %    \sum_{i} \text{ramp}\left(\frac{\nu^i}{\lambda} \|x^i\|^2 - y^i w\cdot x^i\right)
+        %$$
+        %where $\text{ramp}(z) = \min(1,\max(0,1+z))$.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.19. bayes and testing  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{bayes and testing}
+        % PAC Bayes?  testing Sets?  or maybe testing sets should be part of model selection
+
+      \newpage
+    \samsection{5. ideas in optimization}
+      \samquote{
+        premature optimization is the root of all evil
+      }{donald knuth}
+
+        \attn{learning rate as metric; robustness to 2 noise structures}
+        \attn{nesterov momentum}
+        \attn{decaying step size; termination conditions}
+        \attn{batch normalization}
+
+
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.20. local minima  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{local minima}
+        % convexity, initialization
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.21. implicit regularization  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{implicit regularization}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.22. learning rate schedule  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{learning rate schedule}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.23. learning rates as dot products  ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{learning rates as dot products} % connects to whitening / pre-conditioning; ties into next section on kernels
+
+      \newpage
+    \samsection{6. kernels enrich approximations}
+      \samquote{... animals are divided into (a) those
+        belonging to the emperor; (b) embalmed ones; (c) trained ones; (d)
+        suckling pigs; (e) mermaids; (f) fabled ones; (g) stray dogs; (h) those
+        included in this classification; (i) those that tremble as if they were
+        mad; (j) innumerable ones; (k) those drawn with a very fine camel hair
+        brush; (l) et cetera; (m) those that have just broken the vase; and (n)
+        those that from afar look like flies.
+      }{jorge luis borges}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.24. features as pre-processing  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{features as pre-processing} % start with example of (x \mapsto (1, x)) bias trick!
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.25. abstracting to dot products  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{abstracting to dot products} % mention mercer but don't emphasize
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.26. kernelized perceptron and svm  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      \sampassage{kernelized perceptron and svm} % also gaussian process regression?
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~  2.27. kernelized logistic regression  ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+     \sampassage{kernelized logistic regression} % leads to nonlinearities...
+
+

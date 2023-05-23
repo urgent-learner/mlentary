@@ -1,6 +1,10 @@
-% author:   sam tenka
-% change:   2022-07-29
+% author:   samtenka
+% change:   2023-03-28
 % create:   2022-05-11
+
+\newcommand{\picturedw}[2]{\includegraphics[width=#1]{#2}}
+\newcommand{\picturew}[2]{\includegraphics[width=#1]{figures/#2}}
+\newcommand{\pictureh}[2]{\includegraphics[height=#1]{figures/#2}}
 
 %==============================================================================
 %====  0.  DOCUMENT SETTINGS  ================================================
@@ -8,15 +12,6 @@
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %~~~~~~~~~~~~~  0.0. About this Exposition  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-%---------------------  0.0.0. page geometry  ---------------------------------
-\geometry{
-  left           = 0.90in, % left margin
-  textwidth      = 4.95in, % main text block
-  marginparsep   = 0.15in, % gutter between main text block and margin notes
-  marginparwidth = 2.30in, % width of margin notes
-                 % 0.20in  % width from margin to edge
-}
 
 %---------------------  0.0.1. math packages  ---------------------------------
 \newcommand\hmmax{0} % to allow for more fonts
@@ -35,6 +30,7 @@
 %---------------------  0.0.2. graphics packages  -----------------------------
 \usepackage{graphicx, xcolor}
 \usepackage{float, capt-of}
+\usepackage{soul}
 
 %---------------------  0.0.3. packages for fancy text  -----------------------
 \usepackage{enumitem}\setlist{nosep}
@@ -43,13 +39,25 @@
 \usepackage{fontawesome5}
 
 %---------------------  0.043. colors  ----------------------------------------
-\definecolor{mblu}{rgb}{0.05, 0.35, 0.70} \newcommand{\blu}{\color{mblu}}
-\definecolor{mbre}{rgb}{0.30, 0.45, 0.60} \newcommand{\bre}{\color{mbre}}
-\definecolor{mbro}{rgb}{0.60, 0.05, 0.05} \newcommand{\bro}{\color{mbro}}
-\definecolor{mcya}{rgb}{0.10, 0.45, 0.45} \newcommand{\cya}{\color{mcya}}
-\definecolor{mgre}{rgb}{0.55, 0.55, 0.50} \newcommand{\gre}{\color{mgre}}
-\definecolor{mgrn}{rgb}{0.15, 0.65, 0.05} \newcommand{\grn}{\color{mgrn}}
-\definecolor{mred}{rgb}{0.90, 0.05, 0.05} \newcommand{\red}{\color{mred}}
+
+% NOTE: we want to cater to colorblind readers
+
+% (LIGHT, MEDIUM, DARK) x (BLUE, ORANGE)
+\definecolor{msky}{rgb}{0.62, 0.82, 0.94} \newcommand{\sky}{\color{msky}}
+\definecolor{mpch}{rgb}{0.98, 0.86, 0.62} \newcommand{\pch}{\color{mpch}}
+
+\definecolor{mblu}{rgb}{0.05, 0.55, 0.85} \newcommand{\blu}{\color{mblu}}
+\definecolor{mrng}{rgb}{0.95, 0.65, 0.05} \newcommand{\rng}{\color{mrng}}
+
+\definecolor{msea}{rgb}{0.02, 0.22, 0.34} \newcommand{\sea}{\color{msea}}
+\definecolor{mbro}{rgb}{0.38, 0.26, 0.02} \newcommand{\bro}{\color{mbro}}
+
+% SHADES:
+\definecolor{mgre}{rgb}{0.55, 0.55, 0.55} \newcommand{\gre}{\color{mgre}}
+\definecolor{mdgre}{rgb}{0.35, 0.35, 0.35} \newcommand{\dgre}{\color{mdgre}}
+
+% UNFRIENDLY:
+\definecolor{mred}{rgb}{1.00, 0.00, 0.00} \newcommand{\red}{\color{mred}}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %~~~~~~~~~~~~~  0.1. Headers and References  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,11 +81,12 @@
     }$}}}%
 }
 \newcommand{\notesam}[1]{{\blu \textsf{#1}}}
-\newcommand{\attn}[1]{{\bro \textsf{#1}}}
+\newcommand{\attn}[1]{{\blu \textsf{#1}}}
 \newcommand{\attnsam}[1]{{\red \textsf{#1}}}
+%\newcommand{\attnsam}[1]{}%{\red \textsf{#1}}}
 
-\newcommand{\blarr}{\hspace{-0.15cm}${\bro \leftarrow}\,$}
-\newcommand{\bcirc}{${\bro ^\circ}$}
+\newcommand{\blarr}{\hspace{-0.15cm}${\blu \leftarrow}\,$}
+\newcommand{\bcirc}{${\blu ^\circ}$}
 \newcommand{\bovinenote}[1]{\bcirc\marginnote{\blarr #1}}
 
 %---------------------  0.1.1. table of contents helpers  ---------------------
@@ -91,7 +100,7 @@
 
 \newcommand{\samquote} [2]{
     \marginnote[-0.4cm]{\begin{flushright}
-    \scriptsize
+    %\scriptsize
         \gre {\it #1} \\ --- #2
     \end{flushright}}
 }
@@ -104,7 +113,7 @@
 
 \newcommand{\samsection}[1]{
   \vspace{0.3cm}
-  \par\noindent{\Large \sf \bre #1}
+  \par\noindent{\Large \sf \blu #1}
   \vspace{0.1cm}\par
 }
 
@@ -123,7 +132,10 @@
 %---------------------  0.2.0. general math operators  ------------------------
 \newcommand{\scirc}{\mathrel{\mathsmaller{\mathsmaller{\mathsmaller{\circ}}}}}
 \newcommand{\cmop}[2]{{(#1\!\to\!#2)}}
-\newcommand{\pr}{\prime}
+\newcommand{\pr}{^\prime}
+\newcommand{\prpr}{^{\prime\prime}}
+
+\newcommand{\wrap}[1]{\left(#1\right)}
 
 %---------------------  0.2.1. probability symbols  ---------------------------
 \newcommand{\KL}{\text{KL}}
@@ -166,32 +178,32 @@
 \newcommand{\Zz}{\mathbb{Z}}\newcommand{\zZ}{\mathcal{Z}}
 
 %---------------------  0.2.4. sans serif and frak lower letters  -------------
-\newcommand{\sfa}{\mathsf{a}}\newcommand{\fra}{\mathcal{a}}
-\newcommand{\sfb}{\mathsf{b}}\newcommand{\frb}{\mathcal{b}}
-\newcommand{\sfc}{\mathsf{c}}\newcommand{\frc}{\mathcal{c}}
-\newcommand{\sfd}{\mathsf{d}}\newcommand{\frd}{\mathcal{d}}
-\newcommand{\sfe}{\mathsf{e}}\newcommand{\fre}{\mathcal{e}}
-\newcommand{\sff}{\mathsf{f}}\newcommand{\frf}{\mathcal{f}}
-\newcommand{\sfg}{\mathsf{g}}\newcommand{\frg}{\mathcal{g}}
-\newcommand{\sfh}{\mathsf{h}}\newcommand{\frh}{\mathcal{h}}
-\newcommand{\sfi}{\mathsf{i}}\newcommand{\fri}{\mathcal{i}}
-\newcommand{\sfj}{\mathsf{j}}\newcommand{\frj}{\mathcal{j}}
-\newcommand{\sfk}{\mathsf{k}}\newcommand{\frk}{\mathcal{k}}
-\newcommand{\sfl}{\mathsf{l}}\newcommand{\frl}{\mathcal{l}}
-\newcommand{\sfm}{\mathsf{m}}\newcommand{\frm}{\mathcal{m}}
-\newcommand{\sfn}{\mathsf{n}}\newcommand{\frn}{\mathcal{n}}
-\newcommand{\sfo}{\mathsf{o}}\newcommand{\fro}{\mathcal{o}}
-\newcommand{\sfp}{\mathsf{p}}\newcommand{\frp}{\mathcal{p}}
-\newcommand{\sfq}{\mathsf{q}}\newcommand{\frq}{\mathcal{q}}
-\newcommand{\sfr}{\mathsf{r}}\newcommand{\frr}{\mathcal{r}}
-\newcommand{\sfs}{\mathsf{s}}\newcommand{\frs}{\mathcal{s}}
-\newcommand{\sft}{\mathsf{t}}\newcommand{\frt}{\mathcal{t}}
-\newcommand{\sfu}{\mathsf{u}}\newcommand{\fru}{\mathcal{u}}
-\newcommand{\sfv}{\mathsf{v}}\newcommand{\frv}{\mathcal{v}}
-\newcommand{\sfw}{\mathsf{w}}\newcommand{\frw}{\mathcal{w}}
-\newcommand{\sfx}{\mathsf{x}}\newcommand{\frx}{\mathcal{x}}
-\newcommand{\sfy}{\mathsf{y}}\newcommand{\fry}{\mathcal{y}}
-\newcommand{\sfz}{\mathsf{z}}\newcommand{\frz}{\mathcal{z}}
+\newcommand{\sfa}{\mathsf{a}}\newcommand{\fra}{\mathfrak{a}}
+\newcommand{\sfb}{\mathsf{b}}\newcommand{\frb}{\mathfrak{b}}
+\newcommand{\sfc}{\mathsf{c}}\newcommand{\frc}{\mathfrak{c}}
+\newcommand{\sfd}{\mathsf{d}}\newcommand{\frd}{\mathfrak{d}}
+\newcommand{\sfe}{\mathsf{e}}\newcommand{\fre}{\mathfrak{e}}
+\newcommand{\sff}{\mathsf{f}}\newcommand{\frf}{\mathfrak{f}}
+\newcommand{\sfg}{\mathsf{g}}\newcommand{\frg}{\mathfrak{g}}
+\newcommand{\sfh}{\mathsf{h}}\newcommand{\frh}{\mathfrak{h}}
+\newcommand{\sfi}{\mathsf{i}}\newcommand{\fri}{\mathfrak{i}}
+\newcommand{\sfj}{\mathsf{j}}\newcommand{\frj}{\mathfrak{j}}
+\newcommand{\sfk}{\mathsf{k}}\newcommand{\frk}{\mathfrak{k}}
+\newcommand{\sfl}{\mathsf{l}}\newcommand{\frl}{\mathfrak{l}}
+\newcommand{\sfm}{\mathsf{m}}\newcommand{\frm}{\mathfrak{m}}
+\newcommand{\sfn}{\mathsf{n}}\newcommand{\frn}{\mathfrak{n}}
+\newcommand{\sfo}{\mathsf{o}}\newcommand{\fro}{\mathfrak{o}}
+\newcommand{\sfp}{\mathsf{p}}\newcommand{\frp}{\mathfrak{p}}
+\newcommand{\sfq}{\mathsf{q}}\newcommand{\frq}{\mathfrak{q}}
+\newcommand{\sfr}{\mathsf{r}}\newcommand{\frr}{\mathfrak{r}}
+\newcommand{\sfs}{\mathsf{s}}\newcommand{\frs}{\mathfrak{s}}
+\newcommand{\sft}{\mathsf{t}}\newcommand{\frt}{\mathfrak{t}}
+\newcommand{\sfu}{\mathsf{u}}\newcommand{\fru}{\mathfrak{u}}
+\newcommand{\sfv}{\mathsf{v}}\newcommand{\frv}{\mathfrak{v}}
+\newcommand{\sfw}{\mathsf{w}}\newcommand{\frw}{\mathfrak{w}}
+\newcommand{\sfx}{\mathsf{x}}\newcommand{\frx}{\mathfrak{x}}
+\newcommand{\sfy}{\mathsf{y}}\newcommand{\fry}{\mathfrak{y}}
+\newcommand{\sfz}{\mathsf{z}}\newcommand{\frz}{\mathfrak{z}}
 
 %---------------------  0.2.5. math environments  -----------------------------
 \newtheorem*{qst}{Question}
@@ -200,5 +212,19 @@
 % ...
 \theoremstyle{definition}
 \newtheorem*{dfn}{Definition}
+
+\newcommand{\exercise}[1]{%
+  \par\noindent%
+  \attn{Food For Thought:} #1%
+}
+\newcommand{\noparexercise}[1]{%
+  \attn{Food For Thought:} #1%
+}
+\newcommand{\objectives}[1]{%
+  \marginnote[-0.2cm]{%
+    By the end of this section, you'll be able to
+    \begin{itemize}#1\end{itemize}
+  }
+}
 
 

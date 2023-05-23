@@ -1,0 +1,30 @@
+    \samsection{2. multiple layers}
+        We can continue alternating learned linearities with fixed
+        nonlinearities:
+        \begin{align*}
+          \hat p(y\!=\!+1\,|\,x) \,=\,
+          (\sigma_{1\times 1} \,\circ\,
+          A_{1\times (h^{\pr\pr}+1)} \,\circ\,
+            &f_{(h^{\pr\pr}+1) \times h^{\pr\pr}} \,\circ\,
+          B_{h^{\pr\pr} \times (h^\pr+1)} \,\circ\, \\
+            &f_{(h^\pr+1)\times h^\pr} \,\circ\,
+          C_{h^\pr\times (h+1)} \,\circ\, \\
+            &f_{(h+1)\times h} \,\circ\,
+          D_{h\times d})(x)
+        \end{align*}
+
+      \sampassage{feature hierarchies}
+      \sampassage{bottlenecking}
+      \sampassage{highways}
+      %\sampassage{differentiation} % addressed in 0.
+
+    \samsection{3. architecture and wishful thinking}
+      \sampassage{representation learning} % leads to lstms etc
+
+    \samsection{4. architecture and symmetry} % and other priors?
+      \samquote{
+        About to speak at [conference].  Spilled Coke on left leg of jeans, so
+        poured some water on right leg so looks like the denim fade.
+      }{tony hsieh}
+
+
