@@ -64,6 +64,10 @@ WANT the repo to look like.  I haven't had time to organize.
 
 #### branch etiquette
 
+EDIT: instead of adding everyone as a collaborator immediately, I will instead
+accept pull requests and then only after making sure they look alright will I
+add you!
+
 We will primarily make commits to branches called `unit0`, ..., `unit6`.
 
     BRANCH...       ...CONTAINS A...
@@ -121,13 +125,13 @@ look.
 
 The basic story arc is as follows:
 
-    unit0   --- what does it mean to learn from examples?
-    unit1   --- visualize high-D space to learn-from-examples via linear models
-    unit2   --- extend unit1's superpower to new tasks by hand-crafting nonlinearities
-    unit3   --- extend unit2's superpower to richer tasks by automating the crafting of nonlinearities
-    unit4   --- extend unit3's superpower to structured tasks
-    unit5   --- learn-from-rewards by framing learning-from-rewards problems as learning-from-examples problems
-    unit6   --- extras (e.g. helpful math refreshers)
+    unit0 --- what does it mean to learn from examples?
+    unit1 --- visualize high-D space to learn-from-examples via linear models
+    unit2 --- extend unit1's superpower to new tasks by hand-crafting nonlinearities
+    unit3 --- extend unit2's superpower to richer tasks by automating the crafting of nonlinearities
+    unit4 --- extend unit3's superpower to tasks with structured uncertainty/diversity
+    unit5 --- learn-from-rewards by framing learning-from-rewards problems as learning-from-examples problems
+    unit6 --- extras (e.g. where to go next, helpful prereq refreshers)
 
 In a bit more detail, something like the following makes sense to me.  Below,
 "Unit 0" contains prerequisites rather than a friendly invitation.
@@ -157,6 +161,7 @@ In a bit more detail, something like the following makes sense to me.  Below,
       Project 0a:
       Project 0b:
 
+Learning from Examples
     Unit 1: Learning from Examples
       Lecture 1a: What is Machine Learning?
 
@@ -363,7 +368,6 @@ In a bit more detail, something like the following makes sense to me.  Below,
         Wrestling with Training Difficulties (burnin, etc)
         Interpreting Latents
 
-
       Project 4b: A Deep Image Generator (VAE)
         Meeting the Face Data.  How to assess success? % maybe met face data in previous unit?
         Forward Model including reparam trick
@@ -435,9 +439,34 @@ In a bit more detail, something like the following makes sense to me.  Below,
         Creative Part: Design Featurization and Exploration Policy!
         Action Challenge: Learn an Unknown Game in Same Family!
 
-    Unit 6: Farewell
+    Unit 6: Farewell and Prereq Helpers
       Bonus Lecture 6a: What We Learned
       Bonus Lecture 6b: What to Learn Next
+
+      Coding Lecture 6: Python, Numpy, Pytorch
+        Multi-axis arrays.  Speedups.  Index kung-fu.
+        Common numpy maps and zips, filters, reduces, and contractions
+        Example: large-numbers dice statistics, plotting
+        Example: (batched) image filter made by hand
+        Intro to Pytorch
+
+      Homework 6a: Math
+        Types, Functions and Dependencies, Notation
+        Linear Algebra: High Dimensions, Hyperplanes, Linear Maps, Trace and Det; Quadratic Forms, Dot Products, SVD
+        Probability: Expectations, Independence, Bayes, Concentration; Coinflips, Gaussians
+        Optimization: Visualizing Derivative Rules, Sums of Terms (Constraints); Vectors vs Covectors, Overshooting, Convexity
+        Examples: Least Squares; Gaussian Fitting M-Step
+
+      Homework 6b: Programming
+        Matrix Multiply Speed Test
+        Numpy Safari / Treasurehunt
+        Softmax Speed Test
+        Debugging Randomized Code
+        Debugging Many-File Codebase
+
+      Project 6a:
+      Project 6b:
+
 
 Easter Egg.  (-1/12) is a magic number.  Direct message sam (`bohrium`) on
 discord that you've seen this magic number.  This tells me you've looked at
