@@ -131,45 +131,23 @@ The basic story arc is as follows:
     unit3 --- extend unit2's superpower to richer tasks by automating the crafting of nonlinearities
     unit4 --- extend unit3's superpower to tasks with structured uncertainty/diversity
     unit5 --- learn-from-rewards by framing learning-from-rewards problems as learning-from-examples problems
+
     unit6 --- extras (e.g. where to go next, helpful prereq refreshers)
 
 In a bit more detail, something like the following makes sense to me.  Below,
 "Unit 0" contains prerequisites rather than a friendly invitation.
 
-    Unit 0: Prerequisites
-      Coding Lecture 0: Python, Numpy, Pytorch
-        Multi-axis arrays.  Speedups.  Index kung-fu.
-        Common numpy maps and zips, filters, reduces, and contractions
-        Example: large-numbers dice statistics, plotting
-        Example: (batched) image filter made by hand
-        Intro to Pytorch
-
-      Homework 0a: Math
-        Types, Functions and Dependencies, Notation
-        Linear Algebra: High Dimensions, Hyperplanes, Linear Maps, Trace and Det; Quadratic Forms, Dot Products, SVD
-        Probability: Expectations, Independence, Bayes, Concentration; Coinflips, Gaussians
-        Optimization: Visualizing Derivative Rules, Sums of Terms (Constraints); Vectors vs Covectors, Overshooting, Convexity
-        Examples: Least Squares; Gaussian Fitting M-Step
-
-      Homework 0b: Programming
-        Matrix Multiply Speed Test
-        Numpy Safari / Treasurehunt
-        Softmax Speed Test
-        Debugging Randomized Code
-        Debugging Many-File Codebase
-
-      Project 0a:
-      Project 0b:
-
-Learning from Examples
-    Unit 1: Learning from Examples
+    Unit 0: Prologue.  Learning from Examples.
       Lecture 1a: What is Machine Learning?
+      Lecture 1b: Tiny Example: Classifying Handwritten Digits
+      Lecture 1c: How well did we do?  %  Training vs Testing Error ; Generalization, Optimization, Approximation
+      Lecture 1d: How can we do better?  Survey of rest of notes
 
-      Lecture 1b: A Simple Image Classifier
-
-      Lecture 1c: Accelerate Learning using Gradient Descent
-
-      Lecture 1d: Training vs Testing Error % Generalization, Optimization, Approximation
+    Unit 1: Optimize Linear Models to Learn from Examples.
+      Lecture 1a: Hyperplanes, Likelihoods, Goodness of Fit
+      Lecture 1b: Accelerate Learning using Gradient Descent
+      Lecture 1c: Priors and Intrinsic Plausibility
+      Lecture 1d: Model Selection
 
       Coding Lecture 1: Coding the image classifier from lectures, from scratch.  Examining behavior on a concrete image.
 
@@ -463,10 +441,6 @@ Learning from Examples
         Softmax Speed Test
         Debugging Randomized Code
         Debugging Many-File Codebase
-
-      Project 6a:
-      Project 6b:
-
 
 Easter Egg.  (-1/12) is a magic number.  Direct message sam (`bohrium`) on
 discord that you've seen this magic number.  This tells me you've looked at
