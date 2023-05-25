@@ -455,9 +455,12 @@ vague.  But if I allow such words then I add these three verb phrases:
 
 #### what we want for writing
 
+ FILLIN
+
 #### what we want for code
+
+ FILLIN
 
 #### what we want for figures
 
-
-
+ FILLIN

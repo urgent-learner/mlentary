@@ -182,8 +182,6 @@
         %    \end{tabular}
         %\end{table}
 
-
-
         GRAPHICAL NOTATION
         \paragraph{\sf} --- Mo
         \paragraph{\sf} --- Mo
@@ -241,27 +239,77 @@
         \paragraph{\sf} --- Mo
         \paragraph{\sf} --- Mo
         \paragraph{\sf} --- Mo
-
     \newpage
 
     \subsection*{Lecture 4b: Inference via Variation} % MH, EM,
       \subsubsection*{EM overview, 3State Traffic example}
+        \paragraph{\sf} ---
+          Since both $\theta$ and $\sfz$ are unknown, we might try to optimize
+          both, jointly, then report whichever $\theta$ corresponds to the
+          whichever $(\theta, z)$ pair we find maximizes the likelihood
+          $p(x,z;\theta)$.  This can be very useful, but it addresses a problem
+          different from the one we wanted to solve.  We want to find $\theta$
+          that maximizes $\sum_z p(x,z;\theta)$ rather than one that maximizes
+          $\max_z p(x,z;\theta)$.  The sum-over-$z$s is more subtle than the
+          max-over-$z$s in the sense that it incentivizes there to be
+          many plausible hypotheses.  TODO: EXPAND
+
+          As a very crude approximation, we could keep track of two guesses for
+          $z$ at each step of the optimization, rather than one guess.  It
+          wouldn't make sense to set both guesses equal to a maximizer with
+          respect to the current $\theta$: for then they'd be equivalent to
+          just one guess.  We want instead to maintain diversity.
+
+          We could iteratively optimize the marginal likelihood by guessing
+          a $\theta$ and a distribution over $z$s and repeatedly improving
+          one with respect to the other.
+
+          The idea of the \defined{expectation maximization (EM) algorithm}
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+
       \subsubsection*{ELBO bound and pingpong KL geometry}
-      \subsubsection*{EM: HMM example (more detail in coding example)}
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+
       \subsubsection*{EM: GMM example (more detail in pset)}
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+
+      \subsubsection*{EM: HMM example (more detail in coding example)}
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+
       \subsubsection*{Variational Parts as Neural Net}
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+        \paragraph{\sf} --- 
+
     \newpage
 
-    \subsection*{Lecture 4c: Inference via Sampling} % MH, EM,
-      \subsubsection*{Challenge.  MH Algorithm.  Diffusion.}
-        Okay, so we have a probabilistic model and some data.  How do we do
-        inference?  We want an approximate posterior over part of the model
-        conditioned on the data.
-      \subsubsection*{Visualizing MH.  Proposals Matter}
-      \subsubsection*{MH: 3State Traffic example}
-      \subsubsection*{MH: HMM and GM example}
-      \subsubsection*{On Deep Learning and Noise}
-    \newpage
+    %\subsection*{Lecture 4c: Inference via Sampling} % MH, EM,
+    %  \subsubsection*{Challenge.  MH Algorithm.  Diffusion.}
+    %    Okay, so we have a probabilistic model and some data.  How do we do
+    %    inference?  We want an approximate posterior over part of the model
+    %    conditioned on the data.
+    %  \subsubsection*{Visualizing MH.  Proposals Matter}
+    %  \subsubsection*{MH: 3State Traffic example}
+    %  \subsubsection*{MH: GMM and HMM example}
+    %  \subsubsection*{On Deep Learning and Noise}
+    %\newpage
 
     \subsection*{Lecture 4d: Variational Autoencoders (or Encoders)} % so connects back to Unit 3
       \subsubsection*{Architecture} % comparison to matrix factorization, etc

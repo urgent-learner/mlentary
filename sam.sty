@@ -1,6 +1,9 @@
 % author:   samtenka
-% change:   2023-03-28
+% change:   2023-05-25
 % create:   2022-05-11
+
+\newcommand{\recommended} {\textsf{\large\blu$\leftarrow$   RECOMMENDED PASSAGE}}
+\newcommand{\veryoptional}{VERY OPTIONAL}
 
 \newcommand{\picturedw}[2]{\includegraphics[width=#1]{#2}}
 \newcommand{\picturew}[2]{\includegraphics[width=#1]{figures/#2}}
@@ -120,6 +123,10 @@
 \newcommand{\sampassage}[1]{
    \vspace{0.1cm}
    \par\noindent{\hspace{-2cm}\normalsize \sc \gre #1} ---
+}
+
+\newcommand{\blurb}[1]{
+    [[[#1]]]
 }
 
 %---------------------  0.1.3. clear the bibliography's header  ---------------

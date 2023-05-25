@@ -74,7 +74,8 @@ cross-validation.
 
 \begin{marginfigure}[-0cm]
     \centering
-    \picturedw{0.75\textwidth}{example-shallow/image-2500}%woah-08-1500%
+    \attnsam{ADD image}
+    %\picturedw{0.75\textwidth}{example-shallow/image-2500}%woah-08-1500%
     \caption{A toy example of the decision boundary (\textbf{black}) of a
     shallow neural network on 2D inputs (preprocessed with the bias trick).
     This neural network has 8 features (shown as subtle discontinuities in
@@ -270,20 +271,21 @@ vanishing gradients problem.
   Our decision boundaries
   look more complicated, as expected.  We also depict each learned feature.
         \begin{figure}[h]%
-          \picturedw{0.199\textwidth}{example-shallow/image-0000}%woah-08-0000%
-          \picturedw{0.199\textwidth}{example-shallow/image-0500}%woah-08-0500%
-          %       d                                                image-     
-          \picturedw{0.199\textwidth}{example-shallow/image-1000}%woah-08-1000%
-          \picturedw{0.199\textwidth}{example-shallow/image-1500}%woah-08-1500%
-          %       d                                                image-     
-          \picturedw{0.199\textwidth}{example-shallow/image-2000}\\%woah-08-2000\\%
-          \picturedw{0.199\textwidth}{example-shallow/image-2500}%woah-08-2500%
-          %       d                                                image-     
-          \picturedw{0.199\textwidth}{example-shallow/image-3000}%woah-08-3000%
-          \picturedw{0.199\textwidth}{example-shallow/image-3500}%woah-08-3500%
-          %       d                                                image-     
-          \picturedw{0.199\textwidth}{example-shallow/image-4000}%woah-08-4000%
-          \picturedw{0.199\textwidth}{example-shallow/image-4500}%woah-08-4500%
+        \attnsam{ADD images}
+          %\picturedw{0.199\textwidth}{example-shallow/image-0000}%woah-08-0000%
+          %\picturedw{0.199\textwidth}{example-shallow/image-0500}%woah-08-0500%
+          %%       d                                                image-     
+          %\picturedw{0.199\textwidth}{example-shallow/image-1000}%woah-08-1000%
+          %\picturedw{0.199\textwidth}{example-shallow/image-1500}%woah-08-1500%
+          %%       d                                                image-     
+          %\picturedw{0.199\textwidth}{example-shallow/image-2000}\\%woah-08-2000\\%
+          %\picturedw{0.199\textwidth}{example-shallow/image-2500}%woah-08-2500%
+          %%       d                                                image-     
+          %\picturedw{0.199\textwidth}{example-shallow/image-3000}%woah-08-3000%
+          %\picturedw{0.199\textwidth}{example-shallow/image-3500}%woah-08-3500%
+          %%       d                                                image-     
+          %\picturedw{0.199\textwidth}{example-shallow/image-4000}%woah-08-4000%
+          %\picturedw{0.199\textwidth}{example-shallow/image-4500}%woah-08-4500%
           \caption{\textbf{Training dynamics of a shallow neural net}.
             We use artificial 2D data.  The net has 8 hidden features, which we
             depict as subtle edges between colors.  In bold are overall
@@ -513,3 +515,66 @@ $$
   But this packet of notes is supposed to just lay the groundwork for Unit 3.
   I'll try to discuss more about depth, CNNs, and RNNs in future packets of
   notes!
+
+
+%%    \samsection{0. fixed featurizations}
+%\samquote{
+%  Doing ensembles and shows is one thing, but being able to front a
+%  feature is totally different.  ...  there's something about ... a
+%  feature that's unique.
+%}{michael b.\ jordan}
+%%    \samsection{6. kernels enrich approximations}
+%\samquote{... animals are divided into (a) those
+%  belonging to the emperor; (b) embalmed ones; (c) trained ones; (d)
+%  suckling pigs; (e) mermaids; (f) fabled ones; (g) stray dogs; (h) those
+%  included in this classification; (i) those that tremble as if they were
+%  mad; (j) innumerable ones; (k) those drawn with a very fine camel hair
+%  brush; (l) et cetera; (m) those that have just broken the vase; and (n)
+%  those that from afar look like flies.
+%}{jorge luis borges}
+
+\sampassage{features as pre-processing}
+  % recall (x \mapsto (1, x)) bias trick!
+\sampassage{sketching}\marginnote{\veryoptional}
+%\sampassage{sensitivity analysis} % multiple layers, differentiation
+  % REp thm!
+\sampassage{double descent}\marginnote{\veryoptional}
+\sampassage{abstracting to dot products}\marginnote{\veryoptional}
+  % mention mercer but don't emphasize
+\sampassage{kernelized classifiers}
+  %perceptron, svm, logistic
+  % also gaussian process regression?
+  \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+    return 3 if condition(x) else 1
+  \end{lstlisting}
+
+
+%\samsection{1. learned featurizations}
+\sampassage{imagining the space of feature tuples}
+  We'll focus on an architecture of the form
+  $$
+    \hat p(y\!=\!+1\,|\,x) \,=\,
+    (\sigma_{1\times 1} \circ
+    A_{1\times (h+1)} \circ
+    f_{(h+1)\times h} \circ
+    B_{h\times d})(x)
+  $$
+  where $A,B$ are linear maps with the specified
+  $(\text{input}\times\text{output})$ dimensions, where $\sigma$ is the
+  familiar sigmoid operation, and where $f$ applies the leaky relu
+  function elementwise and concatenates a $1$:
+  $$
+    f((v_i : 0\leq i<h)) = (1,)\,+\!\!\!\!+\,(\text{lrelu}(v_i) : 0\leq i<h)
+    \quad \quad
+    \text{lrelu}(z) = \max(z/10, z)
+  $$
+  We call $h$ the \textbf{hidden dimension} of the model.
+  %
+  Intuitively, $f \circ B$ re-featurizes the input to a form more
+  linearly separable (by weight vector $A$).
+
+\sampassage{the featurization layer's learning signal}
+\sampassage{expressivity and local minima}% approximation % logic, etc
+\sampassage{``representer theorem''}
+
+

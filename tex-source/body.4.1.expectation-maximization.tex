@@ -1,0 +1,105 @@
+%\subsection*{Lecture 4b: Inference via Variation: Expectation Maximization}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{EM overview}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{Challenge of summing}
+
+% what goes wrong in 3State Traffic example if don't marginalize
+
+The idea of expectation maximization is to do coordinate ascent there are two
+things we don't know there's theater which is our private or we want to find a
+single best value for and there is Z of the latent random variable whose
+multiplicity of possible values will you wish to account for we have to treat
+theater and see slightly asymmetrically because what we really want to find its
+data that maximizes a certain some over zs
+
+%-------  _  ------------------------------------------------------------------
+\blurb{EM qualitatively: maintain many replicas with different zs}
+
+% misleadingly simple cartoon of EM for 3State Traffic example
+
+%-------  _  ------------------------------------------------------------------
+\blurb{E and M steps: formulas}
+
+mention gradient descent as option in M
+mention how to incorporate priors
+
+%-------  _  ------------------------------------------------------------------
+\blurb{cartoon of EM for GMM}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{cartoon of EM for HMM}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{EM: GMM example (more detail in pset)}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{type signatures of E step and of M step}
+%-------  _  ------------------------------------------------------------------
+\blurb{qualitative behavior of E step and of M step}
+%-------  _  ------------------------------------------------------------------
+\blurb{formula for M step}
+%-------  _  ------------------------------------------------------------------
+\blurb{formula for E step}
+%-------  _  ------------------------------------------------------------------
+\blurb{example dynamics of EM on flower data}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{EM: HMM example (more detail in coding example)}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{HMM forward model.  applications.}
+%-------  _  ------------------------------------------------------------------
+\blurb{M step}
+%-------  _  ------------------------------------------------------------------
+\blurb{E step: (inefficient) formula}
+%-------  _  ------------------------------------------------------------------
+\blurb{E step: efficient way to compute via dynamic programming}
+%-------  _  ------------------------------------------------------------------
+\blurb{Example runthrough on toy data.  applications.}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Learned E steps and Neural Networks}
+%-------  _  ------------------------------------------------------------------
+\blurb{why are E steps hard?}
+%-------  _  ------------------------------------------------------------------
+\blurb{how we might throw deep learning at the E step}
+%-------  _  ------------------------------------------------------------------
+\blurb{first taste of VAEs: architecture for image generation}
+%-------  _  ------------------------------------------------------------------
+\blurb{a remark on diffusion models; distribution-level losses and GANs}
+%-------  _  ------------------------------------------------------------------
+\blurb{a periodic table of ways to encode distributions as neural networks}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{(Bonus) under the hood: ELBO bound, pingpong KL geometry}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{useful math: interplay of logarithms and expectations}
+%-------  _  ------------------------------------------------------------------
+\blurb{ELBO bound and E,M steps}
+%-------  _  ------------------------------------------------------------------
+\blurb{KL divergence, over vs undershoot support, compression, and surprise}
+%-------  _  ------------------------------------------------------------------
+\blurb{exponential vs mixture families.  M and E projections.}
+%-------  _  ------------------------------------------------------------------
+\blurb{ping-pong picture}
+
+

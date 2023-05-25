@@ -1,223 +1,202 @@
 % author:   sam tenka
-% change:   2022-07-29
+% change:   2023-05-25
 % create:   2022-05-11
 
 \documentclass[11pt, justified]{tufte-book}
+\geometry{
+  left           = 0.90in, % left margin
+  textwidth      = 4.95in, % main text block
+  marginparsep   = 0.15in, % gutter between main text block and margin notes
+  marginparwidth = 2.30in, % width of margin notes
+                 % 0.20in  % width from margin to edge
+}
 \input{sam.sty}
+\usepackage{tikz-cd}
 
-\begin{document}\samtitle{%
-    mlentary: basics of machine learning
-  }
+\begin{document}\samtitle{basics of machine learning}
 
-  \newcommand{\veryoptional}{VERY OPTIONAL}
+\sampassage{contributors}
+  \input{CONTRIBUTORS}
 
-  These are optional notes for 6.86x.
-  \marginnote[0cm]{%
+\sampassage{hallo!}
+  These optional and still-evolving notes for 6.86x give a big picture view of
+  our conceptual landscape.  They might help you study, but you can do all your
+  assignments without these notes.  These notes treat many but not all the
+  topics of our course; they also treat a few topics not emphasized in class,
+  to fill gaps for curious learners.
+
+  I'm happy to answer questions about the notes on the forum.  If you want to
+  help improve these notes, ask me; I'll be happy to list you as a contributor!
+
+  We compiled these notes using the following color palette; let us know if
+  the colors are hard to distinguish.
+
+  {\Huge\vspace{-1.5cm}\[\substack{%
+    {\sky\blacksquare}
+    {\blu\blacksquare}
+    {\sea\blacksquare}\\
+    {\pch\blacksquare}
+    {\rng\blacksquare}
+    {\bro\blacksquare}}
+    \]}
+
+    \marginnote[-6cm]{%
     \textsc{Clickable Table of Contents}\vspace{0.05cm}
     \begin{description}
-      \item[A. prologue]                                            \phdot  \hfill\pageref{part:A}
+        \item[\hyperlink{A}{A. prologue}]                                               \phdot  \hfill\pageref{part:A}
         \begin{description}
-          \item[\hyperlink{A0}{what is learning}]
-          \item[\hyperlink{A1}{our first learning algorithm}]
-          \item[\hyperlink{A2}{how well did we do}]
-          \item[\hyperlink{A3}{how can we do better}]
+          \item[\hyperlink{A0}{{\color{gray}0} what is learning?}]
+          \item[\hyperlink{A1}{{\color{gray}1} a tiny example: handwritten digits}]
+          \item[\hyperlink{A2}{{\color{gray}2} how well did we do?}]
+          \item[\hyperlink{A3}{{\color{gray}3} how can we do better?}]
         \end{description}
-      \item[B. auto-predict by fitting lines to examples]           \phdot  \hfill\pageref{part:B}
+    \item[\hyperlink{part:Z}{Z. a complete, simple classifier}]                         \phdot  \hfill\pageref{part:Z}
         \begin{description}
-          \item[\hyperlink{B0}{linear approximation}]
-          \item[\hyperlink{B1}{iterative optimization}]
-          \item[\hyperlink{B2}{priors and optimization}]
-          \item[\hyperlink{B3}{model selection}]
+          \item[\hyperlink{Z0}{{\color{gray}0} goodness of fit}]
+          \item[\hyperlink{Z1}{{\color{gray}1} smarter optimization}]
+          \item[\hyperlink{Z2}{{\color{gray}2} two examples: cows and walls}]
+          \item[\hyperlink{Z3}{{\color{gray}3} intrinsic plausibility}]
         \end{description}
-      \item[C. bend those lines to capture rich patterns]           \phdot  \hfill\pageref{part:C}
+    \item[\hyperlink{part:B}{B. squeezing more out of linear models}]             \phdot  \hfill\pageref{part:B}
         \begin{description}
-          \item[\hyperlink{C0}{featurization}]
-          \item[\hyperlink{C1}{learned featurizations}]
-          \item[\hyperlink{C2}{locality and symmetry in architecture}]
-          \item[\hyperlink{C3}{dependencies in architecture}]
+          \item[\hyperlink{B0}{{\color{gray}0} featurization}]
+          \item[\hyperlink{B1}{{\color{gray}1} quantifying uncertainty}]
+          \item[\hyperlink{B2}{{\color{gray}2} iterative optimization}]
+          \item[\hyperlink{B3}{{\color{gray}3} data-dependent features}]
         \end{description}
-      \item[D. thicken those lines to quantify uncertainty]         \phdot  \hfill\pageref{part:D}
+    \item[\hyperlink{part:C}{C. bend those lines to capture rich patterns}]             \phdot  \hfill\pageref{part:C}
         \begin{description}
-          \item[\hyperlink{D0}{bayesian models}]
-          \item[\hyperlink{D1}{examples of bayesian models}]
-          \item[\hyperlink{D2}{inference algorithms for bayesian models}]
-          \item[\hyperlink{D3}{combining with deep learning}]
+          \item[\hyperlink{C0}{{\color{gray}0} featurization}]
+          \item[\hyperlink{C1}{{\color{gray}1} learned featurizations}]
+          \item[\hyperlink{C2}{{\color{gray}2} locality and symmetry in architecture}]
+          \item[\hyperlink{C3}{{\color{gray}3} dependencies in architecture}]
         \end{description}
-      \item[E. beyond learning-from-examples]                       \phdot  \hfill\pageref{part:E}
+    \item[\hyperlink{part:D}{D. thicken those lines to quantify uncertainty}]           \phdot  \hfill\pageref{part:D}
         \begin{description}
-          \item[\hyperlink{E0}{reinforcement}]
-          \item[\hyperlink{E1}{state}]
-          \item[\hyperlink{E2}{deep q learning}]
-          \item[\hyperlink{E3}{learning from instructions}]
+          \item[\hyperlink{D0}{{\color{gray}0} bayesian models}]
+          \item[\hyperlink{D1}{{\color{gray}1} examples of bayesian models}]
+          \item[\hyperlink{D2}{{\color{gray}2} inference algorithms for bayesian models}]
+          \item[\hyperlink{D3}{{\color{gray}3} combining with deep learning}]
         \end{description}
-      \item[] \vspace{0.05cm} \hrule \vspace{-0.05cm}
-      \item[F. appendices]                                          \phdot  \hfill\pageref{part:F}
+    \item[\hyperlink{part:E}{E. beyond learning-from-examples}]                         \phdot  \hfill\pageref{part:E}
         \begin{description}
-          \item[\hyperlink{F0}{probability primer}]
-          \item[\hyperlink{F1}{linear algebra primer}]
-          \item[\hyperlink{F2}{derivatives primer}]
-          \item[\hyperlink{F3}{programming and numpy and pytorch primer}]
+          \item[\hyperlink{E0}{{\color{gray}0} reinforcement}]
+          \item[\hyperlink{E1}{{\color{gray}1} state}]
+          \item[\hyperlink{E2}{{\color{gray}2} deep q learning}]
+          \item[\hyperlink{E3}{{\color{gray}3} learning from instructions}]
         \end{description}
+    %
+    \item[] \vspace{0.05cm} \hrule \vspace{-0.05cm}
+    %
+    \item[\hyperlink{part:F}{F. some background}]                                       \phdot  \hfill\pageref{part:F}
+        \begin{description}
+          \item[\hyperlink{F0}{{\color{gray}0} probability primer}]
+          \item[\hyperlink{F1}{{\color{gray}1} linear algebra primer}]
+          \item[\hyperlink{F2}{{\color{gray}2} derivatives primer}]
+          \item[\hyperlink{F3}{{\color{gray}3} programming and numpy and pytorch primer}]
+        \end{description}
+    %\item[\hyperlink{part:G}{G. rambles}]                                               \phdot  \hfill\pageref{part:G}
+    %    \begin{description}
+    %      \item[\hyperlink{G0}{{\color{gray}0} }]
+    %      \item[\hyperlink{G1}{{\color{gray}1} }]
+    %      \item[\hyperlink{G2}{{\color{gray}2} }]
+    %      \item[\hyperlink{G3}{{\color{gray}3} }]
+    %    \end{description}
     \end{description}
   }
-  You can do all your assignments without
-  these notes.  These notes are here as a study aid.  They are terse and don't
-  cover all our topics.  I'm happy to answer questions about the notes on
-  Piazza.  If you want to help improve these notes, ask me; I'll be happy to
-  list your name among the contributors to these notes!
+
+  \sampassage{navigating these notes}
+    We divide these notes into bite-size passages; each begins with a gray
+    heading (e.g.\ `navigating these notes' to the left).  All passages are
+    optional in the sense that you'll be able to complete all assignments
+    without ever studying these notes.  Yet, aside from a few bonus passages
+    marked as \textsf{\blu VERY OPTIONAL}, most passages offer complementary
+    discussion of our course topics that may help you understand, appreciate,
+    and internalize the lectures.  After all, only with two lines of sight can
+    we see depth.
+
+    These notes highlight probability theory and model architecture more than
+    the lectures; clustering and low-rank approximation, less.  We can use
+    different projections to tear and squash a globe into a flat map of earth.
+    Different views reveal different aspects of geography.  In order to ``keep
+    australia from being split into two parts'' and to ``display the south
+    pole'', I used a different map projection than the lectures do.  So we
+    traverse topics in the notes in a different order than we do in lecture.
+    Still, we cover essentially the same overall ground.
+
+  \newcommand{\SSS}[2]{\newpage\hypertarget{#1}{}\sampart{#2}\phantomsection\label{part:#1}}
+  \newcommand{\sss}[3]{\hypertarget{#1}{}\samsection{#3}\input{tex-source/#2}}
 
   \newpage
+  \SSS{0}{prologue}
+    \sss{0a}{body.0.0.what-is-learning}{what is learning?}
+    \sss{0b}{body.0.1.our-first-learning-algorithm}{a tiny example: classifying handwritten digits}
+    \sss{0c}{body.0.2.how-well-did-we-do}{how well did we do?  analyzing our error}
+    \sss{0d}{body.0.3.how-can-we-do-better}{how can we do better?  (survey of rest of notes)}
 
-  \sampart{A. prologue}
-    \phantomsection\label{part:A}
-    \samsection{what is learning?}
-      \hypertarget{A2}{}
-      \input{tex-source/body.0.0.what-is-learning}
-    \samsection{our first learning algorithm}
-      \hypertarget{A2}{}
-      \input{tex-source/body.0.1.our-first-learning-algorithm}
-    \samsection{how well did we do?  (3 kinds of error : opt, approx, gen)}
-      \hypertarget{A2}{}
-      \input{tex-source/body.0.2.how-well-did-we-do}
-    \samsection{how can we do better?  (survey of rest of notes)}
-      \hypertarget{A2}{}
-      \input{tex-source/body.0.3.how-can-we-do-better}
+  \newpage
+  %a complete, simple classifier (unit 1)}
+  \SSS{1}{Learning from Examples}
+    \sss{1a}{body.1.0.likelihoods}{goodness of fit}
+    \sss{1b}{body.1.1.gradients}{smarter optimization}
+    \sss{1c}{body.1.2.priors}{intrinsic plausibility}
+    \sss{1d}{body.1.3.model-selection}{model selection}
 
-  \sampart{B. auto-predict by fitting lines to examples (unit 1)}
-    \phantomsection\label{part:B}
-    \samsection{linear approximation}
-      \hypertarget{B0}{}
-      \input{tex-source/body.1.0.linear-approximation}
-        %-- what it means for "dogness vs catness" to vary linearly
-        %-- log probabilities as the thing-to-approximate
-        %-- humble models (svm, perceptron, etc)
-        %-- richer outputs : regression and adt structure
-    \samsection{iterative optimization}
-      \hypertarget{B1}{}
-      \input{tex-source/body.1.1.iterative-optimization}
-        %-- gradients
-        %-- writing out the code : a key exercise ; batches
-        %-- setting initialization and learning rate; local minima
-        %-- visualizing noise and curvature
-    \samsection{priors and generalization}
-      \hypertarget{B2}{}
-      %\input{tex-source/body.1.2.priors-and-optimization}
-      \input{tex-source/body.1.2.iterative-optimization}
-        %-- optimization as MAP
-        %-- lp priors and sparsity
-        %-- generalization as defect of MAP's point estimation (unhumble!)
-        %-- pictures of generalization gap vs number of training points
-    \samsection{model selection}
-      \hypertarget{B3}{}
-      \input{tex-source/body.1.3.model-selection}
-        %-- featurization
-        %-- generalization bounds and BC
-        %-- hyperparameter search
-        %-- double descent
+  \newpage
+  %squeezing more out of linear models (unit 2)}
+  \SSS{2}{Engineering Features (and Friends) by Hand}
+    \sss{2a}{body.2.0.featurization}{featurization}
+    \sss{2b}{body.2.1.quantify-uncertainty}{richer outputs: quantifying uncertainty}
+    \sss{2c}{body.2.2.iterative-optimization}{iterative optimization}
+    \sss{2d}{body.2.3.data-dependent-features}{data dependent features}
 
-  \sampart{C. bend those lines to capture rich patterns (units 2,3)}
-    \phantomsection\label{part:C}
-    \samsection{featurization}
-      \hypertarget{C0}{}
-      \input{tex-source/body.2.0.featurization}
-        %-- linear preprocessing (emphasis; feature extraction and pca)
-        %-- kernels enrich approximations
-        %-- decision trees, polynomials, binning, and other nonlinear ideas
-        %-- random sketching
-    \samsection{learned featurizations}
-      \hypertarget{C1}{}
-      \input{tex-source/body.2.1.learned-featurizations}
-        %-- one hidden layer ; activ.s/pools/flows as creative engineering
-        %-- fancier gradient-based methods (nesterov, adam, etc)
-        %-- multi-layer and skip connections : width vs depth
-        %-- hierarchical features appear
-    \samsection{locality and symmetry in architecture}
-      \hypertarget{C2}{}
-      \input{tex-source/body.2.2.locality-and-symmetry-in-architecture}
-        %-- convolutions
-        %-- attention and transformers
-        %-- gnns
-        %-- survey of approaches to symmetry
-    \samsection{dependencies in architecture}
-      \hypertarget{C3}{}
-      \input{tex-source/body.2.3.dependencies-in-architecture}
-        %-- siamese and masked nets
-        %-- rnns (also philosophy of ntms and stack lstms?)
-        %-- autoencoders
-        %-- "downstream" representation learning
+  \newpage
+  %bend those lines to capture rich patterns (unit 3)}
+  \SSS{3}{Learning Features from Data}
+    \sss{3a}{body.3.a.shallow-learning}{shallow learning}
+    \sss{3b}{body.3.b.deep-architecture}{deep learning: ideas in architecture}
+    \sss{3c}{body.3.c.convolution}{symmetry and locality: convolution}
+    \sss{3d}{body.3.d.attention}{symmetry and locality: attention}
 
-  \sampart{D. thicken those lines to quantify uncertainty (unit 4)}
-    \phantomsection\label{part:D}
-    \samsection{bayesian models}
-      \hypertarget{D0}{}
-      \input{tex-source/body.3.0.bayesian-models}
-        %-- example; graphical notation
-        %-- explaining away and the forward-backward flow of information
-        %-- the `logic` of probability
-        %-- hierarchy and transfer
-    \samsection{examples of bayesian models}
-      \hypertarget{D1}{}
-      \input{tex-source/body.3.1.examples-of-bayesian-models}
-        %-- gmms for clustering ; limit of k-means
-        %-- hmms
-        %-- fonts, glyphs, occlusion (rendering)
-        %-- feras time-series-from-programs
-    \samsection{inference algorithms for bayesian models}
-      \hypertarget{D2}{}
-      \input{tex-source/body.3.2.inference-algorithms-for-bayesian-models}
-        %-- variational : expectation maximization
-        %-- more on variational : expectation maximization
-        %-- sampling : hmmcmc
-        %-- more on sampling : hmmcmc
-    \samsection{combining with deep learning}
-      \hypertarget{D3}{}
-      \input{tex-source/body.3.3.combining-with-deep-learning}
-        %-- neural nets for amortized inference
-        %-- variational autoencoders
-        %-- richer probabilistic outputs
-        %-- analysis by synthesis
+  \newpage
+  %thicken those lines to quantify uncertainty (unit 4)}
+  \SSS{4}{Modeling Structured Uncertainties}
+    \sss{4a}{body.4.0.probabilistic-models}{probabilistic models}
+    \sss{4b}{body.4.1.expectation-maximization}{inference by variation: EM}
+    \sss{4c}{body.4.2.metropolis-hastings}{inference by sampling: MH}
+    \sss{4d}{body.4.3.deep-generators}{deep generative models}
 
-  \sampart{E. beyond learning-from-examples (unit 5)}
-    \phantomsection\label{part:E}
-    \samsection{reinforcement ; bandits}
-      \hypertarget{E0}{}
-      \input{tex-source/body.4.0.reinforcement}
-    \samsection{state (dependence on prev xs and on actions ) ; RL ; partial observations}
-      \hypertarget{E1}{}
-      \input{tex-source/body.4.1.state}
-    \samsection{deep q learning}
-      \hypertarget{E2}{}
-      \input{tex-source/body.4.2.deep-q-learning}
-    \samsection{learning-from-instructions ; farewell}
-      \hypertarget{E3}{}
-      \input{tex-source/body.4.1.learning-from-instructions}
+  \newpage
+  %beyond learning-from-examples (unit 5)}
+  \SSS{5}{Learning while Acting (and from Rewards)}
+    \sss{5a}{body.5.0.reinforcement}{rewards, actions, states. exploration}
+    \sss{5b}{body.5.1.mdps}{qualitative solutions to mdp, dynamic programming, bootstrap}
+        %state (dependence on prev xs and on actions ) ; RL ; partial observations}
+    \sss{5c}{body.5.2.q-learning}{reduce to supervision using q-learning}
+    \sss{5d}{body.5.3.beyond}{non-technical discussion of: curiosity, language, instruction, world-models}
 
-  %\sampart{F. appendices (unit 0; LOW PRIORITY; assemble from old piazza posts)}
-  % \phantomsection\label{part:F}
-  %  \samsection{probability primer}
-  %   \hypertarget{F0}{}
-  %    \input{tex-source/body.5.0.probability-primer}
-  %      %-- fundamentals; frequentism vs bayesianism
-  %      %-- 2 sharp tools: independence and averaging
-  %      %-- log loss and friends
-  %      %-- common families of distributions
-  %  \samsection{linear algebra primer}
-  %   \hypertarget{F1}{}
-  %    \input{tex-source/body.5.1.linear-algebra-primer}
-  %      %-- linear "spaces" and linear "maps"
-  %      %-- dimension, trace, determinant, visually
-  %      %-- vectors, covectors, higher tensors
-  %      %-- dot product, angles, and svd, visually
-  %  \samsection{derivatives primer}
-  %   \hypertarget{F2}{}
-  %    \input{tex-source/body.5.2.derivatives-primer}
-  %      %-- derivatives are best linear appro.s: chain rule and linearity
-  %      %-- product rule, visually
-  %      %-- optimization : critical points, lagrange, higher derivatives
-  %      %-- write your own automatic differentiator: a short exercise
-  %  \samsection{programming and numpy and pytorch primer}
-  %   \hypertarget{F3}{}
-  %    \input{tex-source/body.5.3.programming-and-numpy-and-pytorch-primer}
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+  \newpage
+  \SSS{F}{Prereq Helpers}
+    \sss{Fa}{body.F.0.linear-algebra}{high dimensions and linear algebra}
+      %-- linear "spaces" and linear "maps"
+      %-- dimension, trace, determinant, visually
+      %-- vectors, covectors, higher tensors
+      %-- dot product, angles, and svd, visually
+    \sss{Fb}{body.F.1.probability}{uncertainty and probability}
+      %-- fundamentals; frequentism vs bayesianism
+      %-- 2 sharp tools: independence and averaging
+      %-- log loss and friends
+      %-- common families of distributions
+    \sss{Fc}{body.F.2.derivatives}{optimization and derivatives}
+      %-- derivatives are best linear appro.s: chain rule and linearity
+      %-- product rule, visually
+      %-- optimization : critical points, lagrange, higher derivatives
+      %-- write your own automatic differentiator: a short exercise
+    \sss{Fd}{body.F.3.programming}{python, numpy, pytorch}
 
 \end{document}
 

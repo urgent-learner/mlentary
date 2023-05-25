@@ -1,0 +1,406 @@
+%\subsection*{Lecture 4a: Probabilistic Models}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Probabilistic Models}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{Data comes from somewhere}
+%
+In this unit we explore the idea that \emph{data comes from somewhere}.  The data that
+we typically care about arose through processes we can to good approximation say a
+great deal about; then by a kind of reverse engineering of this process we can
+design good inference algorithms for this data.  Probability theory often
+gives a good language for describing these processes: some random occurrence
+happened and based on that some other random occurrence happened and so forth
+until our data gets measured, so that overall we get this very complicated
+probability distribution whose richness we want to model.
+%
+This fact --- that data comes from somewhere --- and this probabilistic
+attitude toward this fact will inspire us toward even richer and more
+sophisticated and more domain tailored architectures for our machine learning
+models.
+
+Indeed, we started in Unit 1 with linear models.  In Units 2 and 3 we enriched
+those models by pre-processing our input data (the input of our linear map)
+through sophisticated, domain-tailored non-linear featurizers.  Now, in Unit 4,
+we will post-process the decision function value (the output of our linear map)
+through sophisticated, domain-tailored probability-related nonlinearities.
+
+We've already seen two very small examples of this post-processing.  First,
+softmax.  Softmax takes a vector (the one that our linear map outputs) and
+squashes it into a probability distribution over a fixed finite set of
+possibilities.  Then minimizing logistic loss is just maximum likelihood for
+this family of conditional probability distributions.  Second, least squares
+regression.  When we do regression, we get some numeric output for each input.
+We usually don't expect the output to be exactly correct; instead, we interpret
+the model as predicting that the truth will be close to its output.  To be
+definite, let's regard the model as stating that the truth follows some fixed
+variance Gaussian centered on the output.  Then minimizing square loss of a
+regression model is the same as maximizing likelihood, if we interpret the
+linear map's output as parameterizing the mean of a fixed-variance Gaussian.
+%Now we more thoroughly explore the possibilities of parameterizing possible
+%families of distributions that might have something to do with our actual task
+%as we can tell using domain knowledge in the above two examples we parameterize
+%the space of all possible distributions were fixed finite set of possibilities
+%that soft max or prime or tries a very simple family of boring old couch and
+%they're all the same shape but the shepherd relative to each other in least
+%squares regression.
+
+In either case, the linear map's output picks out a particular distribution
+over the set $\yY$ of distributions, out of a family of such distributions.
+the post-processing we mention is simply the implementation of this picking out
+--- jargon: \emph{parameterization} --- step.  So our overall architecture will
+look like this: we take the input $x$ in $\xX$; then we feed it through some nonlinearity;
+then we apply our learned linear layer; then the output of that layer we regard
+as the parameters of some probability distribution over $\yY$.
+
+That probability distribution exists only mathematically in the sense that in
+RAM it's just represented as its parameters.  Still, we can usually do things
+like a sample from the distribution to get a diversity of concrete $y$s, or
+figure out the chance of any given $y$ relative to the distribution.  So our
+architecture overall represents a family (parameterized by weights $\theta$) of
+conditional distributions $p_{\sfy|\sfx;\theta}$ --- or, what's the same, a family
+of stochastic functions from $\xX$ to $\yY$.
+
+An aspect of this enrichment is that the learning problem look quite
+interesting even in the very simple case where there's only one possible input
+$x$ in $\xX$.  That is, when $\xX$ has size one.  Then our examples are just a
+bunch of $y$s and we seek to fit a distribution to that bunch.  This is
+so-called \emph{unsupervised learning}.  Supervised learning and unsupervised
+learning are both instances of learning from examples.  \emph{Supervised
+learning} is the jargon that we use when we are especially interested in the
+challenge of learning input output relationships.  \emph{Unsupervised learning}
+is the jargon we use when what's more interesting to us is modeling the rich
+structure of the outputs.  The distinction is as blurry and as practically
+useful at the distinction between a hotdog and a sandwich.
+
+For most of this unit, we will focus on unsupervised learning, since the probability
+stuff is the new stuff and the input-output stuff we've already seen.  We will
+occasionally sprinkle in examples with nontrivial input-output relationships,
+to show how that would work.  Only near the end of this unit will we do this
+in depth.
+
+%%-------  _  ------------------------------------------------------------------
+%\blurb{Outlook: expressivity through richer output-side nonlinearities that we
+%interpret probabilistically}
+
+%We started with linear models then we made them
+%more able to express a greater set of possible patterns, hopefully one of which
+%matches nature, by pre-composing each linear model by a featurizer function.
+%We started by considering hand engineered featureiser functions such as RBF
+%kernels then we went onto deep learning where we allowed featureizer functions
+%to be learned.  We also briefly considered post composition of the linear
+%operator: for example if we post composed with soft Max then we were able to
+%predict probabilities that as a general doctor which is component stock to add
+%to one and not have to all be positive once gone through soft max determines a
+%particular probability distribution.  Another example is where we did the least
+%squares regression and interpreted the models output --- what we called
+%decision function value --- as giving us the mean of a fixed variance gaussian
+%distribution over possible output values
+%
+%So whereas in unit three we really increased the sophistication of the input
+%side nonlinearities now we will vastly extend the soft max idea and focus on
+%enriching the output side nonlinearities. The basic idea is that the parameters
+%we want to learn potentially combined with some input data for a particular
+%example should determine a whole probability distribution over the output space
+%which is called big Y.  An aspect of this enrichment is that the learning
+%problem will become quite interesting even in the very simple case where
+%there's only one possible input that is if we're trying to learn a mapping from
+%exes to wise where that mapping out gives us a distribution over why for each
+%possible acts and there's only one possible X then we are still in the
+%interesting situation where we want to fit a distribution over wise to give an
+%example data this is the setting of so-called unsupervised learning which is
+%everything is living from examples but when we're focusing on the output
+%structure we think of it as enterprise learning when we're focusing on the
+%input output relations we think of it as supervised learning the distinction is
+%as blurry and as practically useful as a distinction between a hotdog and a
+%sandwich
+
+%-------  _  ------------------------------------------------------------------
+\blurb{example: beyond gaussian for regression}
+%
+Our architectures so far model uncertainty crudely.
+For example, when we train a neural network regression model $f$ with
+weights $\theta$ and square loss, we are maximizing the following
+likelihood function (with independence assumption on training data):
+% no NNs and linear reg
+% folks have not read previous notes in detail
+$$
+  p_{\sfy|\sfx}(y|x;\theta) = \text{gaussian distribution with mean $f(x;\theta)$ and variance $1$}
+$$
+% or two examples
+In many real-world scenarios, however, the ``true'' distribution of
+$\sfy$ conditioned on $\sfx=x$ is much richer than a gaussian
+distribution: it might have multiple humps, heavier tails, or
+correlations with other predictands.  Think, for instance, of
+predicting the a person's distribution of daily-app-usages based on
+their age and job and country (but not on the day): for a musician
+maybe some days have a lot of tuning and sheet music usage and other
+days (vacations) have none, but with no days having intermediate
+levels.  This is non-gaussian.
+
+When the space $Y$ of possible outputs
+is high-dimensional (e.g., a space of all images), there are even more
+ways for the true likelihood functions' shapes shape to differ from a
+gaussian.
+
+FILLIN images
+
+The distribution of all natural grayscale images is not gaussian when
+we represent images in ``raw'' pixel-brightness coordinates.  I mean
+that we are thinking about multi-variate gaussians with as many
+dimensions as there are pixels.  Natural images are all and only those
+photographs taken by professional photographers in the past four
+decades, made into grayscale, and cropped to a standard shape.
+%
+\par
+FOODFORTHOUGHT: What would a gaussian distribution in image space look
+like with spherical covariance?  Arbitrary covariance?  (Don't worry
+much about overflow beyond the maximum and minimum brightnesses).
+%
+\par
+What
+are qualitative aspects of the distribution of natural images that this
+does not model?
+%
+In a scenario where the distribution over natural images is gaussian,
+then the pixelwise average of any two images would be more probable
+than at least one of the images.  But if (in aforementioned
+coordinates) we average a cat image and a dog image, we get an unclear
+image (rather than a clear image of an imaginary hybrid mammal).
+This means MULTIPLE MODES.
+PICTURE OF GAUSSIAN PROPERTY
+%
+(This rhymes with non-convexity of the log probability landscape)
+
+%-------  _  ------------------------------------------------------------------
+\blurb{forward picture of distribution (generative model)}
+
+So in this unit, we want to treat the construction of richer, more
+domain-appropriate probability models as a design challenge, a degree of
+freedom we have as engineers.  We'll go beyond the defaults such as square loss
+implicit in previous units.  In doing so, we will engage with new facets of
+approximation.  And the language we develop will clarify for us aspects of
+generalization that pertain to this as well as previous units, which will
+suggest to us a new and harder optimization goal.  So we will then develop new
+ideas in optimization toward that goal.
+
+That's abstract.  The models we'll think about concretely in this unit
+are combinations of deterministic transforms and sampling statements.
+For example, the following is a model of length-$N$ lists $[y_0,
+\cdots, y_{N-1}]$ of numbers.
+\begin{table*}[h]
+\begin{tabular}{l}
+    %   \text{sample $c_a$ from a normal distribution with mean $0$ and variance $10$}
+    %\\ \text{sample $c_b$ from a normal distribution with mean $0$ and variance $10$}
+       \text{given is a number $c_a$}
+    \\ \text{given is a number $c_b$}
+    \\ \text{for $0\leq n<N$:}
+    \\ \text{~~~~~~~~sample $f_n$ by a coin flip that lands $a$ with chance $0.8$ else $b$}
+    \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $c_{f_n}$ and variance $1$}
+\end{tabular}
+\end{table*}
+FOODFORTHOUGHT: For $c_a=-5$ and $c_b=+5$, what might a 1D
+scatterplot of $y_n$s look like?
+
+To model $(x,y)$ pairs we might do something like:
+\begin{table*}[h]
+\begin{tabular}{l}
+    \text{given is a weight vector $\theta_a$}
+    \text{given is a weight vector $\theta_b$}
+    \\ \text{for $0\leq n<N$:}
+    \\ \text{~~~~~~~~sample $f_n$ by a coin flip that lands $a$ with chance $0.8$ else $b$}
+    \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $\theta_{f_n} \cdot x_n$ and variance $1$}
+\end{tabular}
+\end{table*}
+
+By contrast, the models we have looked at in previous units don't
+really do sampling except of $y$ at the end (and maybe of $\theta$
+at the beginning, for the prior).
+
+TODO: compare (discuss conditional, compare to supervised; initial samplers priors and regularizer?)
+%\begin{table*}[h]
+%\begin{tabular}{l}
+%    \text{sample $\theta_a$ from a normal distribution with mean $0$ and variance $10$}
+%    \\ \text{sample $\theta_b$ from a normal distribution with mean $0$ and variance $10$}
+%    \\ \text{for $0\leq n<N$:}
+%    \\ \text{~~~~~~~~sample $c_n$ by a coin flip that lands $a$ with chance $0.9$ else $b$}
+%    \\ \text{~~~~~~~~sample $y_n$ by normal distribution with mean $\theta_{c_n}$ and variance $1$}
+%\end{tabular}
+%\end{table*}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{latents and marginalization} %and generalization}
+
+  %As you can see,
+  %focus on unsupervised learning
+
+%-------  _  ------------------------------------------------------------------
+\blurb{point estimate vs distribution; utilities; square loss muddies}
+% bayes decision theory?
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Example: 3State Traffic.  Normalization.}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{3state traffic model definition}
+%
+Now we describe a toy example we'll use throughout this Unit.  There are $3$
+possible weathers each day in each city: Sunny, Hailing, and Foggy (SHF).  We
+choose a city whose coldness ranges thru $[0,1]$ (Warm thru Cold).  And there
+are $2$ possible traffics: NoJam or Jam.   In a completely Warm city or a
+completely Cool city, the probabilities of weather-traffic pairs are
+proportional to:
+%
+  \begin{table}[h!]
+      \centering
+      \begin{tabular}{cccc}
+          warm:&  &Noj & Jam \\%\hrule
+              & S& .5 & 0 \\
+              & H& 0  &.25\\
+              & F& 0  &.25
+      \end{tabular}
+      \hspace{2cm}%
+      \begin{tabular}{cccc}
+          cold:& & Noj & Jam \\%\hrule
+             &S&.05 &.05\\
+             &H&.4  &.05\\
+             &F&.4  &.05
+      \end{tabular}
+  \end{table}
+Cities with intermediate coldnesses linearly interpolate between these two tables.
+
+The idea is that warm cities more often have sunny weather than cold cities.
+And that sunny weather tends to lead to less traffic jams ---
+but in cold cities, where folks are used to non-sunny weather, so the effect
+of weather on jams is less.
+
+% TODO: three-jam state (for U curve)
+
+We observe the traffic variable on a single day (one bit of information), and
+we want to estimate the city coldness (one real number in $[0,1]$).  This toy
+is very simple --- misleadingly simple in some ways.
+%
+We can solve this model exactly by thinking about it.  Still, we'll soon use it
+to illustrate heavy-duty machine learning data crunching techniques.  That way
+we can compare with the exact right answers.
+
+FOODFORTHOUGHT: how would you compute the maximum likelihood estimate for
+coldness given Nojam?  Given Jam?  That is, which numbers above are involved
+in the arithmetic, and how are they involved in the arithmetic?  Which case
+(Jam or NoJam) leads to a higher Coldness estimate?
+
+%-------  _  ------------------------------------------------------------------
+\blurb{Sampling and Graphical Notation}
+%-------  _  ------------------------------------------------------------------
+\blurb{Inference with Known Parameter}
+%-------  _  ------------------------------------------------------------------
+\blurb{Parameter Estimation}
+%-------  _  ------------------------------------------------------------------
+\blurb{Challenge of Normalization}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Example: Gaussian Mixture Models.  D-separation.}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{1-cluster case: forward model, generation, and inference}
+%-------  _  ------------------------------------------------------------------
+\blurb{enriching 1 cluster to 2 clusters.  GMM definition.  use cases.}
+%-------  _  ------------------------------------------------------------------
+\blurb{graphical model.  question of fitting.  explaining away.}
+%-------  _  ------------------------------------------------------------------
+\blurb{sampling from a 3-cluster GMM to make color / stick figure data}
+%-------  _  ------------------------------------------------------------------
+\blurb{example of conditional 1-cluster, 2-cluster GMM to connect to unit 3.  color data}
+
+%%-------  _  ------------------------------------------------------------------
+%\blurb{GMM definition}
+
+%%-------  _  ------------------------------------------------------------------
+%\blurb{graphical notation}
+%
+%%-------  _  ------------------------------------------------------------------
+%\blurb{generation, the question of fitting, and use cases}
+%
+%%-------  _  ------------------------------------------------------------------
+%\blurb{priors on priors}
+%
+%%-------  _  ------------------------------------------------------------------
+%\blurb{hierarchy and transfer}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Example: hidden markov models.  Hierarchy and Transfer Learning.}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{definition of HMM}
+Here is an example of a probabilistic model for
+generating length-$T+1$ sequences of labels from a finite set $L$ of
+label values.
+\begin{table*}[h]
+\begin{tabular}{l}
+       \text{given is a distribution $\iota(\cdot)$ on $L$}
+    \\ \text{given is a conditional distribution $\tau(\cdot|\cdot)$ from $L$ to $L$}
+    \\ \text{sample $l_0$ from $\iota(\cdot)$}
+    \\ \text{for $0\leq t<T$:}
+    \\ \text{~~~~~~~~sample $l_{t+1}$ from $\tau(\cdot|l_t)$}
+\end{tabular}
+\end{table*}
+MARKOV PROPERTY
+
+%-------  _  ------------------------------------------------------------------
+\blurb{}
+Adding a layer of sophistication, we might imagine
+that our observation at timestep $t$ is related to but not the same as
+the evolving state.
+\begin{table*}[h]
+\begin{tabular}{l}
+       \text{given is a distribution $\iota(\cdot)$ on $Z$}
+    \\ \text{given is a conditional distribution $\tau(\cdot|\cdot)$ from $Z$ to $Z$}
+    \\ \text{given is a conditional distribution $\epsilon(\cdot|\cdot)$ from $Z$ to $L$}
+    \\ \text{sample $z_0$ from $\iota(\cdot)$}
+    \\ \text{for $0\leq t<T$:}
+    \\ \text{~~~~~~~~sample $z_{t+1}$ from $\tau(\cdot|z_t)$}
+    \\ \text{for $0\leq t\leq T$:}
+    \\ \text{~~~~~~~~sample $l_{t}$ from $\epsilon(\cdot|z_t)$}
+\end{tabular}
+\end{table*}
+
+FAILURE OF MARKOV PROPERTY
+
+%-------  _  ------------------------------------------------------------------
+\blurb{Expressivity: Generating Cool Sequences}
+%-------  _  ------------------------------------------------------------------
+\blurb{Inference given Weights: 0s and Softlogic and Backflow}
+%-------  _  ------------------------------------------------------------------
+\blurb{Inference of Weights, Qualitatively.  Hierarchy and Transfer.}
+
+% =============================================================================
+% ==  _  ======================================================================
+% =============================================================================
+
+\sampassage{Latents, Marginal Likelihood for Latents, Weights as Latents.}
+
+%-------  _  ------------------------------------------------------------------
+\blurb{Weights as Latents.}
+%-------  _  ------------------------------------------------------------------
+\blurb{Point vs Distribution estimates, and generalization.}
+%-------  _  ------------------------------------------------------------------
+\blurb{Bowtie vs Pipe}
+%-------  _  ------------------------------------------------------------------
+\blurb{BIC as an approximation.  Double descent.}
+%-------  _  ------------------------------------------------------------------
+\blurb{Beyond BIC}
+
+
