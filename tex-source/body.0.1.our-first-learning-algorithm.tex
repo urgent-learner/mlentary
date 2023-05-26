@@ -139,10 +139,12 @@
   %  tends to be bigger than width.  We'll soon see that this eyeballed
   %  slope doesn't work well.  It's better to tune by machine.
   %}
+  \begin{minipage}{\linewidth}
   \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
     def condition(x):
       return -1*brightness(x)+4*width(x) > 0
   \end{lstlisting}
+  \end{minipage}
   Intuitively, the formula $-1\cdot \text{brightness} +4\cdot\text{width}$ we
   invented is a measure of \emph{threeness}: if it's positive, we predict
   $y={\rng 3}$.  Otherwise, we predict $y={\blu 1}$.
