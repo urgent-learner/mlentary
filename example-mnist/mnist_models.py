@@ -1,25 +1,29 @@
-''' author: sam tenka
+''' author: sam tenka, MAJOR COLLABORATOR NAMES
     change: 2023-05-29
     create: 2023-05-29
-    descrp: Generate plots for the text's digit-classification examples.
-    depend: keras
-    jargon: we'll consistently use these abbreviations when naming variables:
-                dec_func    --- decision function
-                idx(s)      --- index/indices within list of all examples
-                model       --- name of model ('linear', 'affine', etc)
-                nb_         --- number of (whatever follows the underscore)
-                side        --- sidelength of image, measured in pixels
-                x           --- photo of handwritten digit
-                y           --- digit-valued label
-                y_sign      --- {-1,+1}-valued label
-                z           --- feature vector
-                vert        --- to do with a graph's vertical axis
-                hori        --- to do with a graph's horizontal axis
+    descrp: Generate the text's plots regarding linear classification of
+            handwritten digits.  Plots include decision boundaries, loss
+            landscapes, and learning curves.
+    depend: keras (just for the mnist data)
     thanks: featurization idea inspired by abu-mostafa's book
+                MINOR COLLABORATOR NAMES
     to use: Run `python3 mnist_models.py`.  On first run, expect a downloading
             progress bar to display and finish within 30 to 60 seconds; this
             is for downloading the MNIST dataset we'll use.
 '''
+
+#    jargon: we'll consistently use these abbreviations when naming variables:
+#                dec_func    --- decision function
+#                idx(s)      --- index/indices within list of all examples
+#                model       --- name of model ('linear', 'affine', etc)
+#                nb_         --- number of (whatever follows the underscore)
+#                side        --- sidelength of image, measured in pixels
+#                x           --- photo of handwritten digit
+#                y           --- digit-valued label
+#                y_sign      --- {-1,+1}-valued label
+#                z           --- feature vector
+#                vert        --- to do with a graph's vertical axis
+#                hori        --- to do with a graph's horizontal axis
 
 #==============================================================================
 #===  PREAMBLE  ===============================================================
@@ -37,14 +41,14 @@ import tqdm
 
 #-------  colors  -------------------------------------------------------------
 
-WHITE        = np.array([1.0 ,1.0 ,1.0 ])
-SMOKE        = np.array([ .9 , .9 , .9 ])
-SLATE        = np.array([ .5 , .5 , .5 ])
-SHADE        = np.array([ .1 , .1 , .1 ])
-BLACK        = np.array([ .0 , .0 , .0 ])
+WHITE   = np.array([1.0 ,1.0 ,1.0 ])
+SMOKE   = np.array([ .9 , .9 , .9 ])
+SLATE   = np.array([ .5 , .5 , .5 ])
+SHADE   = np.array([ .1 , .1 , .1 ])
+BLACK   = np.array([ .0 , .0 , .0 ])
 
-BLUE    = np.array([0.05, 0.55, 0.85]) ###
-ORANGE  = np.array([0.95, 0.65, 0.05]) #
+BLUE    = np.array([0.05, 0.55, 0.85]) # this pair is better...
+ORANGE  = np.array([0.95, 0.65, 0.05]) #                ...for colorblind folks
 
 def overlay_color(background, foreground, foreground_opacity=1.0):
     background += foreground_opacity * (foreground - background)
@@ -106,6 +110,7 @@ DIG_2COORS = [(row,col) for row in DIG_1COORS for col in DIG_1COORS]
 FEAT_DIM = sum(len(FEAT_NMS)**d for d in DEGS)
 
 if BRUTE_FORCE_SEARCH:
+    # TODO: assert features.
     BRUTE_PARAMS = [(0, aa, bb) for aa in PARAM_RANGE for bb in PARAM_RANGE]
     #BRUTE_PARAMS = [()]
     #for _ in range(FEAT_DIM):
@@ -320,8 +325,9 @@ if BRUTE_FORCE_SEARCH:
     for param in tqdm.tqdm(BRUTE_PARAMS):
         #classifier = make_classifier(dec_func_maker_by_model[MODEL](*param))
         classifier = make_classifier(dec_func_maker(param))
-        training_errors[MODEL][param] = error_rate(classifier, train_idxs) + 0.0001*abs(param[1]**2+param[2]**2 - 7.0**2)
-        testing_errors [MODEL][param] = error_rate(classifier, test_idxs ) + 0.0001*abs(param[1]**2+param[2]**2 - 7.0**2)
+        training_errors[MODEL][param] = error_rate(classifier, train_idxs)
+        testing_errors [MODEL][param] = error_rate(classifier, test_idxs )
+        # TODO: might want to disambiguate above error rates e.g. by adding + 0.0001*abs(param[1]**2+param[2]**2 - 7.0**2)
 
     best_train = min((err,par) for par,err in training_errors[MODEL].items())
     best_test  = min((err,par) for par,err in testing_errors [MODEL].items())
