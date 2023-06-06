@@ -1,3 +1,36 @@
+\sampassage{CNN layer} Idea of a convolutional layer: turn ``image" to ``image". Here ``image" is an abstract quantity, for example a ${ \text{(height)} \times \text{(width)} \times \text{(dim)} }$ ${ = 30 \times 30 \times 3 }$ array representing an image with ${ 30 \times 30 }$ RGB pixels. 
+
+A ${ H \times W \times D }$ input array turns into another array ${ H' \times W' \times D' }$ where roughly ${ H' \simeq H }$ and ${ W' \simeq W }.$ The transformation must follow ``locality" and ``symmetry". By locality one means: output pixels are effected only from local data in the input. By symmetry one means: effect of input neighbourhoods on output pixels is invariant to translating (both neighbourhoods the same way). 
+
+\sampassage{Math of a CNN layer}
+A ${ H \times W \times D }$ input array ${ X }$ transforms to a ${ \tilde{H} \times \tilde{W} \times \tilde{D} }$ array ${ Y },$ and entries of ${ Y }$ are given by dot product of learned weight matrix ${ A }$ with appropriate submatrices of ${ X }.$  More precisely, $${ Y[\tilde{h}, \tilde{w}, \tilde{d}] = \sum _{\substack{0 \leq \Delta h < K \\ 0 \leq \Delta w < K \\ o \leq d < D}} A[\Delta h, \Delta w, d, \tilde{d}] \cdot X[\tilde{h} + \Delta h, \tilde{w} + \Delta w, d]  .}$$ 
+
+Here ${ K }$ is called kernel size, and controls the size of input neighbourhoods used to compute the output. 
+
+Note symmetry holds since ${ A }$ does not depend on ${ (\tilde{h}, \tilde{w}) },$ and locality holds since we are using only local values ${ X[\tilde{h} + \Delta h, \tilde{w} + \Delta w, d] }$ to compute ${ Y[\tilde{h}, \tilde{w}, \tilde{d}] }.$
+
+\sampassage{CNN Applications} 
+\begin{itemize}
+\item Image processing with typical CNN architecture: Passing an image through multiple CNN layers each having its own learned weight matrix, for image to image translation. 
+\item In above setup, a small neighbourhood in the output array contains high level information about a larger neighbourhood in the original input. Now one can  ``flatten"/``vectorise" output array and perform classification by adding for eg dense and softmax layers.
+\item Image generation: Given noise, prompts, etc. one can unflatten and pass through CNN layers to learn to generate images. 
+\end{itemize} 
+
+${ \textbf{Practicalities} }$: 
+\begin{itemize}
+
+\item Adding pooling layers (to shrink images). These layers are not learned. 
+
+\item Padding: Slight clipping due to boundary effects changing index range (padding with zeroes, etc.) 
+
+\item Skip connections 
+
+\item Stride: Instead of input neighbourhoods skipping by 1 they are more spaced 
+
+
+    
+\end{itemize}     
+    
     \samsection{2. multiple layers}
         We can continue alternating learned linearities with fixed
         nonlinearities:
