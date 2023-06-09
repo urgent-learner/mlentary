@@ -203,6 +203,17 @@
   % TODO: philosophize about all ML being about weighted similarities.
 
   %\vfill
+  
+      With labeled spam email examples, we would build a binary classifier to predict spam or non-spam label. If we did not have labeled examples and presented to the model, instead, with representative samples of spam and non-spam emails, then we could build a model that predicts the unlabeled emails with the representative samples based on some kind of similarity measure. The spam and non-spam data points would appear at both poles of the geometric space and marketing campaign emails, for example, would fall in between. So I would choose cosine similarity. Other non-visual indicators of linear separability include (1) getting a high accuracy score on linear SVM method or (2) principal component analysis indicating linear separability of points in lower dimensional spaces.
+  
+\attnsam{Closing note: Tying ML to weighted similarities}
+
+In SVM, we tried to learn a classifier that identifies the largest gap that separates the dataset. This entails learning a decision boundary by regularizing its distance from its closest points, aka support vectors - by maximizing the margin distance, $1/\lVert w \rVert$. In order to model non-linearities, we used the kernel function trick, $K(x, x') = \phi(x) \cdot \phi(x')$, by transforming the original feature space $x$ to higher dimensions $\phi(x)$.
+\bovinenote{When non-linear SVMs or RBF kernels are used, the calculation of the margin distance from the support vectors is not so straightforward as the hyperplane is not calculated from the original feature space ($x$) but $\phi(x)$.}
+
+In the data dependent features demonstration, we saw how Gaussian RBF kernel endowed us the flexibility to experiment different decision boundaries when the dataset is not linearly separable. This special kernel function is linear in the infinite dimensional space $\phi(x)$, but when mapped back to the dataset's original features, $x$, it manifests as a non-linear boundary, the curvature and shape of which we chose using domain knowledge of the dataset.
+
+In general, using a kernel function, which is the dot product of two feature vectors, is equivalent to calculating the similarity of two points. For instance, the kernel perception algorithm uses kernel functions to learn weights, $w$, for the decision boundary.
 
 \newpage
 \sampassage{superpositions and kernels}%\marginnote{\veryoptional}
