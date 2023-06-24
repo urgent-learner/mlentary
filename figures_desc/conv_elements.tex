@@ -1,0 +1,15 @@
+\begin{document}
+This figure demonstrates how the output image of the convolution operation is formed. 
+First, the function selects particular elements defined by a window of the same size as the kernel.
+Then the algorithm applies the weighted sum to this window and kernel;
+and stores the result according to the window's position. 
+The algorithm starts at the "top left" corner of the image, 
+i. e. an element of the window at $(1, 1)$ is an element of the image at $(1, 1)$; 
+and the output element is also at $(1, 1)$.
+To compute the next element of the output image, the algorithm shifts the window by one.
+For instance, if we want to compute an output element $(2, 1)$ we shift the window by one row and 
+the window starts from 
+$(2, 1)$ element of the input image.
+Considering an input image of size $(W, H)$ and the kernel of size $(K, K)$, 
+the overall computational complexity of 2D convolution is $O(W \times H \times K^2)$.
+\end{document}

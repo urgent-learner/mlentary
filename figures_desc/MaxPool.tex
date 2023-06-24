@@ -1,0 +1,10 @@
+\begin{document}
+MaxPool is a size reduction function. It divides an image into smaller submatrices
+(in this particular case into $2 \times 2$ matrices). Then it selects an element with the maximum 
+value from each submatrix
+and put them into the corresponding cells of the output image. When 2D MaxPool is applied to 
+the colored image, it processes each channel separately. Usually, MaxPool is used right after 
+the convolutional layer, which extracts the features from the image. In these terms, 
+MaxPool gets rid of less important information. It allows us to reduce computations and 
+the number of weights in neural networks.
+\end{document}
