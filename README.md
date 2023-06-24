@@ -64,6 +64,14 @@ WANT the repo to look like.  I haven't had time to organize.
 
 #### branch etiquette
 
+EDIT: let's use the system of claiming or assigning parts of work (e.g. at
+least as fine-grained as which body.N.M file, if that is applicable)  so that
+everone can see and check before working on it themselves.  Let's adopt a format like:
+
+    Issue-"current_number": "a brief description"
+
+New ideas can be discussed in this thread so that everyone can read.
+
 EDIT: instead of adding everyone as a collaborator immediately, I will instead
 accept pull requests and then only after making sure they look alright will I
 add you!

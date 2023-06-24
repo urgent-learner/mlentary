@@ -5,9 +5,9 @@
 % =============================================================================
 
 \sampassage{Probabilistic Models}
-
+%
 %-------  _  ------------------------------------------------------------------
-\blurb{Data comes from somewhere}
+\blurb{Data comes from somewhere; expressivity through richer output-side nonlinearities that we interpret probabilistically}
 %
 In this unit we explore the idea that \emph{data comes from somewhere}.  The data that
 we typically care about arose through processes we can to good approximation say a
@@ -53,17 +53,17 @@ In either case, the linear map's output picks out a particular distribution
 over the set $\yY$ of distributions, out of a family of such distributions.
 the post-processing we mention is simply the implementation of this picking out
 --- jargon: \emph{parameterization} --- step.  So our overall architecture will
-look like this: we take the input $x$ in $\xX$; then we feed it through some nonlinearity;
-then we apply our learned linear layer; then the output of that layer we regard
-as the parameters of some probability distribution over $\yY$.
+look like this: we take the input $x$ in $\xX$; then we feed it through some
+nonlinearity; then we apply our learned linear layer; then the output of that
+layer we regard as the parameters of some probability distribution over $\yY$.
 
 That probability distribution exists only mathematically in the sense that in
 RAM it's just represented as its parameters.  Still, we can usually do things
 like a sample from the distribution to get a diversity of concrete $y$s, or
 figure out the chance of any given $y$ relative to the distribution.  So our
 architecture overall represents a family (parameterized by weights $\theta$) of
-conditional distributions $p_{\sfy|\sfx;\theta}$ --- or, what's the same, a family
-of stochastic functions from $\xX$ to $\yY$.
+conditional distributions $p_{\sfy|\sfx;\theta}$ --- or, what's the same, a
+family of stochastic functions from $\xX$ to $\yY$.
 
 An aspect of this enrichment is that the learning problem look quite
 interesting even in the very simple case where there's only one possible input
@@ -77,47 +77,11 @@ is the jargon we use when what's more interesting to us is modeling the rich
 structure of the outputs.  The distinction is as blurry and as practically
 useful at the distinction between a hotdog and a sandwich.
 
-For most of this unit, we will focus on unsupervised learning, since the probability
-stuff is the new stuff and the input-output stuff we've already seen.  We will
-occasionally sprinkle in examples with nontrivial input-output relationships,
-to show how that would work.  Only near the end of this unit will we do this
-in depth.
-
-%%-------  _  ------------------------------------------------------------------
-%\blurb{Outlook: expressivity through richer output-side nonlinearities that we
-%interpret probabilistically}
-
-%We started with linear models then we made them
-%more able to express a greater set of possible patterns, hopefully one of which
-%matches nature, by pre-composing each linear model by a featurizer function.
-%We started by considering hand engineered featureiser functions such as RBF
-%kernels then we went onto deep learning where we allowed featureizer functions
-%to be learned.  We also briefly considered post composition of the linear
-%operator: for example if we post composed with soft Max then we were able to
-%predict probabilities that as a general doctor which is component stock to add
-%to one and not have to all be positive once gone through soft max determines a
-%particular probability distribution.  Another example is where we did the least
-%squares regression and interpreted the models output --- what we called
-%decision function value --- as giving us the mean of a fixed variance gaussian
-%distribution over possible output values
-%
-%So whereas in unit three we really increased the sophistication of the input
-%side nonlinearities now we will vastly extend the soft max idea and focus on
-%enriching the output side nonlinearities. The basic idea is that the parameters
-%we want to learn potentially combined with some input data for a particular
-%example should determine a whole probability distribution over the output space
-%which is called big Y.  An aspect of this enrichment is that the learning
-%problem will become quite interesting even in the very simple case where
-%there's only one possible input that is if we're trying to learn a mapping from
-%exes to wise where that mapping out gives us a distribution over why for each
-%possible acts and there's only one possible X then we are still in the
-%interesting situation where we want to fit a distribution over wise to give an
-%example data this is the setting of so-called unsupervised learning which is
-%everything is living from examples but when we're focusing on the output
-%structure we think of it as enterprise learning when we're focusing on the
-%input output relations we think of it as supervised learning the distinction is
-%as blurry and as practically useful as a distinction between a hotdog and a
-%sandwich
+For most of this unit, we will focus on unsupervised learning, since the
+probability stuff is the new stuff and the input-output stuff we've already
+seen.  We will occasionally sprinkle in examples with nontrivial input-output
+relationships, to show how that would work.  Only near the end of this unit
+will we do this in depth.
 
 %-------  _  ------------------------------------------------------------------
 \blurb{example: beyond gaussian for regression}
@@ -132,22 +96,27 @@ $$
   p_{\sfy|\sfx}(y|x;\theta) = \text{gaussian distribution with mean $f(x;\theta)$ and variance $1$}
 $$
 % or two examples
-In many real-world scenarios, however, the ``true'' distribution of
-$\sfy$ conditioned on $\sfx=x$ is much richer than a gaussian
-distribution: it might have multiple humps, heavier tails, or
-correlations with other predictands.  Think, for instance, of
-predicting the a person's distribution of daily-app-usages based on
-their age and job and country (but not on the day): for a musician
-maybe some days have a lot of tuning and sheet music usage and other
-days (vacations) have none, but with no days having intermediate
-levels.  This is non-gaussian.
+In many real-world scenarios, however, the ``true'' distribution of $\sfy$
+conditioned on $\sfx=x$ is much richer than a gaussian distribution: it might
+have multiple humps, heavier tails, or correlations with other predictands.
+Think, for instance, of predicting the a person's distribution of
+daily-app-usages based on their age and job and country (but not on the day):
+for a musician maybe some days have a lot of tuning and sheet music usage and
+other days (vacations) have none, but with no days having intermediate levels.
+This is non-gaussian.
 
-When the space $Y$ of possible outputs
-is high-dimensional (e.g., a space of all images), there are even more
-ways for the true likelihood functions' shapes shape to differ from a
-gaussian.
+When the space $Y$ of possible outputs is high-dimensional (e.g., a space of
+all images), there are even more ways for the true likelihood functions' shapes
+shape to differ from a gaussian.
 
-FILLIN images
+\attnsam{TODO can some volunteer make an image of some $30\times 30$ color
+ images?  Want six images: one of a cow, one of a dog, one halfway in between
+ as a vector of dimension $30\cdot 30\cdot 3$, one gaussianly sampled with
+ i.i.d. gaussian colors centered at gray and with stddev 0.25 of total
+ brightness range (clip at black and white), one gaussianly sampled with
+ independent gaussian colors centered at the cow image and with stddev 0.25 of
+ total brightness range (clip at black and white), and one gaussianly sampled
+ according to the PCA of 500 cow and dog images?  Ask sam for details}
 
 The distribution of all natural grayscale images is not gaussian when
 we represent images in ``raw'' pixel-brightness coordinates.  I mean
@@ -156,25 +125,22 @@ dimensions as there are pixels.  Natural images are all and only those
 photographs taken by professional photographers in the past four
 decades, made into grayscale, and cropped to a standard shape.
 %
-\par
-FOODFORTHOUGHT: What would a gaussian distribution in image space look
+\exercise{What would a gaussian distribution in image space look
 like with spherical covariance?  Arbitrary covariance?  (Don't worry
-much about overflow beyond the maximum and minimum brightnesses).
+much about overflow beyond the maximum and minimum brightnesses).}
 %
-\par
-What
-are qualitative aspects of the distribution of natural images that this
-does not model?
+\exercise{What are qualitative aspects of the distribution of natural images
+that this does not model?}
 %
-In a scenario where the distribution over natural images is gaussian,
-then the pixelwise average of any two images would be more probable
-than at least one of the images.  But if (in aforementioned
-coordinates) we average a cat image and a dog image, we get an unclear
-image (rather than a clear image of an imaginary hybrid mammal).
-This means MULTIPLE MODES.
-PICTURE OF GAUSSIAN PROPERTY
-%
-(This rhymes with non-convexity of the log probability landscape)
+\par Here is one possible answer:
+In a scenario where the distribution over natural images is gaussian, then the
+pixelwise average of any two images would be more probable than at least one of
+the images.  But if (in aforementioned coordinates) we average a cat image and
+a dog image, we get an unclear image (rather than a clear image of an imaginary
+hybrid mammal).
+\attnsam{TODO: Draw and insert two-panel CARTOON of the above property of
+gaussians vs of multimodal distributions (in jargon this illustrates one aspect
+of the failure of the image probability density to be convex)}
 
 %-------  _  ------------------------------------------------------------------
 \blurb{forward picture of distribution (generative model)}
@@ -246,8 +212,8 @@ TODO: compare (discuss conditional, compare to supervised; initial samplers prio
 % ==  _  ======================================================================
 % =============================================================================
 
-\sampassage{Example: 3State Traffic.  Normalization.}
-
+\sampassage{Example: 3State Traffic.  Summation.}
+%
 %-------  _  ------------------------------------------------------------------
 \blurb{3state traffic model definition}
 %
@@ -256,29 +222,39 @@ possible weathers each day in each city: Sunny, Hailing, and Foggy (SHF).  We
 choose a city whose coldness ranges thru $[0,1]$ (Warm thru Cold).  And there
 are $2$ possible traffics: NoJam or Jam.   In a completely Warm city or a
 completely Cool city, the probabilities of weather-traffic pairs are
-proportional to:
+as given in the table in the margin.  Cities with intermediate coldnesses linearly interpolate between these two
+tables.
 %
-  \begin{table}[h!]
+  %\begin{table}[h!]
+      \begin{marginfigure}[-2cm]
       \centering
       \begin{tabular}{cccc}
-          warm:&  &Noj & Jam \\%\hrule
-              & S& .5 & 0 \\
+        \textsc{warm}:&  &Noj & Jam \\%\hrule
+              & S& .5 &0  \\
               & H& 0  &.25\\
               & F& 0  &.25
-      \end{tabular}
-      \hspace{2cm}%
+      \end{tabular}\\
+      %\hspace{2cm}%
+      %\begin{tabular}{cccc}
+      %  \textsc{medium}:&  &Noj & Jam \\%\hrule
+      %        & S& .3 &0  \\
+      %        & H& .2 &.15\\
+      %        & F& .2 &.15
+      %\end{tabular}
+      %\hspace{2cm}%
       \begin{tabular}{cccc}
-          cold:& & Noj & Jam \\%\hrule
-             &S&.05 &.05\\
+        %\textsc{cold}:& & Noj & Jam \\%\hrule
+        \textsc{cold}:& &     &     \\%\hrule
+             &S&.1  &0  \\
              &H&.4  &.05\\
              &F&.4  &.05
       \end{tabular}
-  \end{table}
-Cities with intermediate coldnesses linearly interpolate between these two tables.
+  \end{marginfigure}
+  %\end{table}
 
 The idea is that warm cities more often have sunny weather than cold cities.
 And that sunny weather tends to lead to less traffic jams ---
-but in cold cities, where folks are used to non-sunny weather, so the effect
+but in cold cities, where folks are used to non-sunny weather, the effect
 of weather on jams is less.
 
 % TODO: three-jam state (for U curve)
@@ -287,14 +263,17 @@ We observe the traffic variable on a single day (one bit of information), and
 we want to estimate the city coldness (one real number in $[0,1]$).  This toy
 is very simple --- misleadingly simple in some ways.
 %
-We can solve this model exactly by thinking about it.  Still, we'll soon use it
-to illustrate heavy-duty machine learning data crunching techniques.  That way
-we can compare with the exact right answers.
+We can solve this model exactly by thinking about it.\bovinenote{%
+\noparexercise{%
+%How would you compute the maximum likelihood estimate for
+%coldness given Nojam?  That is, which numbers above are involved
+%in the arithmetic, and how are they involved in the arithmetic?
+Which case (Jam or NoJam) leads to a higher Coldness estimate?}
+}
+Still, we'll soon use it
+to illustrate heavy-duty data crunching techniques.  That way we can compare
+with the exact right answers.
 
-FOODFORTHOUGHT: how would you compute the maximum likelihood estimate for
-coldness given Nojam?  Given Jam?  That is, which numbers above are involved
-in the arithmetic, and how are they involved in the arithmetic?  Which case
-(Jam or NoJam) leads to a higher Coldness estimate?
 
 %-------  _  ------------------------------------------------------------------
 \blurb{Sampling and Graphical Notation}
@@ -303,22 +282,140 @@ in the arithmetic, and how are they involved in the arithmetic?  Which case
 %-------  _  ------------------------------------------------------------------
 \blurb{Parameter Estimation}
 %-------  _  ------------------------------------------------------------------
-\blurb{Challenge of Normalization}
+\blurb{Challenge of Summation}
 
 % =============================================================================
 % ==  _  ======================================================================
 % =============================================================================
 
-\sampassage{Example: Gaussian Mixture Models.  D-separation.}
-
+\sampassage{Example: Parameterizing Spread.  Gaussian Mixture Models.  D-separation.}
+%
 %-------  _  ------------------------------------------------------------------
 \blurb{1-cluster case: forward model, generation, and inference}
+Recall that in least squares regression, we're trying to find weights $\theta$
+that determine a function $f_\theta:\xX\to \yY=\Rr$ that maximizes the
+likelihood of observing the training data under a model where $y_n$ is sampled
+from fixed-variance gaussians around $f_\theta(x_n)$.  What if we instead
+let the machine figure out appropriate variances so that it can tell us, based
+on data, when it is less confident?
+
+%\attnsam{TODO: }
+\attnsam{TODO: plot of two samples from fixed-variance model and two samples
+from varying-variance model}
+
+What that would look like is a pair of functions $f_\theta,g_\theta:\xX\to\Rr$
+that determine, for each input $x$, a gaussian distribution for $y$-values at
+$x$.  One way to do this is to regard $f$ as the gaussian's mean and $g$ as the
+gaussian's variance.  Actually, since we don't want to allow negative
+variances, it is more convenient to regard $\exp g$ as the gaussian's variance.
+Therefore, the likelihood for a given training sample $(x,y)$ is
+$$
+  \exp\wrap{-\frac{1}{2}\wrap{%
+    (y-f_\theta(x))^2/\exp g_\theta(x)
+    +
+    \log(2\pi) + g_\theta(x)
+    }}
+$$
+
+Intuitively, doing regression this way allows the model to ``give up'' on
+regions of $\xX$ where inference seems too noisy and thus focus/spend the
+model's expressivity on tractable regions instead of wasting it.
+\attnsam{TODO: offer intuitive situation; make plot}
+
+We could do gradient descent on (the negative log of) the above likelihood,
+just as we do in ordinary least squares, to find a good $\theta$.  For example,
+perhaps $\xX$ has $30$ features and $\theta$ has $(30+1)+(30+1)=62$ dimensions,
+where the first $30+1$ parameterize the linear function $f_\theta$ (with bias)
+and the second $30+1$ parameterize the linear function $g_\theta$ (with bias).
+
+This situation is fun and useful.  It's already worth studying and quite useful
+in the case where $\xX$ only contains one $x$-value.  Then we are fitting a
+gaussian of varying mean and variance to our training data's $y$-values.
+\exercise{In this gaussian-fitting situation, make up some training data.  Can
+you visualize the loss landscape, i.e., the function from weightspace (here
+two-dimensional) to loss?  Define loss as negative log likelihood, as usual.
+Why is there just one minimum?  What do the level curves look like?  How do
+they differ from ellipses?}
+
+
+\exercise{For river level regression prediction, what are reasons it might be
+useful to get the machine to provide calibrated assesments of the possible
+$y$-values' spread instead of just their mean?}
+
 %-------  _  ------------------------------------------------------------------
 \blurb{enriching 1 cluster to 2 clusters.  GMM definition.  use cases.}
+We stick to the case $|\xX|=1$ for now to focus on the interesting new ideas in
+modeling a distribution over $\yY$.  Before, we modeled spread just as the
+variance of a gaussian.  But there are further, interesting ways a distribution
+can be spread.  For example, it might have a fat rightward tail (like annual
+the distribution of household incomes in the united states) or it might have
+multiple humps (like the distribution of longitudes humans live in).  To model
+having multiple humps, we could parameterize a \emph{mixture of gaussians}, a
+probability density that looks like a weighted average of multiple different
+gaussian densities.  For example, to model two humps we'd have as our parameters
+\emph{two} means, \emph{two} variances, and a parameter saying how much mass
+is in one hump vs the other:
+\begin{align*}
+  p(y) =  
+    &\text{weight}_0 \exp\wrap{-\frac{1}{2}\wrap{%
+    (y-\text{mean}_0)^2/\exp \text{logvar}_0
+    +
+    \log(2\pi) + \text{logvar}_0
+    }}
+    +
+    \\&\text{weight}_1 \exp\wrap{-\frac{1}{2}\wrap{%
+    (y-\text{mean}_1)^2/\exp \text{logvar}_1
+    +
+    \log(2\pi) + \text{logvar}_1
+    }}
+\end{align*}
+Here, the two weights add to one, so in effect they constitute one parameter.
+
+This is the ($2$-hump, $1$-dimensional case of) of the probability model called
+the \textbf{Gaussian Mixture Model (GMM)}.  By fitting a GMM to data, we can
+learn about the hidden structure of the data such as its underlying clusters,
+generate new examples in the same spirit (by sampling from the probability
+distribution), test whether future examples are anomalies (by seeing whether or
+not they are likely according to the learned distribution), classify examples
+by which hump they more likely belong to, etc.  DATA MODELING, DATA SCIENCE,
+VERY RICH THING TO PROBE
+
+\attnsam{TODO: add CONCRETE EXAMPLES of kinds of data for which this might
+be interesting.  Include a diversity of domains, e.g. medicine, aero-astro,
+etc}
+
 %-------  _  ------------------------------------------------------------------
-\blurb{graphical model.  question of fitting.  explaining away.}
+\blurb{question of fitting.  graphical model.  explaining away.}
+
+There's a slight sickness in the multi-hump likelihood formula above when we
+are inferring parameters: we can get arbitrarily high likelihoods by letting
+one of the clusters very narrowly center on a datapoint!
+%
+There are three
+
+From a more down-to-earth perspective, we'd like to have high testing time
+likelihood rather than training set likelihood.  CROSS-VALIDATION
+
+UTILITY VS BITS
+
+PRIORS, REGULARIZATION: add $\sum_k \lambda/\exp \text{logvar}_k$ to the loss
+function.
+
+\attnsam{TODO: draw and interpret graphical model of GMM, including prior}
+
+Now a short remark on a very important phenomenon called EXPLAINING AWAY: if
+there are two possible explanations for an observation, then new observations
+that cause us to increase our probability that one explanation happened will
+cause us to decrease our probability that the other explanation happened, even
+if those explanations are not mutually exclusive and a priori those
+explanations are independent!  SHIFTING TENSION/BURDEN OF EXPLANATION
+%
+We can see this effect very spatially as different gaussian components
+``negotiate'' their territories.  \attnsam{TODO: plots!}
+
 %-------  _  ------------------------------------------------------------------
 \blurb{sampling from a 3-cluster GMM to make color / stick figure data}
+
 %-------  _  ------------------------------------------------------------------
 \blurb{example of conditional 1-cluster, 2-cluster GMM to connect to unit 3.  color data}
 
